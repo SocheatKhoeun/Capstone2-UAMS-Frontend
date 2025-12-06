@@ -132,6 +132,7 @@
 
 <script setup>
 import { ref, computed, reactive, watch } from "vue";
+import { userAuth } from '~/store/userAuth';
 import { adminAuth } from '~/store/adminAuth';
 
 // Meta tags for SEO
@@ -165,7 +166,8 @@ const errors = reactive({
 
 // Refs
 const loginForm = ref(null);
-const authStore = adminAuth();
+const userStore = userAuth();
+const adminStore = adminAuth();
 
 // Computed
 const currentYear = computed(() => new Date().getFullYear());
@@ -195,25 +197,50 @@ const handleLogin = async () => {
   // Validate form
   if (!loginForm.value) return;
   const { valid } = await loginForm.value.validate();
-
-  if (!valid) {
-    return;
-  }
+  if (!valid) return;
 
   isLoading.value = true;
   loginError.value = "";
 
   try {
-    // Call admin login action (will set token/cookies)
-    await authStore.login(loginData.email, loginData.password);
+    // 1) Try user login (student / lecturer)
+    const userRes = await userStore.login(loginData.email, loginData.password);
 
-    // Redirect to admin dashboard after successful login
-    await navigateTo("/admin/dashboard");
-  } catch (error) {
-    // Prefer API message when available
-    const apiMessage = error?.response?.data?.message || error?.response?.data?.error || null;
-    loginError.value = apiMessage || error.message || "Login failed. Please check your credentials and try again.";
-    console.error("Login error:", error);
+    // Determine role from response or decoded token
+    const role =
+      userRes?.data?.role ||
+      userRes?.data?.data?.role ||
+      userStore.getUser()?.role ||
+      userStore.getUser()?.raw?.role;
+
+    if (role === "student") {
+      return await navigateTo("/student/dashboard");
+    } else if (role === "lecturer" || role === "teacher") {
+      return await navigateTo("/lecturer/dashboard");
+    } else if (role === "admin") {
+      // backend may return admin role on same endpoint
+      return await navigateTo("/admin/dashboard");
+    } else {
+      return await navigateTo("/");
+    }
+  } catch (userErr) {
+    // 2) If user login failed, try admin login as fallback
+    try {
+      await adminStore.login(loginData.email, loginData.password);
+      // adminStore.login sets token/admin, redirect to admin dashboard
+      return await navigateTo("/admin/dashboard");
+    } catch (adminErr) {
+      // Both failed — show best message available
+      const apiMessage =
+        (userErr?.response && (userErr.response.data?.message || userErr.response.data?.error)) ||
+        (adminErr?.response && (adminErr.response.data?.message || adminErr.response.data?.error)) ||
+        userErr?.message ||
+        adminErr?.message ||
+        "Login failed. Please check your credentials and try again.";
+
+      loginError.value = apiMessage;
+      console.error("Login errors:", { userErr, adminErr });
+    }
   } finally {
     isLoading.value = false;
   }

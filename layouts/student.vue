@@ -48,15 +48,70 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { userAuth } from '~/store/userAuth';
+import { adminAuth } from '~/store/adminAuth';
 
-defineEmits(['toggle-drawer'])
+defineEmits(['toggle-drawer']);
 
-const router = useRouter()
-const drawer = ref(true)
+const router = useRouter();
+const drawer = ref(true);
+
+const userStore = userAuth();
+const adminStore = adminAuth();
 
 // Use a wrapper function to ensure reactivity
 const logout = async () => {
- 
-}
+  try {
+    if (typeof userStore.logout === 'function') {
+      await userStore.logout();
+    }
+    if (typeof adminStore.logout === 'function') {
+      await adminStore.logout();
+    }
+  } catch (err) {
+    console.error('Logout error:', err);
+  } finally {
+    await router.push('/auth/login');
+  }
+};
+
+// Role guard: ensure only student role can use this layout
+onMounted(() => {
+  try {
+    const token = userStore.getToken() || adminStore.getToken();
+    if (!token) {
+      router.replace('/auth/login');
+      return;
+    }
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      // invalid token format
+      router.replace('/auth/login');
+      return;
+    }
+    const payload = JSON.parse(atob(parts[1])); // best-effort decode
+    const roleRaw = (payload?.role || userStore.getUser()?.role || adminStore.getAdmin()?.role || '') + '';
+    const role = roleRaw.toLowerCase();
+
+    if (role.includes('student')) {
+      return; // allowed
+    }
+    // Redirect based on role if not student
+    if (role.includes('admin')) {
+      router.replace('/admin/dashboard');
+      return;
+    }
+    if (role.includes('lecturer') || role.includes('assistant')) {
+      router.replace('/lecturer/dashboard');
+      return;
+    }
+    // fallback
+    router.replace('/auth/login');
+  } catch (e) {
+    console.error('Role guard error:', e);
+    router.replace('/auth/login');
+  }
+});
 </script>

@@ -14,13 +14,19 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useDisplay } from 'vuetify'
 import AppHeader from '~/components/ui/AppHeader.vue'
 import Navbar from '~/components/ui/Navbar.vue'
+import { adminAuth } from '~/store/adminAuth';
+import { userAuth } from '~/store/userAuth';
+import { useRouter } from 'vue-router';
 
 // Composables
+const router = useRouter();
 const { mdAndDown } = useDisplay()
+const adminStore = adminAuth();
+const userStore = userAuth();
 
 // State
 const drawerOpen = ref(true)
@@ -35,6 +41,42 @@ const toggleDrawer = () => {
     navbarRef.value.toggleDrawer()
   }
 }
+
+onMounted(() => {
+  try {
+    const token = userStore.getToken() || adminStore.getToken();
+    if (!token) {
+      router.replace('/auth/login');
+      return;
+    }
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      // invalid token format
+      router.replace('/auth/login');
+      return;
+    }
+    const payload = JSON.parse(atob(parts[1]));
+    const roleRaw = (payload?.role || userStore.getUser()?.role || adminStore.getAdmin()?.role || '') + '';
+    const role = roleRaw.toLowerCase();
+
+    if (role.includes('student')) {
+      router.replace('/student/dashboard');
+      return;
+    }
+    if (role.includes('lecturer') || role.includes('assistant')) {
+      router.replace('/lecturer/dashboard');
+      return;
+    }
+    if (role.includes('admin')) {
+      router.replace('/admin/dashboard');
+      return;
+    }
+    router.replace('/auth/login');
+  } catch (e) {
+    // console.error('Role guard error:', e);
+    router.replace('/auth/login');
+  }
+});
 </script>
 
 <style scoped>

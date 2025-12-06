@@ -184,7 +184,7 @@
 <script setup>
 definePageMeta({
   layout: 'lecturer',
-//   middleware: ['auth']
+  middleware: ['auth']
 })
 
 const totalClasses = ref(6)
