@@ -169,6 +169,21 @@
             <VListItemTitle v-if="!isRail" class="uas-item-title">Classes</VListItemTitle>
           </VListItem>
 
+          <VListItem :to="'/admin/departments'" nav :active="isActivePath('/admin/departments')"
+            :class="['uas-item', isActivePath('/admin/departments') && 'uas-item--active']" @click="onClickItem">
+            <template #prepend>
+              <div class="uas-item-icon-wrapper">
+                <VTooltip v-if="isRail" text="Departments" location="right" offset="8">
+                  <template #activator="{ props }">
+                    <VIcon v-bind="props" icon="mdi-account-group-outline" class="uas-item-icon" />
+                  </template>
+                </VTooltip>
+                <VIcon v-else icon="mdi-account-group-outline" class="uas-item-icon" />
+              </div>
+            </template>
+            <VListItemTitle v-if="!isRail" class="uas-item-title">Departments</VListItemTitle>
+          </VListItem>
+
           <!-- Groups -->
           <VListItem :to="'/admin/groups'" nav :active="isActivePath('/admin/groups')"
             :class="['uas-item', isActivePath('/admin/groups') && 'uas-item--active']" @click="onClickItem">
