@@ -17,7 +17,8 @@
           </VAvatar>
         </div>
 
-        <!-- Brand title only when expanded -->
+        <!-- Brand title only when expanded
+          -->
         <Transition name="brand-text">
           <div class="uas-brand-text" v-if="!isRail">
             <span class="uas-title">UAMS</span>
@@ -120,13 +121,13 @@
           <div v-if="!isRail" class="uas-section-divider">
             <span class="uas-section-title">Academic</span>
           </div>
-          
-          <!-- Schedules -->
+
+          <!-- Rooms -->
           <VListItem :to="'/admin/schedules'" nav :active="isActivePath('/admin/schedules')"
             :class="['uas-item', isActivePath('/admin/schedules') && 'uas-item--active']" @click="onClickItem">
             <template #prepend>
               <div class="uas-item-icon-wrapper">
-                <VTooltip v-if="isRail" text="Schedules" location="right" offset="8">
+                <VTooltip v-if="isRail" text="Rooms" location="right" offset="8">
                   <template #activator="{ props }">
                     <VIcon v-bind="props" icon="mdi-calendar-clock" class="uas-item-icon" />
                   </template>
@@ -138,7 +139,7 @@
           </VListItem>
 
           <!-- Professors -->
-          <VListItem :to="'/admin/professor'" nav :active="isActivePath('/admin/professor')"
+          <!-- <VListItem :to="'/admin/professor'" nav :active="isActivePath('/admin/professor')"
             :class="['uas-item', isActivePath('/admin/professor') && 'uas-item--active']" @click="onClickItem">
             <template #prepend>
               <div class="uas-item-icon-wrapper">
@@ -151,22 +152,22 @@
               </div>
             </template>
             <VListItemTitle v-if="!isRail" class="uas-item-title">Professors</VListItemTitle>
-          </VListItem>
+          </VListItem> -->
 
-          <!-- Classes -->
-          <VListItem :to="'/admin/classes'" nav :active="isActivePath('/admin/classes')"
-            :class="['uas-item', isActivePath('/admin/classes') && 'uas-item--active']" @click="onClickItem">
+          <!-- Rooms -->
+          <VListItem :to="'/admin/rooms'" nav :active="isActivePath('/admin/rooms')"
+            :class="['uas-item', isActivePath('/admin/rooms') && 'uas-item--active']" @click="onClickItem">
             <template #prepend>
               <div class="uas-item-icon-wrapper">
-                <VTooltip v-if="isRail" text="Classes" location="right" offset="8">
+                <VTooltip v-if="isRail" text="Rooms" location="right" offset="8">
                   <template #activator="{ props }">
-                    <VIcon v-bind="props" icon="mdi-google-classroom" class="uas-item-icon" />
+                    <VIcon v-bind="props" icon="mdi-door" class="uas-item-icon" />
                   </template>
                 </VTooltip>
-                <VIcon v-else icon="mdi-google-classroom" class="uas-item-icon" />
+                <VIcon v-else icon="mdi-door" class="uas-item-icon" />
               </div>
             </template>
-            <VListItemTitle v-if="!isRail" class="uas-item-title">Classes</VListItemTitle>
+            <VListItemTitle v-if="!isRail" class="uas-item-title">Rooms</VListItemTitle>
           </VListItem>
 
           <!-- Groups -->

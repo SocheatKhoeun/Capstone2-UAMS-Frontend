@@ -12,7 +12,7 @@
             <v-col cols="12" md="6">
                 <v-text-field v-model="formData.subject" label="Subject Name*" variant="outlined"
                     prepend-inner-icon="mdi-book-open-variant" :rules="[rules.required]" bg-color="grey-lighten-5"
-                    color="indigo" placeholder="e.g., Quantum Computing" />
+                    color="ind  igo" placeholder="e.g., Quantum Computing" />
             </v-col>
 
             <v-col cols="12" md="6">
