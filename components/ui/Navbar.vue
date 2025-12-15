@@ -437,8 +437,8 @@
           </VListItem>
 
           <!-- History -->
-          <VListItem :to="'/student/history'" nav :active="isActivePath('/student/history')"
-            :class="['uas-item', isActivePath('/student/history') && 'uas-item--active']" @click="onClickItem">
+          <VListItem :to="'/student/historys'" nav :active="isActivePath('/student/historys')"
+            :class="['uas-item', isActivePath('/student/historys') && 'uas-item--active']" @click="onClickItem">
             <template #prepend>
               <div class="uas-item-icon-wrapper">
                 <VTooltip v-if="isRail" text="History" location="right" offset="8">
@@ -465,12 +465,12 @@
                 <VIcon v-else icon="mdi-check-circle" class="uas-item-icon" />
               </div>
             </template>
-            <VListItemTitle v-if="!isRail" class="uas-item-title">Attendance</VListItemTitle>
+            <VListItemTitle v-if="!isRail" class="uas-item-title">Scan Attendance</VListItemTitle>
           </VListItem>
 
           <!-- Leave Request -->
-          <VListItem :to="'/student/leave'" nav :active="isActivePath('/student/leave')"
-            :class="['uas-item', isActivePath('/student/leave') && 'uas-item--active']" @click="onClickItem">
+          <VListItem :to="'/student/request-leaves'" nav :active="isActivePath('/student/request-leaves')"
+            :class="['uas-item', isActivePath('/student/request-leaves') && 'uas-item--active']" @click="onClickItem">
             <template #prepend>
               <div class="uas-item-icon-wrapper">
                 <VTooltip v-if="isRail" text="Leave Request" location="right" offset="8">
