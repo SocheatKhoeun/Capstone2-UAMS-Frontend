@@ -34,28 +34,16 @@
         </div>
 
         <div class="action-section">
-          <v-menu offset-y>
-            <template v-slot:activator="{ props }">
-              <v-btn class="modern-btn export-btn" prepend-icon="mdi-upload" variant="outlined" v-bind="props">
-                Export
-                <v-icon icon="mdi-chevron-down" size="16" class="ml-1" />
-              </v-btn>
-            </template>
-            <v-list class="modern-menu">
-              <v-list-item @click="exportSchedulesPDF" class="menu-item">
-                <template v-slot:prepend>
-                  <v-icon icon="mdi-file-pdf-box" color="error" />
-                </template>
-                <v-list-item-title>Export to PDF</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="exportSchedulesExcel" class="menu-item">
-                <template v-slot:prepend>
-                  <v-icon icon="mdi-file-excel" color="success" />
-                </template>
-                <v-list-item-title>Export to Excel</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+
+          <!-- Export Button Component -->
+          <ExportButtons :data="filteredSchedules" :columns="exportColumns" filename="Schedules_Export"
+            @export-start="handleExportStart" @export-complete="handleExportComplete"
+            @export-error="handleExportError" />
+
+          <!-- Import Button Component -->
+          <ImportCsv :columns="importColumns" :validate-row="validateImportRow" :transform-row="transformImportRow"
+            @import-start="handleImportStart" @import-complete="handleImportComplete"
+            @import-error="handleImportError" />
 
           <v-btn class="modern-btn add-btn" prepend-icon="mdi-plus" variant="flat" color="primary"
             @click="openCreateDialog" elevation="2">
@@ -86,10 +74,10 @@
 
             <v-select v-model="generationFilter" :items="generationOptions" label="Generation" variant="outlined"
               density="compact" hide-details class="filter-select" />
-            
+
             <v-select v-model="yearFilter" :items="yearOptions" label="Year" variant="outlined" density="compact"
               hide-details class="filter-select" />
-            
+
             <v-select v-model="statusFilter" :items="statusOptions" label="Status" variant="outlined" density="compact"
               hide-details class="filter-select" />
           </div>
@@ -120,100 +108,90 @@
           <div v-else class="cards-grid">
             <v-card v-for="schedule in paginatedSchedules" :key="schedule.id" class="schedule-card" elevation="2"
               @click="viewSchedule(schedule)">
-            <div class="card-header">
-              <div class="group-info">
-                <h3 class="group-name">{{ getGroupName(schedule.group_id) }}</h3>
-                <div class="group-details">
-                  <span class="group-id">{{ getSubjectName(schedule.subject_id) }}</span>
-                  <v-chip :color="schedule.active ? 'success' : 'error'" size="small" variant="flat">
-                    {{ schedule.active ? 'Active' : 'Inactive' }}
-                  </v-chip>
+              <div class="card-header">
+                <div class="group-info">
+                  <h3 class="group-name">{{ getGroupName(schedule.group_id) }}</h3>
+                  <div class="group-details">
+                    <span class="group-id">{{ getSubjectName(schedule.subject_id) }}</span>
+                    <v-chip :color="schedule.active ? 'success' : 'error'" size="small" variant="flat">
+                      {{ schedule.active ? 'Active' : 'Inactive' }}
+                    </v-chip>
+                  </div>
+                </div>
+                <v-menu>
+                  <template v-slot:activator="{ props }">
+                    <v-btn icon="mdi-dots-vertical" variant="text" size="small" v-bind="props" @click.stop></v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item @click.stop="editSchedule(schedule)">
+                      <template v-slot:prepend>
+                        <v-icon icon="mdi-pencil" />
+                      </template>
+                      <v-list-item-title>Edit</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click.stop="duplicateSchedule(schedule)">
+                      <template v-slot:prepend>
+                        <v-icon icon="mdi-content-copy" />
+                      </template>
+                      <v-list-item-title>Duplicate</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click.stop="deleteSchedule(schedule)">
+                      <template v-slot:prepend>
+                        <v-icon icon="mdi-delete" color="error" />
+                      </template>
+                      <v-list-item-title class="text-error">Delete</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </div>
+
+              <div class="card-content">
+                <div class="schedule-info">
+                  <div class="info-row">
+                    <v-icon icon="mdi-account-school" size="16" class="mr-2" />
+                    <span>{{ getGenerationName(schedule.generation_id) }}</span>
+                  </div>
+                  <div class="info-row">
+                    <v-icon icon="mdi-calendar-clock" size="16" class="mr-2" />
+                    <span>{{ formatDateRange(schedule.start_time, schedule.end_time) }}</span>
+                  </div>
+                  <div class="info-row">
+                    <v-icon icon="mdi-door" size="16" class="mr-2" />
+                    <span>Room: {{ getRoomName(schedule.room_id) }}</span>
+                  </div>
+                  <div class="info-row">
+                    <v-icon icon="mdi-account-tie" size="16" class="mr-2" />
+                    <span>Instructor: {{ getInstructorName(schedule.instructor_id) }}</span>
+                  </div>
+                  <div class="info-row">
+                    <v-icon icon="mdi-information" size="16" class="mr-2" />
+                    <span>Status: {{ getStatusLabel(schedule.status) }}</span>
+                  </div>
                 </div>
               </div>
-              <v-menu>
-                <template v-slot:activator="{ props }">
-                  <v-btn icon="mdi-dots-vertical" variant="text" size="small" v-bind="props"
-                    @click.stop></v-btn>
-                </template>
-                <v-list>
-                  <v-list-item @click.stop="editSchedule(schedule)">
-                    <template v-slot:prepend>
-                      <v-icon icon="mdi-pencil" />
-                    </template>
-                    <v-list-item-title>Edit</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item @click.stop="duplicateSchedule(schedule)">
-                    <template v-slot:prepend>
-                      <v-icon icon="mdi-content-copy" />  
-                    </template>
-                    <v-list-item-title>Duplicate</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item @click.stop="deleteSchedule(schedule)">
-                    <template v-slot:prepend>
-                      <v-icon icon="mdi-delete" color="error" />
-                    </template>
-                    <v-list-item-title class="text-error">Delete</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-            </div>
 
-            <div class="card-content">
-              <div class="schedule-info">
-                <div class="info-row">
-                  <v-icon icon="mdi-account-school" size="16" class="mr-2" />
-                  <span>{{ getGenerationName(schedule.generation_id) }}</span>
-                </div>
-                <div class="info-row">
-                  <v-icon icon="mdi-calendar-clock" size="16" class="mr-2" />
-                  <span>{{ formatDateRange(schedule.start_time, schedule.end_time) }}</span>
-                </div>
-                <div class="info-row">
-                  <v-icon icon="mdi-door" size="16" class="mr-2" />
-                  <span>Room: {{ getRoomName(schedule.room_id) }}</span>
-                </div>
-                <div class="info-row">
-                  <v-icon icon="mdi-account-tie" size="16" class="mr-2" />
-                  <span>Instructor: {{ getInstructorName(schedule.instructor_id) }}</span>
-                </div>
-                <div class="info-row">
-                  <v-icon icon="mdi-information" size="16" class="mr-2" />
-                  <span>Status: {{ getStatusLabel(schedule.status) }}</span>
-                </div>
+              <div class="card-footer">
+                <span class="updated-date">Updated {{ formatDate(schedule.updated_at) }}</span>
+                <v-btn variant="outlined" size="small" @click.stop="viewSchedule(schedule)">
+                  View Schedule
+                </v-btn>
               </div>
-            </div>
-
-            <div class="card-footer">
-              <span class="updated-date">Updated {{ formatDate(schedule.updated_at) }}</span>
-              <v-btn variant="outlined" size="small" @click.stop="viewSchedule(schedule)">
-                View Schedule
-              </v-btn>
-            </div>
-          </v-card>
+            </v-card>
           </div>
-          
+
           <!-- Pagination Footer -->
           <div v-if="filteredSchedules.length > 0" class="pagination-section">
-            <v-btn 
-                variant="outlined" 
-                :disabled="currentPage === 1"
-                @click="goToPrevPage"
-                class="pagination-btn"
-            >
-                Previous
+            <v-btn variant="outlined" :disabled="currentPage === 1" @click="goToPrevPage" class="pagination-btn">
+              Previous
             </v-btn>
-            
+
             <div class="pagination-info">
-                <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
+              <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
             </div>
-            
-            <v-btn 
-                variant="outlined" 
-                :disabled="currentPage >= totalPages"
-                @click="goToNextPage"
-                class="pagination-btn"
-            >
-                Next
+
+            <v-btn variant="outlined" :disabled="currentPage >= totalPages" @click="goToNextPage"
+              class="pagination-btn">
+              Next
             </v-btn>
           </div>
         </div>
@@ -246,176 +224,89 @@
               <v-col cols="12" md="6">
                 <div class="form-group">
                   <label class="form-label">Group *</label>
-                  <v-select 
-                    v-model="formData.group_id" 
-                    :items="groupOptions"
-                    :rules="requiredRules" 
-                    variant="outlined"
-                    density="comfortable" 
-                    hide-details="auto" 
-                    class="form-field"
-                    :loading="loadingOptions"
-                    placeholder="Select a group"
-                  />
+                  <v-select v-model="formData.group_id" :items="groupOptions" :rules="requiredRules" variant="outlined"
+                    density="comfortable" hide-details="auto" class="form-field" :loading="loadingOptions"
+                    placeholder="Select a group" />
                 </div>
               </v-col>
               <v-col cols="12" md="6">
                 <div class="form-group">
                   <label class="form-label">Subject *</label>
-                  <v-select 
-                    v-model="formData.subject_id" 
-                    :items="subjectOptions"
-                    :rules="requiredRules"
-                    variant="outlined" 
-                    density="comfortable" 
-                    hide-details="auto" 
-                    class="form-field"
-                    :loading="loadingOptions"
-                    placeholder="Select a subject"
-                  />
+                  <v-select v-model="formData.subject_id" :items="subjectOptions" :rules="requiredRules"
+                    variant="outlined" density="comfortable" hide-details="auto" class="form-field"
+                    :loading="loadingOptions" placeholder="Select a subject" />
                 </div>
               </v-col>
               <v-col cols="12" md="6">
                 <div class="form-group">
                   <label class="form-label">Term *</label>
-                  <v-select 
-                    v-model="formData.term_id" 
-                    :items="termOptions" 
-                    variant="outlined"
-                    density="comfortable" 
-                    hide-details="auto" 
-                    :rules="requiredRules" 
-                    class="form-field"
-                    :loading="loadingOptions"
-                    placeholder="Select a term"
-                  />
+                  <v-select v-model="formData.term_id" :items="termOptions" variant="outlined" density="comfortable"
+                    hide-details="auto" :rules="requiredRules" class="form-field" :loading="loadingOptions"
+                    placeholder="Select a term" />
                 </div>
               </v-col>
               <v-col cols="12" md="6">
                 <div class="form-group">
                   <label class="form-label">Generation *</label>
-                  <v-select 
-                    v-model="formData.generation_id" 
-                    :items="generationOptions" 
-                    variant="outlined"
-                    density="comfortable" 
-                    hide-details="auto" 
-                    :rules="requiredRules" 
-                    class="form-field"
-                    :loading="loadingOptions"
-                    placeholder="Select a generation"
-                  />
+                  <v-select v-model="formData.generation_id" :items="generationOptions" variant="outlined"
+                    density="comfortable" hide-details="auto" :rules="requiredRules" class="form-field"
+                    :loading="loadingOptions" placeholder="Select a generation" />
                 </div>
               </v-col>
               <v-col cols="12" md="6">
                 <div class="form-group">
                   <label class="form-label">Instructor *</label>
-                  <v-select 
-                    v-model="formData.instructor_id" 
-                    :items="instructorOptions"
-                    variant="outlined" 
-                    density="comfortable" 
-                    hide-details="auto" 
-                    :rules="requiredRules" 
-                    class="form-field"
-                    :loading="loadingOptions"
-                    placeholder="Select an instructor"
-                  />
+                  <v-select v-model="formData.instructor_id" :items="instructorOptions" variant="outlined"
+                    density="comfortable" hide-details="auto" :rules="requiredRules" class="form-field"
+                    :loading="loadingOptions" placeholder="Select an instructor" />
                 </div>
               </v-col>
               <v-col cols="12" md="6">
                 <div class="form-group">
                   <label class="form-label">Assistant *</label>
-                  <v-select 
-                    v-model="formData.assistant_id" 
-                    :items="instructorOptions"
-                    variant="outlined" 
-                    density="comfortable" 
-                    hide-details="auto" 
-                    :rules="requiredRules" 
-                    class="form-field"
-                    :loading="loadingOptions"
-                    placeholder="Select an assistant"
-                  />
+                  <v-select v-model="formData.assistant_id" :items="instructorOptions" variant="outlined"
+                    density="comfortable" hide-details="auto" :rules="requiredRules" class="form-field"
+                    :loading="loadingOptions" placeholder="Select an assistant" />
                 </div>
               </v-col>
               <v-col cols="12" md="6">
                 <div class="form-group">
                   <label class="form-label">Room</label>
-                  <v-select 
-                    v-model="formData.room_id" 
-                    :items="roomOptions" 
-                    variant="outlined"
-                    density="comfortable" 
-                    hide-details="auto" 
-                    class="form-field"
-                    :loading="loadingOptions"
-                    clearable
-                    placeholder="Select a room (optional)"
-                  />
+                  <v-select v-model="formData.room_id" :items="roomOptions" variant="outlined" density="comfortable"
+                    hide-details="auto" class="form-field" :loading="loadingOptions" clearable
+                    placeholder="Select a room (optional)" />
                 </div>
               </v-col>
               <v-col cols="12" md="6">
                 <div class="form-group">
                   <label class="form-label">Status *</label>
-                  <v-select 
-                    v-model="formData.status" 
-                    :items="statusItems" 
-                    variant="outlined"
-                    density="comfortable" 
-                    hide-details="auto" 
-                    :rules="requiredRules" 
-                    class="form-field"
-                  />
+                  <v-select v-model="formData.status" :items="statusItems" variant="outlined" density="comfortable"
+                    hide-details="auto" :rules="requiredRules" class="form-field" />
                 </div>
               </v-col>
               <v-col cols="12" md="6">
                 <div class="form-group">
                   <label class="form-label">Start Time</label>
-                  <v-text-field 
-                    v-model="formData.start_time" 
-                    type="datetime-local" 
-                    variant="outlined"
-                    density="comfortable" 
-                    hide-details="auto" 
-                    class="form-field"
-                  />
+                  <v-text-field v-model="formData.start_time" type="datetime-local" variant="outlined"
+                    density="comfortable" hide-details="auto" class="form-field" />
                 </div>
               </v-col>
               <v-col cols="12" md="6">
                 <div class="form-group">
                   <label class="form-label">End Time</label>
-                  <v-text-field 
-                    v-model="formData.end_time" 
-                    type="datetime-local" 
-                    variant="outlined"
-                    density="comfortable" 
-                    hide-details="auto" 
-                    class="form-field"
-                  />
+                  <v-text-field v-model="formData.end_time" type="datetime-local" variant="outlined"
+                    density="comfortable" hide-details="auto" class="form-field" />
                 </div>
               </v-col>
               <v-col cols="12">
                 <div class="form-group">
                   <label class="form-label">Description</label>
-                  <v-textarea 
-                    v-model="formData.description" 
-                    variant="outlined"
-                    density="comfortable" 
-                    hide-details="auto" 
-                    class="form-field"
-                    rows="3"
-                    placeholder="Additional notes or description"
-                  />
+                  <v-textarea v-model="formData.description" variant="outlined" density="comfortable"
+                    hide-details="auto" class="form-field" rows="3" placeholder="Additional notes or description" />
                 </div>
               </v-col>
               <v-col cols="12">
-                <v-checkbox 
-                  v-model="formData.active" 
-                  label="Active"
-                  hide-details
-                  color="primary"
-                />
+                <v-checkbox v-model="formData.active" label="Active" hide-details color="primary" />
               </v-col>
             </v-row>
           </v-form>
@@ -519,6 +410,8 @@
 <script setup>
 import { useScheduleStore } from '~/store/useScheduleStore'
 import { storeToRefs } from 'pinia'
+import ExportButtons from '~/components/ui/ExportButtons.vue'
+import ImportCsv from '~/components/ui/ImportCsv.vue'
 
 definePageMeta({
   layout: 'admin',
@@ -571,6 +464,119 @@ const formData = reactive({
   start_time: null,
   end_time: null
 })
+
+// ...existing code...
+
+// --- EXPORT/IMPORT CONFIGURATION ---
+
+// Export columns for Excel/PDF/CSV
+const exportColumns = [
+  { label: 'ID', field: 'id' },
+  { label: 'Group', field: row => getGroupName(row.group_id) },
+  { label: 'Subject', field: row => getSubjectName(row.subject_id) },
+  { label: 'Term', field: row => getTermName(row.term_id) },
+  { label: 'Generation', field: row => getGenerationName(row.generation_id) },
+  { label: 'Room', field: row => getRoomName(row.room_id) },
+  { label: 'Instructor', field: row => getInstructorName(row.instructor_id) },
+  { label: 'Assistant', field: row => getInstructorName(row.assistant_id) },
+  { label: 'Status', field: row => getStatusLabel(row.status) },
+  { label: 'Active', field: row => (row.active ? 'Active' : 'Inactive') },
+  { label: 'Start Time', field: row => formatDate(row.start_time) },
+  { label: 'End Time', field: row => formatDate(row.end_time) },
+  { label: 'Description', field: 'description' },
+  { label: 'Updated At', field: row => formatDate(row.updated_at) }
+]
+
+// Import columns (CSV header mapping)
+const importColumns = [
+  { label: 'Group', field: 'group_id', required: true },
+  { label: 'Subject', field: 'subject_id', required: true },
+  { label: 'Term', field: 'term_id', required: true },
+  { label: 'Generation', field: 'generation_id', required: true },
+  { label: 'Room', field: 'room_id' },
+  { label: 'Instructor', field: 'instructor_id', required: true },
+  { label: 'Assistant', field: 'assistant_id', required: true },
+  { label: 'Status', field: 'status', required: true },
+  { label: 'Active', field: 'active' },
+  { label: 'Start Time', field: 'start_time' },
+  { label: 'End Time', field: 'end_time' },
+  { label: 'Description', field: 'description' }
+]
+
+// Validate each imported row
+function validateImportRow(row) {
+  // Check required fields
+  const requiredFields = ['group_id', 'subject_id', 'term_id', 'generation_id', 'instructor_id', 'assistant_id', 'status']
+  for (const field of requiredFields) {
+    if (!row[field] || String(row[field]).trim() === '') {
+      return `Missing required field: ${field}`
+    }
+  }
+  // Optionally, add more validation (e.g., check if IDs exist in reference data)
+  return true
+}
+
+// Transform imported row to match backend model
+function transformImportRow(row) {
+  // Helper to parse boolean/active
+  const parseActive = v => (v === '1' || v === 1 || v === true || String(v).toLowerCase() === 'active')
+  // Helper to parse int
+  const parseIntOrNull = v => (v === '' || v == null ? null : parseInt(v, 10))
+
+  return {
+    group_id: parseIntOrNull(row.group_id),
+    subject_id: parseIntOrNull(row.subject_id),
+    term_id: parseIntOrNull(row.term_id),
+    generation_id: parseIntOrNull(row.generation_id),
+    room_id: parseIntOrNull(row.room_id),
+    instructor_id: parseIntOrNull(row.instructor_id),
+    assistant_id: parseIntOrNull(row.assistant_id),
+    status: parseIntOrNull(row.status) || 1,
+    active: row.active !== undefined ? parseActive(row.active) : true,
+    start_time: row.start_time ? new Date(row.start_time).toISOString() : null,
+    end_time: row.end_time ? new Date(row.end_time).toISOString() : null,
+    description: row.description || ''
+  }
+}
+
+function handleExportStart() {
+  // Optionally show a loading indicator
+}
+function handleExportComplete() {
+  // Optionally show a success message
+}
+function handleExportError(e) {
+  alert('Export failed: ' + (e?.message || e))
+}
+
+async function handleImportStart() {
+  // Optionally show a loading indicator
+}
+async function handleImportComplete(importedRows) {
+  // Bulk create schedules
+  let successCount = 0
+  let failCount = 0
+  for (const row of importedRows) {
+    try {
+      const result = await scheduleStore.createSchedule(row)
+      if (result.success) successCount++
+      else failCount++
+    } catch {
+      failCount++
+    }
+  }
+  await scheduleStore.fetchSchedules()
+  alert(`Import complete: ${successCount} succeeded, ${failCount} failed`)
+}
+function handleImportError(e) {
+  alert('Import failed: ' + (e?.message || e))
+}
+
+// Helper for export columns
+function getTermName(termId) {
+  const term = terms.value.find(t => t.id === termId)
+  return term?.term || 'N/A'
+}
 
 // Computed
 const activeSchedules = computed(() => schedules.value.filter(s => s.active))
@@ -725,15 +731,15 @@ const submitForm = async () => {
     }
 
     // Validate required fields
-    if (!payload.group_id || !payload.subject_id || !payload.term_id || 
-        !payload.instructor_id || !payload.assistant_id || !payload.generation_id) {
+    if (!payload.group_id || !payload.subject_id || !payload.term_id ||
+      !payload.instructor_id || !payload.assistant_id || !payload.generation_id) {
       alert('Please fill in all required fields with valid values')
       return
     }
 
     console.log('Submitting payload:', payload)
 
-    const result = isEdit.value 
+    const result = isEdit.value
       ? await scheduleStore.updateSchedule(formData.global_id || formData.id, payload)
       : await scheduleStore.createSchedule(payload)
 
@@ -788,7 +794,7 @@ const confirmDelete = async () => {
   try {
     deleteLoading.value = true
     const result = await scheduleStore.deleteSchedule(scheduleToDelete.value.id)
-    
+
     if (result.success) {
       console.log("Schedule deleted successfully, closing dialog")
       deleteDialog.value = false
@@ -897,7 +903,7 @@ const fetchReferenceData = async () => {
   loadingOptions.value = true
   try {
     const { $AdminPrivateAxios } = useNuxtApp()
-    
+
     const [groupsRes, subjectsRes, termsRes, instructorsRes, roomsRes, generationsRes] = await Promise.all([
       $AdminPrivateAxios.get('/groups/'),
       $AdminPrivateAxios.get('/subjects/'),
@@ -906,14 +912,14 @@ const fetchReferenceData = async () => {
       $AdminPrivateAxios.get('/rooms/'),
       $AdminPrivateAxios.get('/generations/')
     ])
-    
+
     groups.value = groupsRes.data?.data || []
     subjects.value = subjectsRes.data?.data || []
     terms.value = termsRes.data?.data || []
     instructors.value = instructorsRes.data?.data || []
     rooms.value = roomsRes.data?.data || []
     generations.value = generationsRes.data?.data || []
-    
+
     console.log('Reference data loaded:', {
       groups: groups.value.length,
       subjects: subjects.value.length,
@@ -1448,7 +1454,7 @@ const fetchReferenceData = async () => {
 }
 
 .warning-icon {
-  flex-shrink: 0; 
+  flex-shrink: 0;
   margin-top: 2px;
 }
 
@@ -1572,7 +1578,7 @@ const fetchReferenceData = async () => {
 .modern-menu {
   border-radius: 8px;
   padding: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .menu-item {
@@ -1598,6 +1604,7 @@ const fetchReferenceData = async () => {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

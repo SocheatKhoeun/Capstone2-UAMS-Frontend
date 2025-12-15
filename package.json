@@ -14,12 +14,15 @@
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
     "js-cookie": "^3.0.5",
+    "jspdf": "^3.0.4",
+    "jspdf-autotable": "^5.0.2",
     "nuxt": "^3.16.0",
     "nuxt-app": "file:",
     "pinia": "^3.0.0",
     "sweetalert2": "^11.6.13",
     "vue": "latest",
-    "vue-router": "latest"
+    "vue-router": "latest",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "vite-plugin-vuetify": "^2.1.0",

@@ -12,12 +12,7 @@
               <h1 class="page-title">Group Management</h1>
               <div class="breadcrumb">
                 <span class="breadcrumb-item">Admin</span>
-                <v-icon
-                  icon="mdi-chevron-right"
-                  size="16"
-                  color="grey"
-                  class="breadcrumb-separator"
-                />
+                <v-icon icon="mdi-chevron-right" size="16" color="grey" class="breadcrumb-separator" />
                 <span class="breadcrumb-item active">Groups</span>
               </div>
             </div>
@@ -29,27 +24,31 @@
             </div>
             <div class="stat-card">
               <div class="stat-number">
-                {{ groups.filter((g) => g.active).length }}
+                {{groups.filter((g) => g.active).length}}
               </div>
               <div class="stat-label">Active</div>
             </div>
             <div class="stat-card">
               <div class="stat-number">
-                {{ groups.filter((g) => !g.active).length }}
+                {{groups.filter((g) => !g.active).length}}
               </div>
               <div class="stat-label">Inactive</div>
             </div>
           </div>
         </div>
         <div class="action-section">
-          <v-btn
-            class="modern-btn add-btn"
-            prepend-icon="mdi-plus"
-            variant="flat"
-            color="primary"
-            @click="openCreateDialog"
-            elevation="2"
-          >
+          <!-- Export Button Component -->
+          <ExportButtons :data="filteredGroups" :columns="exportColumns" filename="Groups_Export"
+            @export-start="handleExportStart" @export-complete="handleExportComplete"
+            @export-error="handleExportError" />
+
+          <!-- Import Button Component -->
+          <ImportCsv :columns="importColumns" :validate-row="validateImportRow" :transform-row="transformImportRow"
+            @import-start="handleImportStart" @import-complete="handleImportComplete"
+            @import-error="handleImportError" />
+
+          <v-btn class="modern-btn add-btn" prepend-icon="mdi-plus" variant="flat" color="primary"
+            @click="openCreateDialog" elevation="2">
             Add Group
           </v-btn>
         </div>
@@ -70,32 +69,14 @@
           </div>
           <div class="toolbar-right">
             <div class="search-container">
-              <v-text-field
-                v-model="searchQuery"
-                placeholder="Search groups..."
-                prepend-inner-icon="mdi-magnify"
-                variant="outlined"
-                density="compact"
-                hide-details
-                class="search-input"
-                clearable
-              />
+              <v-text-field v-model="searchQuery" placeholder="Search groups..." prepend-inner-icon="mdi-magnify"
+                variant="outlined" density="compact" hide-details class="search-input" clearable />
             </div>
 
             <!-- REPLACED: simple filter button -> v-menu dropdown -->
-            <v-menu
-              v-model="showFilters"
-              offset-y
-              transition="scale-transition"
-              max-width="320"
-            >
+            <v-menu v-model="showFilters" offset-y transition="scale-transition" max-width="320">
               <template #activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  variant="outlined"
-                  class="filter-btn"
-                  aria-label="Open filters"
-                >
+                <v-btn v-bind="props" variant="outlined" class="filter-btn" aria-label="Open filters">
                   <v-icon icon="mdi-filter-variant" />
                 </v-btn>
               </template>
@@ -105,18 +86,10 @@
                   <div class="filters-content" style="min-width:220px;">
                     <div class="filter-group">
                       <label class="filter-label">Status</label>
-                      <v-chip-group
-                        v-model="statusFilter"
-                        selected-class="text-primary"
-                        column
-                      >
+                      <v-chip-group v-model="statusFilter" selected-class="text-primary" column>
                         <v-chip value="All" variant="outlined">All</v-chip>
-                        <v-chip value="1" variant="outlined" color="success"
-                          >Active</v-chip
-                        >
-                        <v-chip value="0" variant="outlined" color="error"
-                          >Inactive</v-chip
-                        >
+                        <v-chip value="1" variant="outlined" color="success">Active</v-chip>
+                        <v-chip value="0" variant="outlined" color="error">Inactive</v-chip>
                       </v-chip-group>
                     </div>
                   </div>
@@ -152,11 +125,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="group in paginatedGroups"
-                :key="group.id"
-                class="modern-table-row"
-              >
+              <tr v-for="group in paginatedGroups" :key="group.id" class="modern-table-row">
                 <!-- Only show numeric DB ID -->
                 <td class="modern-table-cell text-center id-column">
                   <span class="id-badge">{{ group.id }}</span>
@@ -166,9 +135,7 @@
                 <td class="modern-table-cell">
                   <div class="group-info">
                     <span class="group-avatar">
-                      <v-icon size="22" color="#1d4ed8"
-                        >mdi-account-group</v-icon
-                      >
+                      <v-icon size="22" color="#1d4ed8">mdi-account-group</v-icon>
                     </span>
                     <div class="group-details">
                       <div class="group-name">{{ group.group_name }}</div>
@@ -177,11 +144,7 @@
                 </td>
 
                 <td class="modern-table-cell text-center">
-                  <v-chip
-                    :color="group.active ? 'success' : 'error'"
-                    class="status-chip"
-                    size="small"
-                  >
+                  <v-chip :color="group.active ? 'success' : 'error'" class="status-chip" size="small">
                     <v-icon start size="16">mdi-check-circle</v-icon>
                     {{ group.active ? "Active" : "Inactive" }}
                   </v-chip>
@@ -212,20 +175,10 @@
 
                 <td class="modern-table-cell text-center">
                   <div class="action-group">
-                    <v-btn
-                      icon
-                      size="small"
-                      class="action-btn"
-                      @click="openEditDialog(group)"
-                    >
+                    <v-btn icon size="small" class="action-btn" @click="openEditDialog(group)">
                       <v-icon color="#fde047">mdi-pencil</v-icon>
                     </v-btn>
-                    <v-btn
-                      icon
-                      size="small"
-                      class="action-btn"
-                      @click="confirmDelete(group)"
-                    >
+                    <v-btn icon size="small" class="action-btn" @click="confirmDelete(group)">
                       <v-icon color="#dc2626">mdi-delete</v-icon>
                     </v-btn>
                   </div>
@@ -236,11 +189,7 @@
 
           <!-- Empty State -->
           <div v-if="filteredGroups.length === 0" class="empty-state">
-            <v-icon
-              icon="mdi-account-group-outline"
-              size="64"
-              color="grey-lighten-1"
-            />
+            <v-icon icon="mdi-account-group-outline" size="64" color="grey-lighten-1" />
             <h3 class="empty-title">No groups found</h3>
             <p class="empty-subtitle">
               {{
@@ -249,13 +198,7 @@
                   : "Create your first group to get started"
               }}
             </p>
-            <v-btn
-              v-if="!searchQuery"
-              color="primary"
-              variant="flat"
-              @click="openCreateDialog"
-              class="mt-4"
-            >
+            <v-btn v-if="!searchQuery" color="primary" variant="flat" @click="openCreateDialog" class="mt-4">
               <v-icon start icon="mdi-plus" />
               Add First Group
             </v-btn>
@@ -263,25 +206,14 @@
 
           <!-- Pagination -->
           <div v-if="filteredGroups.length > 0" class="pagination-section">
-            <v-btn
-              variant="outlined"
-              :disabled="currentPage === 1"
-              @click="goToPrevPage"
-              class="pagination-btn"
-            >
+            <v-btn variant="outlined" :disabled="currentPage === 1" @click="goToPrevPage" class="pagination-btn">
               Previous
             </v-btn>
             <div class="pagination-info">
-              <span class="pagination-text"
-                >Page {{ currentPage }} of {{ totalPages }}</span
-              >
+              <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
             </div>
-            <v-btn
-              variant="outlined"
-              :disabled="currentPage >= totalPages"
-              @click="goToNextPage"
-              class="pagination-btn"
-            >
+            <v-btn variant="outlined" :disabled="currentPage >= totalPages" @click="goToNextPage"
+              class="pagination-btn">
               Next
             </v-btn>
           </div>
@@ -295,11 +227,8 @@
         <div class="dialog-header">
           <div class="header-content">
             <div class="header-icon">
-              <v-icon
-                :icon="isEdit ? 'mdi-pencil-circle' : 'mdi-plus-circle'"
-                :color="isEdit ? '#fde047' : 'primary'"
-                size="28"
-              />
+              <v-icon :icon="isEdit ? 'mdi-pencil-circle' : 'mdi-plus-circle'" :color="isEdit ? '#fde047' : 'primary'"
+                size="28" />
             </div>
             <div class="header-text">
               <h2 class="dialog-title">
@@ -314,32 +243,16 @@
               </p>
             </div>
           </div>
-          <v-btn
-            icon="mdi-close"
-            variant="text"
-            size="small"
-            @click="closeDialog"
-            class="close-btn"
-          />
+          <v-btn icon="mdi-close" variant="text" size="small" @click="closeDialog" class="close-btn" />
         </div>
         <v-divider />
         <v-card-text class="dialog-content">
-          <v-form
-            ref="formRef"
-            v-model="formValid"
-            @submit.prevent="submitForm"
-          >
+          <v-form ref="formRef" v-model="formValid" @submit.prevent="submitForm">
             <div class="form-group">
               <label class="form-label">Group Name</label>
-              <v-text-field
-                v-model="formData.group_name"
-                placeholder="Enter group name"
-                variant="outlined"
-                density="comfortable"
-                prepend-inner-icon="mdi-account-group"
-                :rules="groupNameRules"
-                hide-details="auto"
-              />
+              <v-text-field v-model="formData.group_name" placeholder="Enter group name" variant="outlined"
+                density="comfortable" prepend-inner-icon="mdi-account-group" :rules="groupNameRules"
+                hide-details="auto" />
             </div>
             <div class="form-group">
               <div class="switch-container">
@@ -353,28 +266,16 @@
                     }}
                   </p>
                 </div>
-                <v-switch
-                  v-model="formData.active"
-                  color="success"
-                  inset
-                  hide-details
-                />
+                <v-switch v-model="formData.active" color="success" inset hide-details />
               </div>
             </div>
           </v-form>
         </v-card-text>
         <v-divider />
         <v-card-actions class="dialog-actions">
-          <v-btn variant="outlined" color="grey-darken-1" @click="closeDialog"
-            >Cancel</v-btn
-          >
-          <v-btn
-            :color="isEdit ? 'warning' : 'primary'"
-            variant="flat"
-            @click="submitForm"
-            :disabled="!formValid"
-            :loading="formLoading"
-          >
+          <v-btn variant="outlined" color="grey-darken-1" @click="closeDialog">Cancel</v-btn>
+          <v-btn :color="isEdit ? 'warning' : 'primary'" variant="flat" @click="submitForm" :disabled="!formValid"
+            :loading="formLoading">
             {{ isEdit ? "Update Group" : "Create Group" }}
           </v-btn>
         </v-card-actions>
@@ -394,11 +295,7 @@
         <v-divider />
         <v-card-text class="delete-content">
           <div class="warning-box">
-            <v-icon
-              icon="mdi-alert-circle"
-              color="warning"
-              class="warning-icon"
-            />
+            <v-icon icon="mdi-alert-circle" color="warning" class="warning-icon" />
             <p class="warning-message">
               You are about to permanently delete
               <strong class="group-name">{{
@@ -410,12 +307,7 @@
         <v-divider />
         <v-card-actions class="delete-actions">
           <v-btn variant="outlined" @click="deleteDialog = false">Cancel</v-btn>
-          <v-btn
-            color="error"
-            variant="flat"
-            @click="handleDelete"
-            :loading="deleteLoading"
-          >
+          <v-btn color="error" variant="flat" @click="handleDelete" :loading="deleteLoading">
             Delete Group
           </v-btn>
         </v-card-actions>
@@ -423,6 +315,7 @@
     </v-dialog>
   </div>
 </template>
+
 <script setup>
 definePageMeta({
   layout: "admin",
@@ -431,6 +324,8 @@ definePageMeta({
 
 import { ref, computed, watch, onMounted, reactive } from "vue";
 import { useAdminGroups } from "~/store/adminGroups";
+import ExportButtons from '~/components/ui/ExportButtons.vue'
+import ImportCsv from '~/components/ui/ImportCsv.vue'
 
 const adminGroupsStore = useAdminGroups();
 
@@ -455,6 +350,122 @@ const formData = reactive({
   active: true,
 });
 
+// Export/Import Configuration
+const exportColumns = [
+  { key: 'global_id', header: 'Global ID', width: 15 },
+  { key: 'group_name', header: 'Group Name', width: 30 },
+  { key: 'active', header: 'Status', width: 12, format: 'status' },
+  { key: 'created_at', header: 'Created At', width: 20, format: 'datetime' },
+  { key: 'updated_at', header: 'Updated At', width: 20, format: 'datetime' }
+]
+
+const importColumns = [
+  { key: 'global_id', header: 'Global ID' },
+  { key: 'group_name', header: 'Group Name' },
+  { key: 'active', header: 'Status', format: 'status' }
+]
+
+// Export Handlers
+const handleExportStart = (type) => {
+  console.log(`Starting ${type} export...`)
+}
+
+const handleExportComplete = (type) => {
+  console.log(`Successfully exported to ${type.toUpperCase()}!`)
+  // You can add a toast notification here
+}
+
+const handleExportError = ({ type, error }) => {
+  console.error(`Export error (${type}):`, error)
+  alert(`Failed to export to ${type.toUpperCase()}`)
+}
+
+// Import Handlers
+const handleImportStart = () => {
+  console.log('Starting CSV import...')
+}
+
+const handleImportComplete = async (rows) => {
+  console.log('Importing rows:', rows)
+
+  let successCount = 0
+  let errorCount = 0
+
+  for (const row of rows) {
+    try {
+      await adminGroupsStore.createGroup({
+        global_id: row.global_id,
+        group_name: row.group_name,
+        active: row.active
+      })
+      successCount++
+    } catch (error) {
+      console.error('Failed to import row:', row, error)
+      errorCount++
+    }
+  }
+
+  // Refresh the groups list
+  await adminGroupsStore.fetchGroups()
+
+  if (successCount > 0) {
+    alert(
+      `Successfully imported ${successCount} group(s)${errorCount > 0 ? `, ${errorCount} failed` : ''}!`
+    )
+  } else {
+    alert('Failed to import groups')
+  }
+}
+
+const handleImportError = ({ error }) => {
+  console.error('Import error:', error)
+  alert('Failed to import CSV file')
+}
+
+// Validate imported row
+const validateImportRow = (row, rowNumber) => {
+  // Validate Global ID format
+  if (!row.global_id || !/^GRP-\d{3}$/.test(row.global_id)) {
+    return {
+      valid: false,
+      error: 'Invalid Global ID format (must be GRP-001)'
+    }
+  }
+
+  // Check if Global ID already exists
+  if (groups.value.some(g => g.global_id === row.global_id)) {
+    return {
+      valid: false,
+      error: `Global ID ${row.global_id} already exists`
+    }
+  }
+
+  // Validate Group Name
+  if (!row.group_name || row.group_name.length < 2) {
+    return {
+      valid: false,
+      error: 'Group name must be at least 2 characters'
+    }
+  }
+
+  if (row.group_name.length > 50) {
+    return {
+      valid: false,
+      error: 'Group name must not exceed 50 characters'
+    }
+  }
+
+  return { valid: true }
+}
+
+// Transform imported row before validation
+const transformImportRow = (row) => {
+  return {
+    ...row,
+    // Ensure active is 0 or 1
+    active: row.active === 1 || row.active === '1' ? 1 : 0
+  }
+}
 
 onMounted(() => {
   adminGroupsStore.fetchGroups().catch(() => {
@@ -558,22 +569,16 @@ const submitForm = async () => {
   formLoading.value = true;
   try {
     if (isEdit.value && selectedGroup.value) {
-      const identifier = selectedGroup.value.global_id
-        ? String(selectedGroup.value.global_id)
-        : String(selectedGroup.value.id);
-      await adminGroupsStore.updateGroup(identifier, {
-        global_id: formData.global_id,
+      await adminGroupsStore.updateGroup(selectedGroup.value.global_id, {
         group_name: formData.group_name,
         active: formData.active ? 1 : 0,
       });
     } else {
       await adminGroupsStore.createGroup({
-        global_id: formData.global_id,
         group_name: formData.group_name,
         active: formData.active ? 1 : 0,
       });
     }
-    await adminGroupsStore.fetchGroups();
     closeDialog();
   } catch (e) {
     console.error("Group save error", e);
@@ -591,12 +596,9 @@ const handleDelete = async () => {
   if (!selectedGroup.value) return;
   deleteLoading.value = true;
   try {
-    const identifier = selectedGroup.value.global_id
-      ? String(selectedGroup.value.global_id)
-      : String(selectedGroup.value.id);
-    await adminGroupsStore.deleteGroup(identifier);
-    await adminGroupsStore.fetchGroups();
+    await adminGroupsStore.deleteGroup(selectedGroup.value.global_id);
     deleteDialog.value = false;
+    selectedGroup.value = null;
   } catch (e) {
     console.error("Delete group error", e);
   } finally {
@@ -604,18 +606,11 @@ const handleDelete = async () => {
   }
 };
 
-const handleImportCSV = () => alert("Import CSV feature ready (connect your composable)");
-const handleExportExcel = () => alert("Export to Excel ready");
-const handleExportPDF = () => alert("Export to PDF ready");
-
 const goToPrevPage = () => currentPage.value > 1 && currentPage.value--;
 const goToNextPage = () =>
   currentPage.value < totalPages.value && currentPage.value++;
 
-watch(
-  [searchQuery, statusFilter, tableSortOrder],
-  () => (currentPage.value = 1)
-);
+watch([searchQuery, statusFilter], () => (currentPage.value = 1));
 </script>
 
 <style scoped>
@@ -1274,6 +1269,7 @@ watch(
   padding: 20px 24px 24px !important;
   gap: 12px;
 }
+
 modern-action-btn .action-btn {
   height: 44px;
   border-radius: 12px;

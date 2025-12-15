@@ -12,7 +12,6 @@ export const adminAuth = defineStore('adminAuth', {
     actions: {
         // admin management methods
         setAdmin(admin) {
-            console.log("Admin from params", admin)
             this.admin = { ...admin }; // Ensure reactivity
             localStorage.setItem('admin', JSON.stringify(admin)); // Persist
         },
@@ -75,8 +74,6 @@ export const adminAuth = defineStore('adminAuth', {
         
         // Authentication methods
         async login(email, password) {
-            console.log("email", email);
-            console.log("password", password);
             const {$AdminPublicAxios} = useNuxtApp();
             try {
                 // Ensure we call the /login endpoint
@@ -103,8 +100,8 @@ export const adminAuth = defineStore('adminAuth', {
                 this.setToken(token);
 
                 // If API returns an expires timestamp, update cookie expiration (js-cookie expects days)
-                try {
-                    if (expiresAt && typeof expiresAt === 'number') {
+                if (expiresAt && typeof expiresAt === 'number') {
+                    try {
                         const nowSec = Math.floor(Date.now() / 1000);
                         const secondsLeft = Math.max(expiresAt - nowSec, 0);
                         const daysLeft = secondsLeft / (60 * 60 * 24);
@@ -115,9 +112,9 @@ export const adminAuth = defineStore('adminAuth', {
                             secure: process.env.NODE_ENV === 'production'
                         };
                         Cookies.set('token', token, cookieOptions);
+                    } catch (cookieErr) {
+                        console.error('Failed to set cookie expiry:', cookieErr);
                     }
-                } catch (cookieErr) {
-                    console.warn('Failed to set cookie expiry:', cookieErr);
                 }
 
                 // Only set admin object if provided by API
@@ -148,14 +145,32 @@ export const adminAuth = defineStore('adminAuth', {
                 const {$AdminPrivateAxios} = useNuxtApp();
                 this.token = this.getToken(); // Ensure token is set before making the request
                 if (!this.token) {
-                    console.error("No token available for refresh.");
+                    if (process.env.NODE_ENV === 'development') {
+                        console.error('No token available for refresh');
+                    }
+                    return;
+                }
+
+                // Check if this is actually an admin token before trying to refresh
+                try {
+                    const parts = this.token.split('.');
+                    if (parts.length === 3) {
+                        const payload = JSON.parse(atob(parts[1]));
+                        const role = (payload?.role || '').toLowerCase();
+                        // If not admin role, skip refresh attempt
+                        if (!role.includes('admin') && !role.includes('superadmin')) {
+                            return;
+                        }
+                    }
+                } catch (e) {
+                    // Invalid token, skip refresh
                     return;
                 }
 
                 const response = await $AdminPrivateAxios.post('/refresh-token');
                 
                 if(response.data.success === false) {
-                    console.error("Refresh token failed:", response.data.message);
+                    console.error('Refresh token failed:', response.data.message);
                     return;
                 }
 
@@ -168,9 +183,14 @@ export const adminAuth = defineStore('adminAuth', {
                                 
                 return token;
             } catch (error) {
-                console.error("Refresh Token Error:", error);
-                this.logout(); // Logout on error
-                // setTimeout(() => this.refreshToken(), 60 * 1000);
+                // Only log error if it's not a 404 (which happens for non-admin users)
+                if (error.response?.status !== 404) {
+                    console.error('Refresh Token Error:', error.message);
+                }
+                // Don't logout on 404 errors
+                if (error.response?.status !== 404) {
+                    this.logout(); // Logout on error
+                }
             }
         }
         ,
@@ -190,21 +210,32 @@ export const adminAuth = defineStore('adminAuth', {
                 const payload = JSON.parse(atob(parts[1]));
                 const currentTime = Math.floor(Date.now() / 1000);
                 
-                // If token is expired or close to expiry, refresh it
+                // Check if this is an admin token before attempting refresh
+                const role = (payload?.role || '').toLowerCase();
+                const isAdmin = role.includes('admin') || role.includes('superadmin');
+                
+                // If token is expired or close to expiry, refresh it (only for admin users)
                 if (!payload.exp || payload.exp < currentTime) {
-                    console.log('Token expired, getting new one');
-                    token = await this.refreshToken();
-                    return !!token;
-                    // this.logout();
-                    // return false;
-                } else if (payload.exp - currentTime < 900) { // 15 minutes
-                    console.log('Token expiring soon, refreshing');
+                    if (isAdmin) {
+                        if (process.env.NODE_ENV === 'development') {
+                            console.log('Token expired, refreshing');
+                        }
+                        token = await this.refreshToken();
+                        return !!token;
+                    } else {
+                        // Token expired but not admin, return false to trigger re-login
+                        return false;
+                    }
+                } else if (isAdmin && payload.exp - currentTime < 900) { // 15 minutes
+                    if (process.env.NODE_ENV === 'development') {
+                        console.log('Token expiring soon, refreshing');
+                    }
                     this.refreshToken(); // Don't await, let it refresh in background
                 }
                 
                 return true;
             } catch (error) {
-                console.error('Token validation error:', error);
+                console.error('Token validation error:', error.message);
                 return false;
             }
         },

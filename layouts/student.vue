@@ -1,117 +1,103 @@
 <template>
-    <v-app>
-        <v-navigation-drawer v-model="drawer" permanent>
-            <v-list>
-                <v-list-item>
-                    <v-list-item-content>
-                        <v-list-item-title class="text-h6">
-                            Student Panel
-                        </v-list-item-title>
-                    </v-list-item-content>
-                </v-list-item>
-                <v-divider></v-divider>
+  <v-app>
+    <!-- Navbar (Sidebar) -->
+    <Navbar ref="navbarRef" v-model="drawerOpen" role="student" />
 
-                <!-- Navigation Items -->
-                <v-list-item to="/student/dashboard" prepend-icon="mdi-view-dashboard">
-                    <v-list-item-title>Dashboard</v-list-item-title>
-                </v-list-item>
+    <!-- Header -->
+    <AppHeader @toggle-drawer="toggleDrawer" :drawer-open="drawerOpen" :is-mobile="isMobile" />
 
-                <v-list-item to="/student/attendance" prepend-icon="mdi-check-circle">
-                    <v-list-item-title>Attendance</v-list-item-title>
-                </v-list-item>
-
-                <v-list-item to="/student/schedule" prepend-icon="mdi-calendar">
-                    <v-list-item-title>Schedule</v-list-item-title>
-                </v-list-item>
-
-                <v-list-item to="/student/leave" prepend-icon="mdi-calendar-remove">
-                    <v-list-item-title>Leave Request</v-list-item-title>
-                </v-list-item>
-            </v-list>
-        </v-navigation-drawer>
-
-        <v-app-bar>
-            <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-            <v-toolbar-title>UAS Student</v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-btn icon @click="logout">
-                <v-icon>mdi-logout</v-icon>
-            </v-btn>
-        </v-app-bar>
-
-        <v-main>
-            <v-container fluid>
-                <slot />
-            </v-container>
-        </v-main>
-    </v-app>
+    <!-- Main Content Area -->
+    <v-main class="main-content">
+      <slot />
+    </v-main>
+  </v-app>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { userAuth } from '~/store/userAuth';
-import { adminAuth } from '~/store/adminAuth';
+import { ref, computed, onMounted } from 'vue'
+import { useDisplay } from 'vuetify'
+import { useRouter } from 'vue-router'
+import AppHeader from '~/components/ui/AppHeader.vue'
+import Navbar from '~/components/ui/Navbar.vue'
+import { userAuth } from '~/store/userAuth'
+import { adminAuth } from '~/store/adminAuth'
 
-defineEmits(['toggle-drawer']);
+// Composables
+const router = useRouter()
+const { mdAndDown } = useDisplay()
+const userStore = userAuth()
+const adminStore = adminAuth()
 
-const router = useRouter();
-const drawer = ref(true);
+// State
+const drawerOpen = ref(true)
+const navbarRef = ref(null)
 
-const userStore = userAuth();
-const adminStore = adminAuth();
+// Computed
+const isMobile = computed(() => mdAndDown.value)
 
-// Use a wrapper function to ensure reactivity
-const logout = async () => {
-  try {
-    if (typeof userStore.logout === 'function') {
-      await userStore.logout();
-    }
-    if (typeof adminStore.logout === 'function') {
-      await adminStore.logout();
-    }
-  } catch (err) {
-    console.error('Logout error:', err);
-  } finally {
-    await router.push('/auth/login');
+// Methods
+const toggleDrawer = () => {
+  if (navbarRef.value) {
+    navbarRef.value.toggleDrawer()
   }
-};
+}
 
 // Role guard: ensure only student role can use this layout
-onMounted(() => {
+onMounted(async () => {
   try {
-    const token = userStore.getToken() || adminStore.getToken();
+    // Initialize stores
+    if (typeof userStore.init === 'function') {
+      await userStore.init()
+    }
+
+    const token = userStore.getToken() || adminStore.getToken()
     if (!token) {
-      router.replace('/auth/login');
-      return;
+      console.warn('No token found, redirecting to login')
+      router.replace('/auth/login')
+      return
     }
-    const parts = token.split('.');
+    
+    const parts = token.split('.')
     if (parts.length !== 3) {
-      // invalid token format
-      router.replace('/auth/login');
-      return;
+      console.warn('Invalid token format, redirecting to login')
+      router.replace('/auth/login')
+      return
     }
-    const payload = JSON.parse(atob(parts[1])); // best-effort decode
-    const roleRaw = (payload?.role || userStore.getUser()?.role || adminStore.getAdmin()?.role || '') + '';
-    const role = roleRaw.toLowerCase();
+    
+    const payload = JSON.parse(atob(parts[1]))
+    const roleRaw = (payload?.role || userStore.getUser()?.role || adminStore.getAdmin()?.role || '') + ''
+    const role = roleRaw.toLowerCase()
+
+    console.log('Student layout - detected role:', role)
 
     if (role.includes('student')) {
-      return; // allowed
+      console.log('Student role confirmed, allowing access')
+      return // allowed
     }
     // Redirect based on role if not student
     if (role.includes('admin')) {
-      router.replace('/admin/dashboard');
-      return;
+      console.log('Admin role detected, redirecting to admin dashboard')
+      router.replace('/admin/dashboard')
+      return
     }
     if (role.includes('lecturer') || role.includes('assistant')) {
-      router.replace('/lecturer/dashboard');
-      return;
+      console.log('Lecturer role detected, redirecting to lecturer dashboard')
+      router.replace('/lecturer/dashboard')
+      return
     }
     // fallback
-    router.replace('/auth/login');
+    console.warn('Unknown role, redirecting to login')
+    router.replace('/auth/login')
   } catch (e) {
-    console.error('Role guard error:', e);
-    router.replace('/auth/login');
+    console.error('Role guard error:', e)
+    router.replace('/auth/login')
   }
-});
+})
 </script>
+
+<style scoped>
+.main-content {
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+</style>

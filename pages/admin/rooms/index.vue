@@ -12,12 +12,7 @@
               <h1 class="page-title">Room Management</h1>
               <div class="breadcrumb">
                 <span class="breadcrumb-item">Admin</span>
-                <v-icon
-                  icon="mdi-chevron-right"
-                  size="16"
-                  color="grey"
-                  class="breadcrumb-separator"
-                />
+                <v-icon icon="mdi-chevron-right" size="16" color="grey" class="breadcrumb-separator" />
                 <span class="breadcrumb-item active">Rooms</span>
               </div>
             </div>
@@ -29,27 +24,31 @@
             </div>
             <div class="stat-card">
               <div class="stat-number">
-                {{ rooms.filter((r) => r.active).length }}
+                {{rooms.filter((r) => r.active).length}}
               </div>
               <div class="stat-label">Active</div>
             </div>
             <div class="stat-card">
               <div class="stat-number">
-                {{ rooms.filter((r) => !r.active).length }}
+                {{rooms.filter((r) => !r.active).length}}
               </div>
               <div class="stat-label">Inactive</div>
             </div>
           </div>
         </div>
         <div class="action-section">
-          <v-btn
-            class="modern-btn add-btn"
-            prepend-icon="mdi-plus"
-            variant="flat"
-            color="primary"
-            @click="openCreateDialog"
-            elevation="2"
-          >
+          <!-- Export Button Component -->
+          <ExportButtons :data="filteredRooms" :columns="exportColumns" filename="Rooms_Export"
+            @export-start="handleExportStart" @export-complete="handleExportComplete"
+            @export-error="handleExportError" />
+
+          <!-- Import Button Component -->
+          <ImportCsv :columns="importColumns" :validate-row="validateImportRow" :transform-row="transformImportRow"
+            @import-start="handleImportStart" @import-complete="handleImportComplete"
+            @import-error="handleImportError" />
+
+          <v-btn class="modern-btn add-btn" prepend-icon="mdi-plus" variant="flat" color="primary"
+            @click="openCreateDialog" elevation="2">
             Add Room
           </v-btn>
         </div>
@@ -70,31 +69,13 @@
           </div>
           <div class="toolbar-right">
             <div class="search-container">
-              <v-text-field
-                v-model="searchQuery"
-                placeholder="Search rooms..."
-                prepend-inner-icon="mdi-magnify"
-                variant="outlined"
-                density="compact"
-                hide-details
-                class="search-input"
-                clearable
-              />
+              <v-text-field v-model="searchQuery" placeholder="Search rooms..." prepend-inner-icon="mdi-magnify"
+                variant="outlined" density="compact" hide-details class="search-input" clearable />
             </div>
 
-            <v-menu
-              v-model="showFilters"
-              offset-y
-              transition="scale-transition"
-              max-width="320"
-            >
+            <v-menu v-model="showFilters" offset-y transition="scale-transition" max-width="320">
               <template #activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  variant="outlined"
-                  class="filter-btn"
-                  aria-label="Open filters"
-                >
+                <v-btn v-bind="props" variant="outlined" class="filter-btn" aria-label="Open filters">
                   <v-icon icon="mdi-filter-variant" />
                 </v-btn>
               </template>
@@ -104,18 +85,10 @@
                   <div class="filters-content" style="min-width:220px;">
                     <div class="filter-group">
                       <label class="filter-label">Status</label>
-                      <v-chip-group
-                        v-model="statusFilter"
-                        selected-class="text-primary"
-                        column
-                      >
+                      <v-chip-group v-model="statusFilter" selected-class="text-primary" column>
                         <v-chip value="All" variant="outlined">All</v-chip>
-                        <v-chip value="1" variant="outlined" color="success"
-                          >Active</v-chip
-                        >
-                        <v-chip value="0" variant="outlined" color="error"
-                          >Inactive</v-chip
-                        >
+                        <v-chip value="1" variant="outlined" color="success">Active</v-chip>
+                        <v-chip value="0" variant="outlined" color="error">Inactive</v-chip>
                       </v-chip-group>
                     </div>
                   </div>
@@ -157,21 +130,12 @@
               <!-- Loading State -->
               <tr v-if="loading">
                 <td colspan="7" class="text-center pa-8">
-                  <v-progress-circular
-                    indeterminate
-                    color="primary"
-                    size="48"
-                  />
+                  <v-progress-circular indeterminate color="primary" size="48" />
                   <p class="mt-4 text-medium-emphasis">Loading rooms...</p>
                 </td>
               </tr>
               <!-- Data Rows -->
-              <tr
-                v-else
-                v-for="room in paginatedRooms"
-                :key="room.id"
-                class="modern-table-row"
-              >
+              <tr v-else v-for="room in paginatedRooms" :key="room.id" class="modern-table-row">
                 <td class="modern-table-cell text-center id-column">
                   <span class="id-badge">{{ room.id }}</span>
                 </td>
@@ -195,11 +159,7 @@
                 </td>
 
                 <td class="modern-table-cell text-center">
-                  <v-chip
-                    :color="room.active ? 'success' : 'error'"
-                    class="status-chip"
-                    size="small"
-                  >
+                  <v-chip :color="room.active ? 'success' : 'error'" class="status-chip" size="small">
                     <v-icon start size="16">mdi-check-circle</v-icon>
                     {{ room.active ? "Active" : "Inactive" }}
                   </v-chip>
@@ -229,20 +189,10 @@
 
                 <td class="modern-table-cell text-center">
                   <div class="action-group">
-                    <v-btn
-                      icon
-                      size="small"
-                      class="action-btn"
-                      @click="openEditDialog(room)"
-                    >
+                    <v-btn icon size="small" class="action-btn" @click="openEditDialog(room)">
                       <v-icon color="#fde047">mdi-pencil</v-icon>
                     </v-btn>
-                    <v-btn
-                      icon
-                      size="small"
-                      class="action-btn"
-                      @click="confirmDelete(room)"
-                    >
+                    <v-btn icon size="small" class="action-btn" @click="confirmDelete(room)">
                       <v-icon color="#dc2626">mdi-delete</v-icon>
                     </v-btn>
                   </div>
@@ -253,11 +203,7 @@
 
           <!-- Empty State -->
           <div v-if="filteredRooms.length === 0" class="empty-state">
-            <v-icon
-              icon="mdi-door-open"
-              size="64"
-              color="grey-lighten-1"
-            />
+            <v-icon icon="mdi-door-open" size="64" color="grey-lighten-1" />
             <h3 class="empty-title">No rooms found</h3>
             <p class="empty-subtitle">
               {{
@@ -266,13 +212,7 @@
                   : "Create your first room to get started"
               }}
             </p>
-            <v-btn
-              v-if="!searchQuery"
-              color="primary"
-              variant="flat"
-              @click="openCreateDialog"
-              class="mt-4"
-            >
+            <v-btn v-if="!searchQuery" color="primary" variant="flat" @click="openCreateDialog" class="mt-4">
               <v-icon start icon="mdi-plus" />
               Add First Room
             </v-btn>
@@ -280,25 +220,14 @@
 
           <!-- Pagination -->
           <div v-if="filteredRooms.length > 0" class="pagination-section">
-            <v-btn
-              variant="outlined"
-              :disabled="currentPage === 1"
-              @click="goToPrevPage"
-              class="pagination-btn"
-            >
+            <v-btn variant="outlined" :disabled="currentPage === 1" @click="goToPrevPage" class="pagination-btn">
               Previous
             </v-btn>
             <div class="pagination-info">
-              <span class="pagination-text"
-                >Page {{ currentPage }} of {{ totalPages }}</span
-              >
+              <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
             </div>
-            <v-btn
-              variant="outlined"
-              :disabled="currentPage >= totalPages"
-              @click="goToNextPage"
-              class="pagination-btn"
-            >
+            <v-btn variant="outlined" :disabled="currentPage >= totalPages" @click="goToNextPage"
+              class="pagination-btn">
               Next
             </v-btn>
           </div>
@@ -312,11 +241,8 @@
         <div class="dialog-header">
           <div class="header-content">
             <div class="header-icon">
-              <v-icon
-                :icon="isEdit ? 'mdi-pencil-circle' : 'mdi-plus-circle'"
-                :color="isEdit ? '#fde047' : 'primary'"
-                size="28"
-              />
+              <v-icon :icon="isEdit ? 'mdi-pencil-circle' : 'mdi-plus-circle'" :color="isEdit ? '#fde047' : 'primary'"
+                size="28" />
             </div>
             <div class="header-text">
               <h2 class="dialog-title">
@@ -331,45 +257,21 @@
               </p>
             </div>
           </div>
-          <v-btn
-            icon="mdi-close"
-            variant="text"
-            size="small"
-            @click="closeDialog"
-            class="close-btn"
-          />
+          <v-btn icon="mdi-close" variant="text" size="small" @click="closeDialog" class="close-btn" />
         </div>
         <v-divider />
         <v-card-text class="dialog-content">
-          <v-form
-            ref="formRef"
-            v-model="formValid"
-            @submit.prevent="submitForm"
-          >
+          <v-form ref="formRef" v-model="formValid" @submit.prevent="submitForm">
             <div class="form-group">
               <label class="form-label">Room Name</label>
-              <v-text-field
-                v-model="formData.room"
-                placeholder="Enter room name"
-                variant="outlined"
-                density="comfortable"
-                prepend-inner-icon="mdi-door"
-                :rules="roomNameRules"
-                hide-details="auto"
-              />
+              <v-text-field v-model="formData.room" placeholder="Enter room name" variant="outlined"
+                density="comfortable" prepend-inner-icon="mdi-door" :rules="roomNameRules" hide-details="auto" />
             </div>
             <div class="form-group">
               <label class="form-label">Capacity</label>
-              <v-text-field
-                v-model.number="formData.capacity"
-                placeholder="Enter room capacity"
-                variant="outlined"
-                density="comfortable"
-                prepend-inner-icon="mdi-seat"
-                type="number"
-                :rules="capacityRules"
-                hide-details="auto"
-              />
+              <v-text-field v-model.number="formData.capacity" placeholder="Enter room capacity" variant="outlined"
+                density="comfortable" prepend-inner-icon="mdi-seat" type="number" :rules="capacityRules"
+                hide-details="auto" />
             </div>
             <div class="form-group">
               <div class="switch-container">
@@ -383,28 +285,16 @@
                     }}
                   </p>
                 </div>
-                <v-switch
-                  v-model="formData.active"
-                  color="success"
-                  inset
-                  hide-details
-                />
+                <v-switch v-model="formData.active" color="success" inset hide-details />
               </div>
             </div>
           </v-form>
         </v-card-text>
         <v-divider />
         <v-card-actions class="dialog-actions">
-          <v-btn variant="outlined" color="grey-darken-1" @click="closeDialog"
-            >Cancel</v-btn
-          >
-          <v-btn
-            :color="isEdit ? 'warning' : 'primary'"
-            variant="flat"
-            @click="submitForm"
-            :disabled="!formValid"
-            :loading="formLoading"
-          >
+          <v-btn variant="outlined" color="grey-darken-1" @click="closeDialog">Cancel</v-btn>
+          <v-btn :color="isEdit ? 'warning' : 'primary'" variant="flat" @click="submitForm" :disabled="!formValid"
+            :loading="formLoading">
             {{ isEdit ? "Update Room" : "Create Room" }}
           </v-btn>
         </v-card-actions>
@@ -424,11 +314,7 @@
         <v-divider />
         <v-card-text class="delete-content">
           <div class="warning-box">
-            <v-icon
-              icon="mdi-alert-circle"
-              color="warning"
-              class="warning-icon"
-            />
+            <v-icon icon="mdi-alert-circle" color="warning" class="warning-icon" />
             <p class="warning-message">
               You are about to permanently delete
               <strong class="room-name">{{
@@ -440,12 +326,7 @@
         <v-divider />
         <v-card-actions class="delete-actions">
           <v-btn variant="outlined" @click="deleteDialog = false">Cancel</v-btn>
-          <v-btn
-            color="error"
-            variant="flat"
-            @click="handleDelete"
-            :loading="deleteLoading"
-          >
+          <v-btn color="error" variant="flat" @click="handleDelete" :loading="deleteLoading">
             Delete Room
           </v-btn>
         </v-card-actions>
@@ -461,6 +342,8 @@ definePageMeta({
 });
 
 import { ref, computed, watch, onMounted, reactive } from "vue";
+import ExportButtons from '~/components/ui/ExportButtons.vue'
+import ImportCsv from '~/components/ui/ImportCsv.vue'
 
 // Mock store - replace with actual room store when available
 const rooms = ref([]);
@@ -486,22 +369,156 @@ const formData = reactive({
   active: true,
 });
 
-// Fetch rooms on mount - replace with actual API call
+// Export/Import Configuration
+const exportColumns = [
+  { key: 'global_id', header: 'Global ID', width: 15 },
+  { key: 'room', header: 'Room Name', width: 25 },
+  { key: 'capacity', header: 'Capacity', width: 12, format: 'number' },
+  { key: 'active', header: 'Status', width: 12, format: 'status' },
+  { key: 'created_at', header: 'Created At', width: 20, format: 'datetime' },
+  { key: 'updated_at', header: 'Updated At', width: 20, format: 'datetime' }
+]
+
+const importColumns = [
+  { key: 'global_id', header: 'Global ID' },
+  { key: 'room', header: 'Room Name' },
+  { key: 'capacity', header: 'Capacity', format: 'number' },
+  { key: 'active', header: 'Status', format: 'status' }
+]
+
+// Export Handlers
+const handleExportStart = (type) => {
+  console.log(`Starting ${type} export...`)
+}
+
+const handleExportComplete = (type) => {
+  console.log(`Successfully exported to ${type.toUpperCase()}!`)
+  // You can add a toast notification here
+}
+
+const handleExportError = ({ type, error }) => {
+  console.error(`Export error (${type}):`, error)
+  alert(`Failed to export to ${type.toUpperCase()}`)
+}
+
+// Import Handlers
+const handleImportStart = () => {
+  console.log('Starting CSV import...')
+}
+
+const handleImportComplete = async (rows) => {
+  console.log('Importing rows:', rows)
+
+  let successCount = 0
+  let errorCount = 0
+
+  const { $AdminPrivateAxios } = useNuxtApp()
+
+  for (const row of rows) {
+    try {
+      await $AdminPrivateAxios.post('/rooms/', {
+        global_id: row.global_id,
+        room: row.room,
+        capacity: row.capacity,
+        active: row.active ? 1 : 0
+      })
+      successCount++
+    } catch (error) {
+      console.error('Failed to import row:', row, error)
+      errorCount++
+    }
+  }
+
+  // Refresh the rooms list
+  try {
+    const response = await $AdminPrivateAxios.get('/rooms/')
+    rooms.value = response.data?.data || []
+  } catch (error) {
+    console.error('Failed to refresh rooms:', error)
+  }
+
+  if (successCount > 0) {
+    alert(
+      `Successfully imported ${successCount} room(s)${errorCount > 0 ? `, ${errorCount} failed` : ''}!`
+    )
+  } else {
+    alert('Failed to import rooms')
+  }
+}
+
+const handleImportError = ({ error }) => {
+  console.error('Import error:', error)
+  alert('Failed to import CSV file')
+}
+
+// Validate imported row
+const validateImportRow = (row, rowNumber) => {
+  // Validate Global ID format (optional field)
+  if (row.global_id && !/^RM-\d{3}$/.test(row.global_id)) {
+    return {
+      valid: false,
+      error: 'Invalid Global ID format (must be RM-001)'
+    }
+  }
+
+  // Check if Global ID already exists (if provided)
+  if (row.global_id && rooms.value.some(r => r.global_id === row.global_id)) {
+    return {
+      valid: false,
+      error: `Global ID ${row.global_id} already exists`
+    }
+  }
+
+  // Validate Room Name
+  if (!row.room || row.room.length < 2) {
+    return {
+      valid: false,
+      error: 'Room name must be at least 2 characters'
+    }
+  }
+
+  if (row.room.length > 50) {
+    return {
+      valid: false,
+      error: 'Room name must not exceed 50 characters'
+    }
+  }
+
+  // Validate capacity if provided
+  if (row.capacity !== null && row.capacity !== '' && row.capacity < 0) {
+    return {
+      valid: false,
+      error: 'Capacity must be 0 or greater'
+    }
+  }
+
+  return { valid: true }
+}
+
+// Transform imported row before validation
+const transformImportRow = (row) => {
+  return {
+    ...row,
+    // Ensure capacity is integer or null
+    capacity: row.capacity ? parseInt(row.capacity) : null,
+    // Ensure active is 0 or 1
+    active: row.active === 1 || row.active === '1' ? 1 : 0
+  }
+}
+
+// Fetch rooms on mount
 onMounted(async () => {
   loading.value = true;
-  console.log("=== FETCHING ROOMS ===");
   try {
-    // TODO: Replace with actual API call
     const { $AdminPrivateAxios } = useNuxtApp();
     const response = await $AdminPrivateAxios.get('/rooms/');
-    console.log("Rooms API response:", response);
-    console.log("Rooms data:", response.data);
     rooms.value = response.data?.data || [];
-    console.log("Total rooms loaded:", rooms.value.length);
-    console.log("Rooms list:", rooms.value);
-    console.log("======================");
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Rooms loaded:', rooms.value.length);
+    }
   } catch (error) {
-    console.error("Failed to fetch rooms:", error);
+    console.error('Failed to fetch rooms:', error.response?.data?.message || error.message);
     // Fallback to empty array
     rooms.value = [];
   } finally {
@@ -542,6 +559,9 @@ const filteredRooms = computed(() => {
 
   return filtered;
 });
+
+// Add computed property for export data
+const filteredGenerations = computed(() => filteredRooms.value);
 
 const totalPages = computed(() =>
   Math.ceil(filteredRooms.value.length / itemsPerPage.value)
@@ -605,7 +625,7 @@ const submitForm = async () => {
   formLoading.value = true;
   try {
     const { $AdminPrivateAxios } = useNuxtApp();
-    
+
     if (isEdit.value && selectedRoom.value) {
       const identifier = selectedRoom.value.global_id
         ? String(selectedRoom.value.global_id)
@@ -622,7 +642,7 @@ const submitForm = async () => {
         active: formData.active ? 1 : 0,
       });
     }
-    
+
     // Refresh the list
     const response = await $AdminPrivateAxios.get('/rooms/');
     rooms.value = response.data?.data || [];
@@ -642,37 +662,37 @@ const confirmDelete = (room) => {
 const handleDelete = async () => {
   if (!selectedRoom.value) return;
   deleteLoading.value = true;
-  
+
   console.log("=== DELETE OPERATION START ===");
   console.log("Selected room to delete:", selectedRoom.value);
-  
+
   try {
     const { $AdminPrivateAxios } = useNuxtApp();
     const identifier = selectedRoom.value.global_id
       ? String(selectedRoom.value.global_id)
       : String(selectedRoom.value.id);
-    
+
     console.log("Using identifier:", identifier);
     console.log("DELETE request URL:", `/rooms/${identifier}/delete`);
-    
+
     // Delete the room using POST method (backend expects POST to /rooms/{id}/delete)
     const response = await $AdminPrivateAxios.post(`/rooms/${identifier}/delete`);
-    
+
     console.log("DELETE response:", response);
     console.log("DELETE response data:", response.data);
     console.log("DELETE SUCCESS - Room marked as deleted (status = 2)");
-    
+
     // Remove from local state immediately
     const roomsBefore = rooms.value.length;
-    rooms.value = rooms.value.filter(r => 
+    rooms.value = rooms.value.filter(r =>
       r.id !== selectedRoom.value.id && r.global_id !== selectedRoom.value.global_id
     );
     const roomsAfter = rooms.value.length;
-    
+
     console.log(`Rooms count before: ${roomsBefore}, after: ${roomsAfter}`);
     console.log("Remaining rooms:", rooms.value);
     console.log("=== DELETE OPERATION END ===");
-    
+
     deleteDialog.value = false;
     selectedRoom.value = null;
   } catch (e) {
@@ -681,7 +701,7 @@ const handleDelete = async () => {
     console.error("Error details:", e.response?.data);
     console.error("Error status:", e.response?.status);
     console.error("===================");
-    
+
     // Show error message to user
     alert(`Failed to delete room: ${e.response?.data?.message || e.message}`);
   } finally {
@@ -1322,6 +1342,7 @@ watch(
     opacity: 0;
     transform: scale(0.9) translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -1335,6 +1356,7 @@ watch(
     align-items: stretch;
     gap: 24px;
   }
+
   .action-section {
     justify-content: center;
   }
@@ -1344,33 +1366,41 @@ watch(
   .header-container {
     padding: 16px 20px;
   }
+
   .modern-table-section {
     padding: 16px 20px;
   }
+
   .title-wrapper {
     flex-direction: column;
     text-align: center;
     gap: 12px;
   }
+
   .stats-cards {
     justify-content: center;
     flex-wrap: wrap;
   }
+
   .toolbar-right {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
   }
+
   .search-container {
     min-width: auto;
   }
+
   .table-toolbar {
     flex-direction: column;
     gap: 16px;
   }
+
   .modern-table-wrapper {
     overflow-x: auto;
   }
+
   .modern-table {
     min-width: 800px;
   }

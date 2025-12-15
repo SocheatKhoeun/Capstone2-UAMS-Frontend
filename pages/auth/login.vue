@@ -206,6 +206,9 @@ const handleLogin = async () => {
     // 1) Try user login (student / lecturer)
     const userRes = await userStore.login(loginData.email, loginData.password);
 
+    // Wait a bit for store to initialize
+    await new Promise(resolve => setTimeout(resolve, 100));
+
     // Determine role from response or decoded token
     const role =
       userRes?.data?.role ||
@@ -213,22 +216,29 @@ const handleLogin = async () => {
       userStore.getUser()?.role ||
       userStore.getUser()?.raw?.role;
 
+    console.log('Login successful, role:', role);
+
     if (role === "student") {
-      return await navigateTo("/student/dashboard");
+      await navigateTo("/student/dashboard", { replace: true });
+      return;
     } else if (role === "lecturer" || role === "teacher") {
-      return await navigateTo("/lecturer/dashboard");
+      await navigateTo("/lecturer/dashboard", { replace: true });
+      return;
     } else if (role === "admin") {
       // backend may return admin role on same endpoint
-      return await navigateTo("/admin/dashboard");
+      await navigateTo("/admin/dashboard", { replace: true });
+      return;
     } else {
-      return await navigateTo("/");
+      await navigateTo("/", { replace: true });
+      return;
     }
   } catch (userErr) {
     // 2) If user login failed, try admin login as fallback
     try {
       await adminStore.login(loginData.email, loginData.password);
       // adminStore.login sets token/admin, redirect to admin dashboard
-      return await navigateTo("/admin/dashboard");
+      await navigateTo("/admin/dashboard", { replace: true });
+      return;
     } catch (adminErr) {
       // Both failed — show best message available
       const apiMessage =
