@@ -19,15 +19,13 @@ function decodeJwtPayload(token) {
     if (parts.length !== 3 || !parts[1]) return null;
     let decoded;
     try {
-      if (typeof atob === 'function') {
-        decoded = atob(parts[1]);
-      } else if (typeof Buffer !== 'undefined') {
+      decoded = atob(parts[1]);
+    } catch (e) {
+      if (typeof Buffer !== 'undefined') {
         decoded = Buffer.from(parts[1], 'base64').toString('utf8');
       } else {
         return null;
       }
-    } catch (e) {
-      return null;
     }
     if (!decoded || decoded === 'undefined' || decoded === 'null') return null;
     return safeJSONParse(decoded);
@@ -57,7 +55,12 @@ export const adminAuth = defineStore('adminAuth', {
       if (this.tokenInitialized) return;
 
       const token = this.getToken();
-      const storeAdmin = localStorage.getItem('admin');
+      let storeAdmin = null;
+      try {
+        storeAdmin = localStorage.getItem('admin');
+      } catch (e) {
+        console.error('Failed to read admin from localStorage:', e);
+      }
 
       if (token) {
         this.token = token;
@@ -67,6 +70,7 @@ export const adminAuth = defineStore('adminAuth', {
         if (parsed) this.admin = parsed;
       }
 
+      // attempt a refresh (safe)
       await this.refreshToken();
     },
 
