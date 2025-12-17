@@ -1,55 +1,50 @@
 <template>
-  <div class="rooms-page">
+  <div class="leave-requests-page">
     <!-- Modern Header Section -->
     <div class="modern-header">
       <div class="header-container">
         <div class="title-section">
           <div class="title-wrapper">
             <div class="title-icon">
-              <v-icon icon="mdi-door" size="32" color="white" />
+              <v-icon icon="mdi-calendar-remove" size="32" color="white" />
             </div>
             <div class="title-content">
-              <h1 class="page-title">Room Management</h1>
+              <h1 class="page-title">Leave Request Management</h1>
               <div class="breadcrumb">
-                <span class="breadcrumb-item">Admin</span>
+                <span class="breadcrumb-item">Student</span>
                 <v-icon icon="mdi-chevron-right" size="16" color="grey" class="breadcrumb-separator" />
-                <span class="breadcrumb-item active">Rooms</span>
+                <span class="breadcrumb-item active">Request Leaves</span>
               </div>
             </div>
           </div>
           <div class="stats-cards">
             <div class="stat-card">
-              <div class="stat-number">{{ rooms.length }}</div>
-              <div class="stat-label">Total Rooms</div>
+              <div class="stat-number">{{ leaveRequests.length }}</div>
+              <div class="stat-label">Total Requests</div>
             </div>
             <div class="stat-card">
               <div class="stat-number">
-                {{rooms.filter((r) => r.active).length}}
+                {{leaveRequests.filter((r) => r.status === 'Pending').length}}
               </div>
-              <div class="stat-label">Active</div>
+              <div class="stat-label">Pending</div>
             </div>
             <div class="stat-card">
               <div class="stat-number">
-                {{rooms.filter((r) => !r.active).length}}
+                {{leaveRequests.filter((r) => r.status === 'Approved').length}}
               </div>
-              <div class="stat-label">Inactive</div>
+              <div class="stat-label">Approved</div>
             </div>
           </div>
         </div>
         <div class="action-section">
           <!-- Export Button Component -->
-          <ExportButtons :data="filteredRooms" :columns="exportColumns" filename="Rooms_Export"
+          <ExportButtons :data="filteredLeaveRequests" :columns="exportColumns" filename="Leave_Requests_Export"
             @export-start="handleExportStart" @export-complete="handleExportComplete"
             @export-error="handleExportError" />
 
-          <!-- Import Button Component -->
-          <ImportCsv :columns="importColumns" :validate-row="validateImportRow" :transform-row="transformImportRow"
-            @import-start="handleImportStart" @import-complete="handleImportComplete"
-            @import-error="handleImportError" />
-
           <v-btn class="modern-btn add-btn" prepend-icon="mdi-plus" variant="flat" color="primary"
             @click="openCreateDialog" elevation="2">
-            Add Room
+            Add Leave Request
           </v-btn>
         </div>
       </div>
@@ -63,16 +58,17 @@
           <div class="toolbar-left">
             <h2 class="table-title">
               <v-icon icon="mdi-table" size="20" class="mr-2" />
-              Room Information
+              Leave Request Information
             </h2>
-            <div class="table-subtitle">Manage and organize your rooms</div>
+            <div class="table-subtitle">Manage and track your leave requests</div>
           </div>
           <div class="toolbar-right">
             <div class="search-container">
-              <v-text-field v-model="searchQuery" placeholder="Search rooms..." prepend-inner-icon="mdi-magnify"
+              <v-text-field v-model="searchQuery" placeholder="Search leave requests..." prepend-inner-icon="mdi-magnify"
                 variant="outlined" density="compact" hide-details class="search-input" clearable />
             </div>
 
+            <!-- Filter dropdown -->
             <v-menu v-model="showFilters" offset-y transition="scale-transition" max-width="320">
               <template #activator="{ props }">
                 <v-btn v-bind="props" variant="outlined" class="filter-btn" aria-label="Open filters">
@@ -87,8 +83,9 @@
                       <label class="filter-label">Status</label>
                       <v-chip-group v-model="statusFilter" selected-class="text-primary" column>
                         <v-chip value="All" variant="outlined">All</v-chip>
-                        <v-chip value="1" variant="outlined" color="success">Active</v-chip>
-                        <v-chip value="0" variant="outlined" color="error">Inactive</v-chip>
+                        <v-chip value="Pending" variant="outlined" color="warning">Pending</v-chip>
+                        <v-chip value="Approved" variant="outlined" color="success">Approved</v-chip>
+                        <v-chip value="Rejected" variant="outlined" color="error">Rejected</v-chip>
                       </v-chip-group>
                     </div>
                   </div>
@@ -107,19 +104,19 @@
                   <div class="header-content">ID</div>
                 </th>
                 <th class="modern-header-cell text-left">
-                  <div class="header-content">Room Name</div>
+                  <div class="header-content">Student</div>
                 </th>
-                <th class="modern-header-cell text-center">
-                  <div class="header-content">Capacity</div>
+                <th class="modern-header-cell text-left">
+                  <div class="header-content">Leave Type</div>
+                </th>
+                <th class="modern-header-cell text-left">
+                  <div class="header-content">Date Range</div>
                 </th>
                 <th class="modern-header-cell text-center">
                   <div class="header-content">Status</div>
                 </th>
                 <th class="modern-header-cell text-left">
-                  <div class="header-content">Created</div>
-                </th>
-                <th class="modern-header-cell text-left">
-                  <div class="header-content">Updated</div>
+                  <div class="header-content">Requested</div>
                 </th>
                 <th class="modern-header-cell text-center">
                   <div class="header-content">Actions</div>
@@ -127,72 +124,59 @@
               </tr>
             </thead>
             <tbody>
-              <!-- Loading State -->
-              <tr v-if="loading">
-                <td colspan="7" class="text-center pa-8">
-                  <v-progress-circular indeterminate color="primary" size="48" />
-                  <p class="mt-4 text-medium-emphasis">Loading rooms...</p>
-                </td>
-              </tr>
-              <!-- Data Rows -->
-              <tr v-else v-for="room in paginatedRooms" :key="room.id" class="modern-table-row">
+              <tr v-for="request in paginatedLeaveRequests" :key="request.leave_id" class="modern-table-row">
                 <td class="modern-table-cell text-center id-column">
-                  <span class="id-badge">{{ room.id }}</span>
+                  <span class="id-badge">{{ request.leave_id }}</span>
                 </td>
 
                 <td class="modern-table-cell">
-                  <div class="room-info">
-                    <span class="room-avatar">
-                      <v-icon size="22" color="#1d4ed8">mdi-door</v-icon>
+                  <div class="student-info">
+                    <span class="student-avatar">
+                      <v-icon size="22" color="#1d4ed8">mdi-account</v-icon>
                     </span>
-                    <div class="room-details">
-                      <div class="room-name">{{ room.room }}</div>
+                    <div class="student-details">
+                      <div class="student-name">{{ request.student_name || 'N/A' }}</div>
+                      <div class="student-code">{{ request.student_code || '' }}</div>
+                    </div>
+                  </div>
+                </td>
+
+                <td class="modern-table-cell">
+                  <div class="leave-type-badge">{{ request.leave_type || 'N/A' }}</div>
+                </td>
+
+                <td class="modern-table-cell">
+                  <div class="date-info">
+                    <div class="date-primary">
+                      {{ formatDate(request.start_date) }} - {{ formatDate(request.end_date) }}
                     </div>
                   </div>
                 </td>
 
                 <td class="modern-table-cell text-center">
-                  <div class="capacity-badge">
-                    <v-icon size="16" class="mr-1">mdi-seat</v-icon>
-                    {{ room.capacity || 'N/A' }}
-                  </div>
-                </td>
-
-                <td class="modern-table-cell text-center">
-                  <v-chip :color="room.active ? 'success' : 'error'" class="status-chip" size="small">
-                    <v-icon start size="16">mdi-check-circle</v-icon>
-                    {{ room.active ? "Active" : "Inactive" }}
+                  <v-chip :color="getStatusColor(request.status)" class="status-chip" size="small">
+                    <v-icon start size="16">{{ getStatusIcon(request.status) }}</v-icon>
+                    {{ request.status || 'Pending' }}
                   </v-chip>
                 </td>
 
                 <td class="modern-table-cell">
                   <div class="date-info">
                     <div class="date-primary">
-                      {{ formatDate(room.created_at) }}
+                      {{ formatDate(request.created_at) }}
                     </div>
                     <div class="date-secondary">
-                      {{ formatTime(room.created_at) }}
-                    </div>
-                  </div>
-                </td>
-
-                <td class="modern-table-cell">
-                  <div class="date-info">
-                    <div class="date-primary">
-                      {{ formatDate(room.updated_at) }}
-                    </div>
-                    <div class="date-secondary">
-                      {{ formatTime(room.updated_at) }}
+                      {{ formatTime(request.created_at) }}
                     </div>
                   </div>
                 </td>
 
                 <td class="modern-table-cell text-center">
                   <div class="action-group">
-                    <v-btn icon size="small" class="action-btn" @click="openEditDialog(room)">
+                    <v-btn icon size="small" class="action-btn" @click="openEditDialog(request)">
                       <v-icon color="#fde047">mdi-pencil</v-icon>
                     </v-btn>
-                    <v-btn icon size="small" class="action-btn" @click="confirmDelete(room)">
+                    <v-btn icon size="small" class="action-btn" @click="confirmDelete(request)">
                       <v-icon color="#dc2626">mdi-delete</v-icon>
                     </v-btn>
                   </div>
@@ -202,24 +186,24 @@
           </v-table>
 
           <!-- Empty State -->
-          <div v-if="filteredRooms.length === 0" class="empty-state">
-            <v-icon icon="mdi-door-open" size="64" color="grey-lighten-1" />
-            <h3 class="empty-title">No rooms found</h3>
+          <div v-if="filteredLeaveRequests.length === 0" class="empty-state">
+            <v-icon icon="mdi-calendar-remove-outline" size="64" color="grey-lighten-1" />
+            <h3 class="empty-title">No leave requests found</h3>
             <p class="empty-subtitle">
               {{
                 searchQuery
                   ? "Try adjusting your search terms"
-                  : "Create your first room to get started"
+                  : "Create your first leave request to get started"
               }}
             </p>
             <v-btn v-if="!searchQuery" color="primary" variant="flat" @click="openCreateDialog" class="mt-4">
               <v-icon start icon="mdi-plus" />
-              Add First Room
+              Add First Leave Request
             </v-btn>
           </div>
 
           <!-- Pagination -->
-          <div v-if="filteredRooms.length > 0" class="pagination-section">
+          <div v-if="filteredLeaveRequests.length > 0" class="pagination-section">
             <v-btn variant="outlined" :disabled="currentPage === 1" @click="goToPrevPage" class="pagination-btn">
               Previous
             </v-btn>
@@ -236,7 +220,7 @@
     </div>
 
     <!-- Create/Edit Dialog -->
-    <v-dialog v-model="dialogOpen" max-width="550" persistent>
+    <v-dialog v-model="dialogOpen" max-width="800" persistent>
       <v-card class="modern-dialog" elevation="24">
         <div class="dialog-header">
           <div class="header-content">
@@ -246,13 +230,13 @@
             </div>
             <div class="header-text">
               <h2 class="dialog-title">
-                {{ isEdit ? "Edit Room" : "Create New Room" }}
+                {{ isEdit ? "Edit Leave Request" : "Create New Leave Request" }}
               </h2>
               <p class="dialog-subtitle">
                 {{
                   isEdit
-                    ? "Modify room information"
-                    : "Add a new room to the system"
+                    ? "Modify leave request information"
+                    : "Add a new leave request to the system"
                 }}
               </p>
             </div>
@@ -263,30 +247,25 @@
         <v-card-text class="dialog-content">
           <v-form ref="formRef" v-model="formValid" @submit.prevent="submitForm">
             <div class="form-group">
-              <label class="form-label">Room Name</label>
-              <v-text-field v-model="formData.room" placeholder="Enter room name" variant="outlined"
-                density="comfortable" prepend-inner-icon="mdi-door" :rules="roomNameRules" hide-details="auto" />
+              <label class="form-label">Leave Type *</label>
+              <v-select v-model="formData.leave_type" :items="leaveTypeOptions" placeholder="Select leave type"
+                variant="outlined" density="comfortable" prepend-inner-icon="mdi-format-list-bulleted-type"
+                :rules="leaveTypeRules" />
             </div>
             <div class="form-group">
-              <label class="form-label">Capacity</label>
-              <v-text-field v-model.number="formData.capacity" placeholder="Enter room capacity" variant="outlined"
-                density="comfortable" prepend-inner-icon="mdi-seat" type="number" :rules="capacityRules"
-                hide-details="auto" />
+              <label class="form-label">Start Date *</label>
+              <v-text-field v-model="formData.start_date" type="date" variant="outlined" density="comfortable"
+                prepend-inner-icon="mdi-calendar-start" :rules="startDateRules" />
             </div>
             <div class="form-group">
-              <div class="switch-container">
-                <div class="switch-info">
-                  <label class="form-label">Status</label>
-                  <p class="switch-description">
-                    {{
-                      formData.active
-                        ? "Room is active and available"
-                        : "Room is inactive and hidden"
-                    }}
-                  </p>
-                </div>
-                <v-switch v-model="formData.active" color="success" inset hide-details />
-              </div>
+              <label class="form-label">End Date *</label>
+              <v-text-field v-model="formData.end_date" type="date" variant="outlined" density="comfortable"
+                prepend-inner-icon="mdi-calendar-end" :rules="endDateRules" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Reason *</label>
+              <v-textarea v-model="formData.reason" placeholder="Enter reason for leave" variant="outlined"
+                density="comfortable" rows="4" :rules="reasonRules" />
             </div>
           </v-form>
         </v-card-text>
@@ -295,7 +274,7 @@
           <v-btn variant="outlined" color="grey-darken-1" @click="closeDialog">Cancel</v-btn>
           <v-btn :color="isEdit ? 'warning' : 'primary'" variant="flat" @click="submitForm" :disabled="!formValid"
             :loading="formLoading">
-            {{ isEdit ? "Update Room" : "Create Room" }}
+            {{ isEdit ? "Update Leave Request" : "Create Leave Request" }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -308,7 +287,7 @@
           <div class="delete-icon-container">
             <v-icon icon="mdi-delete-alert" color="error" size="48" />
           </div>
-          <h2 class="delete-title">Delete Room</h2>
+          <h2 class="delete-title">Delete Leave Request</h2>
           <p class="delete-subtitle">This action cannot be undone</p>
         </div>
         <v-divider />
@@ -316,9 +295,9 @@
           <div class="warning-box">
             <v-icon icon="mdi-alert-circle" color="warning" class="warning-icon" />
             <p class="warning-message">
-              You are about to permanently delete
-              <strong class="room-name">{{
-                selectedRoom?.room
+              You are about to permanently delete leave request
+              <strong class="request-id">#{{
+                selectedRequest?.leave_id
               }}</strong>
             </p>
           </div>
@@ -327,7 +306,7 @@
         <v-card-actions class="delete-actions">
           <v-btn variant="outlined" @click="deleteDialog = false">Cancel</v-btn>
           <v-btn color="error" variant="flat" @click="handleDelete" :loading="deleteLoading">
-            Delete Room
+            Delete Request
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -337,17 +316,16 @@
 
 <script setup>
 definePageMeta({
-  layout: "admin",
+  layout: "student",
   middleware: ["auth"],
 });
 
 import { ref, computed, watch, onMounted, reactive } from "vue";
+import { useRequestLeaveStore } from "~/store/useRequestLeaveStore";
 import ExportButtons from '~/components/ui/ExportButtons.vue'
-import ImportCsv from '~/components/ui/ImportCsv.vue'
+import Swal from 'sweetalert2'
 
-// Mock store - replace with actual room store when available
-const rooms = ref([]);
-const loading = ref(false);
+const requestLeaveStore = useRequestLeaveStore();
 
 const searchQuery = ref("");
 const statusFilter = ref("All");
@@ -356,34 +334,42 @@ const currentPage = ref(1);
 const itemsPerPage = ref(10);
 const dialogOpen = ref(false);
 const deleteDialog = ref(false);
-const selectedRoom = ref(null);
+const selectedRequest = ref(null);
 const isEdit = ref(false);
+const formRef = ref(null);
 const formValid = ref(false);
 const formLoading = ref(false);
 const deleteLoading = ref(false);
+const leaveRequests = computed(() => requestLeaveStore.leaveRequests);
 
 const formData = reactive({
-  global_id: "",
-  room: "",
-  capacity: null,
-  active: true,
+  leave_type: "",
+  start_date: "",
+  end_date: "",
+  reason: "",
 });
 
-// Export/Import Configuration
-const exportColumns = [
-  { key: 'global_id', header: 'Global ID', width: 15 },
-  { key: 'room', header: 'Room Name', width: 25 },
-  { key: 'capacity', header: 'Capacity', width: 12, format: 'number' },
-  { key: 'active', header: 'Status', width: 12, format: 'status' },
-  { key: 'created_at', header: 'Created At', width: 20, format: 'datetime' },
-  { key: 'updated_at', header: 'Updated At', width: 20, format: 'datetime' }
-]
+// Leave type options
+const leaveTypeOptions = [
+  "Sick Leave",
+  "Personal Leave",
+  "Emergency Leave",
+  "Family Leave",
+  "Medical Leave",
+  "Other"
+];
 
-const importColumns = [
-  { key: 'global_id', header: 'Global ID' },
-  { key: 'room', header: 'Room Name' },
-  { key: 'capacity', header: 'Capacity', format: 'number' },
-  { key: 'active', header: 'Status', format: 'status' }
+// Export Configuration
+const exportColumns = [
+  { key: 'leave_id', header: 'Leave ID', width: 12 },
+  { key: 'student_name', header: 'Student Name', width: 25 },
+  { key: 'student_code', header: 'Student Code', width: 15 },
+  { key: 'leave_type', header: 'Leave Type', width: 18 },
+  { key: 'start_date', header: 'Start Date', width: 15, format: 'date' },
+  { key: 'end_date', header: 'End Date', width: 15, format: 'date' },
+  { key: 'reason', header: 'Reason', width: 35 },
+  { key: 'status', header: 'Status', width: 12 },
+  { key: 'created_at', header: 'Created At', width: 20, format: 'datetime' }
 ]
 
 // Export Handlers
@@ -393,7 +379,6 @@ const handleExportStart = (type) => {
 
 const handleExportComplete = (type) => {
   console.log(`Successfully exported to ${type.toUpperCase()}!`)
-  // You can add a toast notification here
 }
 
 const handleExportError = ({ type, error }) => {
@@ -401,175 +386,68 @@ const handleExportError = ({ type, error }) => {
   alert(`Failed to export to ${type.toUpperCase()}`)
 }
 
-// Import Handlers
-const handleImportStart = () => {
-  console.log('Starting CSV import...')
-}
-
-const handleImportComplete = async (rows) => {
-  console.log('Importing rows:', rows)
-
-  let successCount = 0
-  let errorCount = 0
-
-  const { $AdminPrivateAxios } = useNuxtApp()
-
-  for (const row of rows) {
-    try {
-      await $AdminPrivateAxios.post('/rooms/', {
-        global_id: row.global_id,
-        room: row.room,
-        capacity: row.capacity,
-        active: row.active ? 1 : 0
-      })
-      successCount++
-    } catch (error) {
-      console.error('Failed to import row:', row, error)
-      errorCount++
-    }
-  }
-
-  // Refresh the rooms list
-  try {
-    const response = await $AdminPrivateAxios.get('/rooms/')
-    rooms.value = response.data?.data || []
-  } catch (error) {
-    console.error('Failed to refresh rooms:', error)
-  }
-
-  if (successCount > 0) {
-    alert(
-      `Successfully imported ${successCount} room(s)${errorCount > 0 ? `, ${errorCount} failed` : ''}!`
-    )
-  } else {
-    alert('Failed to import rooms')
-  }
-}
-
-const handleImportError = ({ error }) => {
-  console.error('Import error:', error)
-  alert('Failed to import CSV file')
-}
-
-// Validate imported row
-const validateImportRow = (row, rowNumber) => {
-  // Validate Global ID format (optional field)
-  if (row.global_id && !/^RM-\d{3}$/.test(row.global_id)) {
-    return {
-      valid: false,
-      error: 'Invalid Global ID format (must be RM-001)'
-    }
-  }
-
-  // Check if Global ID already exists (if provided)
-  if (row.global_id && rooms.value.some(r => r.global_id === row.global_id)) {
-    return {
-      valid: false,
-      error: `Global ID ${row.global_id} already exists`
-    }
-  }
-
-  // Validate Room Name
-  if (!row.room || row.room.length < 2) {
-    return {
-      valid: false,
-      error: 'Room name must be at least 2 characters'
-    }
-  }
-
-  if (row.room.length > 50) {
-    return {
-      valid: false,
-      error: 'Room name must not exceed 50 characters'
-    }
-  }
-
-  // Validate capacity if provided
-  if (row.capacity !== null && row.capacity !== '' && row.capacity < 0) {
-    return {
-      valid: false,
-      error: 'Capacity must be 0 or greater'
-    }
-  }
-
-  return { valid: true }
-}
-
-// Transform imported row before validation
-const transformImportRow = (row) => {
-  return {
-    ...row,
-    // Ensure capacity is integer or null
-    capacity: row.capacity ? parseInt(row.capacity) : null,
-    // Ensure active is 0 or 1
-    active: row.active === 1 || row.active === '1' ? 1 : 0
-  }
-}
-
-// Fetch rooms on mount
-onMounted(async () => {
-  loading.value = true;
-  try {
-    const { $AdminPrivateAxios } = useNuxtApp();
-    const response = await $AdminPrivateAxios.get('/rooms/');
-    rooms.value = response.data?.data || [];
-    
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Rooms loaded:', rooms.value.length);
-    }
-  } catch (error) {
-    console.error('Failed to fetch rooms:', error.response?.data?.message || error.message);
-    // Fallback to empty array
-    rooms.value = [];
-  } finally {
-    loading.value = false;
-  }
+onMounted(() => {
+  requestLeaveStore.fetchLeaveRequests().catch(() => {
+  });
 });
 
-const roomNameRules = [
-  (v) => !!v || "Room name is required",
-  (v) => v.length >= 2 || "At least 2 characters",
-  (v) => v.length <= 50 || "Max 50 characters",
+const leaveTypeRules = [
+  (v) => !!v || "Leave type is required",
 ];
 
-const capacityRules = [
-  (v) => v === null || v === "" || v >= 0 || "Capacity must be 0 or greater",
+const startDateRules = [
+  (v) => !!v || "Start date is required",
 ];
 
-const filteredRooms = computed(() => {
-  let filtered = [...rooms.value];
+const endDateRules = [
+  (v) => !!v || "End date is required",
+  (v) => {
+    if (!formData.start_date || !v) return true;
+    return new Date(v) >= new Date(formData.start_date) || "End date must be after start date";
+  },
+];
+
+const reasonRules = [
+  (v) => !!v || "Reason is required",
+  (v) => v.length >= 10 || "At least 10 characters",
+  (v) => v.length <= 500 || "Max 500 characters",
+];
+
+const filteredLeaveRequests = computed(() => {
+  let filtered = [...leaveRequests.value];
 
   if (searchQuery.value) {
     const q = searchQuery.value.toLowerCase();
     filtered = filtered.filter(
       (r) =>
-        String(r.room || "")
+        String(r.student_name || "")
           .toLowerCase()
           .includes(q) ||
-        String(r.global_id || "")
+        String(r.student_code || "")
+          .toLowerCase()
+          .includes(q) ||
+        String(r.leave_type || "")
+          .toLowerCase()
+          .includes(q) ||
+        String(r.reason || "")
           .toLowerCase()
           .includes(q)
     );
   }
 
   if (statusFilter.value !== "All") {
-    const active = statusFilter.value === "1";
-    filtered = filtered.filter((r) => !!r.active === active);
+    filtered = filtered.filter((r) => r.status === statusFilter.value);
   }
 
   return filtered;
 });
 
-// Add computed property for export data
-const filteredGenerations = computed(() => filteredRooms.value);
-
 const totalPages = computed(() =>
-  Math.ceil(filteredRooms.value.length / itemsPerPage.value)
+  Math.ceil(filteredLeaveRequests.value.length / itemsPerPage.value)
 );
-
-const paginatedRooms = computed(() => {
+const paginatedLeaveRequests = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value;
-  return filteredRooms.value.slice(start, start + itemsPerPage.value);
+  return filteredLeaveRequests.value.slice(start, start + itemsPerPage.value);
 });
 
 const formatDate = (dateStr) => {
@@ -597,113 +475,158 @@ const formatTime = (dateStr) => {
   }
 };
 
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'Approved':
+      return 'success';
+    case 'Rejected':
+      return 'error';
+    case 'Pending':
+    default:
+      return 'warning';
+  }
+};
+
+const getStatusIcon = (status) => {
+  switch (status) {
+    case 'Approved':
+      return 'mdi-check-circle';
+    case 'Rejected':
+      return 'mdi-close-circle';
+    case 'Pending':
+    default:
+      return 'mdi-clock-outline';
+  }
+};
+
 const openCreateDialog = () => {
   isEdit.value = false;
-  Object.assign(formData, { global_id: "", room: "", capacity: null, active: true });
+  Object.assign(formData, {
+    leave_type: "",
+    start_date: "",
+    end_date: "",
+    reason: "",
+  });
   dialogOpen.value = true;
 };
 
-const openEditDialog = (room) => {
-  selectedRoom.value = room;
+const openEditDialog = (request) => {
+  selectedRequest.value = request;
   isEdit.value = true;
   Object.assign(formData, {
-    global_id: room.global_id || "",
-    room: room.room || "",
-    capacity: room.capacity || null,
-    active: !!room.active,
+    leave_type: request.leave_type || "",
+    start_date: request.start_date || "",
+    end_date: request.end_date || "",
+    reason: request.reason || "",
   });
   dialogOpen.value = true;
 };
 
 const closeDialog = () => {
   dialogOpen.value = false;
-  selectedRoom.value = null;
+  selectedRequest.value = null;
 };
 
 const submitForm = async () => {
-  if (!formValid.value) return;
+  // Validate form
+  const { valid } = await formRef.value.validate();
+  if (!valid) return;
+
   formLoading.value = true;
   try {
-    const { $AdminPrivateAxios } = useNuxtApp();
-
-    if (isEdit.value && selectedRoom.value) {
-      const identifier = selectedRoom.value.global_id
-        ? String(selectedRoom.value.global_id)
-        : String(selectedRoom.value.id);
-      await $AdminPrivateAxios.patch(`/rooms/${identifier}`, {
-        room: formData.room,
-        capacity: formData.capacity,
-        active: formData.active ? 1 : 0,
+    let result;
+    if (isEdit.value && selectedRequest.value) {
+      result = await requestLeaveStore.updateLeaveRequest(selectedRequest.value.leave_id, {
+        leave_type: formData.leave_type,
+        start_date: formData.start_date,
+        end_date: formData.end_date,
+        reason: formData.reason,
       });
+      
+      if (result.success) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Leave request updated successfully',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
     } else {
-      await $AdminPrivateAxios.post('/rooms/', {
-        room: formData.room,
-        capacity: formData.capacity,
-        active: formData.active ? 1 : 0,
+      result = await requestLeaveStore.createLeaveRequest({
+        leave_type: formData.leave_type,
+        start_date: formData.start_date,
+        end_date: formData.end_date,
+        reason: formData.reason,
+      });
+      
+      if (result.success) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Leave request created successfully',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
+    }
+    
+    if (result.success) {
+      closeDialog();
+    } else {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: result.error || 'Failed to save leave request',
       });
     }
-
-    // Refresh the list
-    const response = await $AdminPrivateAxios.get('/rooms/');
-    rooms.value = response.data?.data || [];
-    closeDialog();
   } catch (e) {
-    console.error("Room save error", e);
+    console.error("Leave request save error", e);
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      text: 'An unexpected error occurred',
+    });
   } finally {
     formLoading.value = false;
   }
 };
 
-const confirmDelete = (room) => {
-  selectedRoom.value = room;
+const confirmDelete = (request) => {
+  selectedRequest.value = request;
   deleteDialog.value = true;
 };
 
 const handleDelete = async () => {
-  if (!selectedRoom.value) return;
+  if (!selectedRequest.value) return;
   deleteLoading.value = true;
-
-  console.log("=== DELETE OPERATION START ===");
-  console.log("Selected room to delete:", selectedRoom.value);
-
   try {
-    const { $AdminPrivateAxios } = useNuxtApp();
-    const identifier = selectedRoom.value.global_id
-      ? String(selectedRoom.value.global_id)
-      : String(selectedRoom.value.id);
-
-    console.log("Using identifier:", identifier);
-    console.log("DELETE request URL:", `/rooms/${identifier}/delete`);
-
-    // Delete the room using POST method (backend expects POST to /rooms/{id}/delete)
-    const response = await $AdminPrivateAxios.post(`/rooms/${identifier}/delete`);
-
-    console.log("DELETE response:", response);
-    console.log("DELETE response data:", response.data);
-    console.log("DELETE SUCCESS - Room marked as deleted (status = 2)");
-
-    // Remove from local state immediately
-    const roomsBefore = rooms.value.length;
-    rooms.value = rooms.value.filter(r =>
-      r.id !== selectedRoom.value.id && r.global_id !== selectedRoom.value.global_id
-    );
-    const roomsAfter = rooms.value.length;
-
-    console.log(`Rooms count before: ${roomsBefore}, after: ${roomsAfter}`);
-    console.log("Remaining rooms:", rooms.value);
-    console.log("=== DELETE OPERATION END ===");
-
-    deleteDialog.value = false;
-    selectedRoom.value = null;
+    const result = await requestLeaveStore.deleteLeaveRequest(selectedRequest.value.leave_id);
+    
+    if (result.success) {
+      await Swal.fire({
+        icon: 'success',
+        title: 'Deleted!',
+        text: 'Leave request has been deleted successfully',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      deleteDialog.value = false;
+      selectedRequest.value = null;
+    } else {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: result.error || 'Failed to delete leave request',
+      });
+    }
   } catch (e) {
-    console.error("=== DELETE ERROR ===");
-    console.error("Delete room error", e);
-    console.error("Error details:", e.response?.data);
-    console.error("Error status:", e.response?.status);
-    console.error("===================");
-
-    // Show error message to user
-    alert(`Failed to delete room: ${e.response?.data?.message || e.message}`);
+    console.error("Delete leave request error", e);
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      text: 'An unexpected error occurred',
+    });
   } finally {
     deleteLoading.value = false;
   }
@@ -713,14 +636,11 @@ const goToPrevPage = () => currentPage.value > 1 && currentPage.value--;
 const goToNextPage = () =>
   currentPage.value < totalPages.value && currentPage.value++;
 
-watch(
-  [searchQuery, statusFilter],
-  () => (currentPage.value = 1)
-);
+watch([searchQuery, statusFilter], () => (currentPage.value = 1));
 </script>
 
 <style scoped>
-.rooms-page {
+.leave-requests-page {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   min-height: 100vh;
   padding: 0;
@@ -924,6 +844,12 @@ watch(
   border-radius: 12px;
 }
 
+.filters-content {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
 .filter-group {
   display: flex;
   flex-direction: column;
@@ -1010,13 +936,13 @@ watch(
   border-radius: 8px;
 }
 
-.room-info {
+.student-info {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.room-avatar {
+.student-avatar {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1027,18 +953,24 @@ watch(
   border-radius: 10px;
 }
 
-.room-details {
+.student-details {
   flex: 1;
 }
 
-.room-name {
+.student-name {
   font-weight: 500;
   color: #1e293b;
   font-size: 14px;
   line-height: 1.2;
 }
 
-.capacity-badge {
+.student-code {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.leave-type-badge {
   display: inline-flex;
   align-items: center;
   padding: 6px 12px;
@@ -1221,28 +1153,6 @@ watch(
   margin-bottom: 8px;
 }
 
-.switch-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 16px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-}
-
-.switch-info {
-  flex: 1;
-}
-
-.switch-description {
-  font-size: 13px;
-  color: #64748b;
-  margin: 4px 0 0 0;
-  line-height: 1.4;
-}
-
 .dialog-actions {
   padding: 20px 24px 24px !important;
   gap: 12px;
@@ -1310,7 +1220,7 @@ watch(
   line-height: 1.4;
 }
 
-.room-name {
+.request-id {
   color: black;
   font-weight: 600;
 }
@@ -1329,24 +1239,6 @@ watch(
   border-radius: 16px !important;
   padding: 0 12px !important;
   height: 28px !important;
-}
-
-/* Animation for dialogs */
-.modern-dialog,
-.delete-dialog {
-  animation: dialogSlideIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-@keyframes dialogSlideIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9) translateY(-20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
 }
 
 /* Responsive Design */
@@ -1402,7 +1294,25 @@ watch(
   }
 
   .modern-table {
-    min-width: 800px;
+    min-width: 1000px;
+  }
+}
+
+/* Animation for dialogs */
+.modern-dialog,
+.delete-dialog {
+  animation: dialogSlideIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes dialogSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 </style>

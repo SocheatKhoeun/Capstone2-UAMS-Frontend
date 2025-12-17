@@ -31,7 +31,7 @@ export const useLecturerStore = defineStore("lecturerStore", {
     async fetchSpecializations() {
       const { $AdminPrivateAxios } = useNuxtApp();
       try {
-        const response = await $AdminPrivateAxios.get('/specializations');
+        const response = await $AdminPrivateAxios.get("/specializations");
         let specs = response.data.data;
         if (specs && specs.items) {
           specs = specs.items;
@@ -39,15 +39,17 @@ export const useLecturerStore = defineStore("lecturerStore", {
         if (!Array.isArray(specs)) {
           specs = [];
         }
-        this.specializations = specs.filter(s => s.active === 1).map(s => ({
-          id: s.id,
-          global_id: s.global_id,
-          name: s.name,
-          department_id: s.department_id
-        }));
+        this.specializations = specs
+          .filter((s) => s.active === 1)
+          .map((s) => ({
+            id: s.id,
+            global_id: s.global_id,
+            name: s.name,
+            department_id: s.department_id,
+          }));
         return this.specializations;
       } catch (error) {
-        console.error('Failed to fetch specializations', error);
+        console.error("Failed to fetch specializations", error);
         return [];
       }
     },
@@ -56,7 +58,7 @@ export const useLecturerStore = defineStore("lecturerStore", {
     async fetchDepartments() {
       const { $AdminPrivateAxios } = useNuxtApp();
       try {
-        const response = await $AdminPrivateAxios.get('/departments');
+        const response = await $AdminPrivateAxios.get("/departments");
         let depts = response.data.data;
         if (depts && depts.items) {
           depts = depts.items;
@@ -64,14 +66,16 @@ export const useLecturerStore = defineStore("lecturerStore", {
         if (!Array.isArray(depts)) {
           depts = [];
         }
-        this.departments = depts.filter(d => d.active === 1).map(d => ({
-          id: d.id,
-          global_id: d.global_id,
-          name: d.name
-        }));
+        this.departments = depts
+          .filter((d) => d.active === 1)
+          .map((d) => ({
+            id: d.id,
+            global_id: d.global_id,
+            name: d.name,
+          }));
         return this.departments;
       } catch (error) {
-        console.error('Failed to fetch departments', error);
+        console.error("Failed to fetch departments", error);
         return [];
       }
     },

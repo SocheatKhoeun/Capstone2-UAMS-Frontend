@@ -72,4 +72,7 @@ yarn preview
 bun run preview
 ```
 
+# install xlsx, pdg
+npm install xlsx jspdf jspdf-autotable
+
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

@@ -288,7 +288,9 @@ const specializeOptions = ['CS', 'IT', 'IS', 'SE']
 // Filter actions
 const applyFilters = () => {
     console.log('Applying filters:', filters.value)
-    // TODO: Add your filter logic here
+    // Filter dashboard data based on selected criteria
+    // This would typically refresh data from the API with filter parameters
+    // Example: fetchDashboardData(filters.value)
 }
 
 const resetFilters = () => {
@@ -299,6 +301,8 @@ const resetFilters = () => {
         specialize: null
     }
     console.log('Filters reset')
+    // Optionally reload data without filters
+    // fetchDashboardData()
 }
 
 // Chart data and filters

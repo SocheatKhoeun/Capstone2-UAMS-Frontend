@@ -208,20 +208,32 @@
               <div class="uas-item-icon-wrapper">
                 <VTooltip v-if="isRail" text="Generations" location="right" offset="8">
                   <template #activator="{ props }">
+<<<<<<< HEAD
                     <VIcon v-bind="props" icon="mdi-calendar-clock" class="uas-item-icon" />
                   </template>
                 </VTooltip>
                 <VIcon v-else icon="mdi-calendar-clock" class="uas-item-icon" />
+=======
+                    <VIcon v-bind="props" icon="mdi-school-outline" class="uas-item-icon" />
+                  </template>
+                </VTooltip>
+                <VIcon v-else icon="mdi-school-outline" class="uas-item-icon" />
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
               </div>
             </template>
             <VListItemTitle v-if="!isRail" class="uas-item-title">Generations</VListItemTitle>
           </VListItem>
 
+<<<<<<< HEAD
           <!-- Specializations -->
+=======
+          <!-- Specialization -->
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
           <VListItem :to="'/admin/specializations'" nav :active="isActivePath('/admin/specializations')"
             :class="['uas-item', isActivePath('/admin/specializations') && 'uas-item--active']" @click="onClickItem">
             <template #prepend>
               <div class="uas-item-icon-wrapper">
+<<<<<<< HEAD
                 <VTooltip v-if="isRail" text="Specializations" location="right" offset="8">
                   <template #activator="{ props }">
                     <VIcon v-bind="props" icon="mdi-certificate-outline" class="uas-item-icon" />
@@ -231,6 +243,49 @@
               </div>
             </template>
             <VListItemTitle v-if="!isRail" class="uas-item-title">Specializations</VListItemTitle>
+=======
+                <VTooltip v-if="isRail" text="Specialization" location="right" offset="8">
+                  <template #activator="{ props }">
+                    <VIcon v-bind="props" icon="mdi-star-settings" class="uas-item-icon" />
+                  </template>
+                </VTooltip>
+                <VIcon v-else icon="mdi-star-settings" class="uas-item-icon" />
+              </div>
+            </template>
+            <VListItemTitle v-if="!isRail" class="uas-item-title">Specialization</VListItemTitle>
+          </VListItem>
+
+          <!-- Terms -->
+          <VListItem :to="'/admin/terms'" nav :active="isActivePath('/admin/terms')"
+            :class="['uas-item', isActivePath('/admin/terms') && 'uas-item--active']" @click="onClickItem">
+            <template #prepend>
+              <div class="uas-item-icon-wrapper">
+                <VTooltip v-if="isRail" text="Terms" location="right" offset="8">
+                  <template #activator="{ props }">
+                    <VIcon v-bind="props" icon="mdi-calendar-text" class="uas-item-icon" />
+                  </template>
+                </VTooltip>
+                <VIcon v-else icon="mdi-calendar-text" class="uas-item-icon" />
+              </div>
+            </template>
+            <VListItemTitle v-if="!isRail" class="uas-item-title">Terms</VListItemTitle>
+          </VListItem>
+
+          <!-- Subject -->
+          <VListItem :to="'/admin/subjects'" nav :active="isActivePath('/admin/subjects')"
+            :class="['uas-item', isActivePath('/admin/subjects') && 'uas-item--active']" @click="onClickItem">
+            <template #prepend>
+              <div class="uas-item-icon-wrapper">
+                <VTooltip v-if="isRail" text="Subjects" location="right" offset="8">
+                  <template #activator="{ props }">
+                    <VIcon v-bind="props" icon="mdi-book-open-variant" class="uas-item-icon" />
+                  </template>
+                </VTooltip>
+                <VIcon v-else icon="mdi-book-open-variant" class="uas-item-icon" />
+              </div>
+            </template>
+            <VListItemTitle v-if="!isRail" class="uas-item-title">Subjects</VListItemTitle>
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
           </VListItem>
 
           <!-- Operations Section -->
@@ -239,8 +294,8 @@
           </div>
 
           <!-- Leave Requests -->
-          <VListItem :to="'/admin/request_leave'" nav :active="isActivePath('/admin/request_leave')"
-            :class="['uas-item', isActivePath('/admin/request_leave') && 'uas-item--active']" @click="onClickItem">
+          <VListItem :to="'/admin/request-leave'" nav :active="isActivePath('/admin/request-leave')"
+            :class="['uas-item', isActivePath('/admin/request-leave') && 'uas-item--active']" @click="onClickItem">
             <template #prepend>
               <div class="uas-item-icon-wrapper">
                 <VTooltip v-if="isRail" text="Leave Requests" location="right" offset="8">
@@ -368,6 +423,89 @@
             </template>
             <VListItemTitle v-if="!isRail" class="uas-item-title">Attendance</VListItemTitle>
           </VListItem> -->
+        </template>
+
+        <!-- Student Navigation -->
+        <template v-else-if="props.role === 'student'">
+          <!-- Dashboard -->
+          <VListItem :to="'/student/dashboard'" nav :active="isActivePath('/student/dashboard')"
+            :class="['uas-item', isActivePath('/student/dashboard') && 'uas-item--active']" @click="onClickItem">
+            <template #prepend>
+              <div class="uas-item-icon-wrapper">
+                <VTooltip v-if="isRail" text="Dashboard" location="right" offset="8">
+                  <template #activator="{ props }">
+                    <VIcon v-bind="props" icon="mdi-view-dashboard" class="uas-item-icon" />
+                  </template>
+                </VTooltip>
+                <VIcon v-else icon="mdi-view-dashboard" class="uas-item-icon" />
+              </div>
+            </template>
+            <VListItemTitle v-if="!isRail" class="uas-item-title">Dashboard</VListItemTitle>
+          </VListItem>
+
+          <!-- Schedule -->
+          <VListItem :to="'/student/schedules'" nav :active="isActivePath('/student/schedules')"
+            :class="['uas-item', isActivePath('/student/schedules') && 'uas-item--active']" @click="onClickItem">
+            <template #prepend>
+              <div class="uas-item-icon-wrapper">
+                <VTooltip v-if="isRail" text="Schedule" location="right" offset="8">
+                  <template #activator="{ props }">
+                    <VIcon v-bind="props" icon="mdi-calendar" class="uas-item-icon" />
+                  </template>
+                </VTooltip>
+                <VIcon v-else icon="mdi-calendar" class="uas-item-icon" />
+              </div>
+            </template>
+            <VListItemTitle v-if="!isRail" class="uas-item-title">Schedule</VListItemTitle>
+          </VListItem>
+
+          <!-- History -->
+          <VListItem :to="'/student/historys'" nav :active="isActivePath('/student/historys')"
+            :class="['uas-item', isActivePath('/student/historys') && 'uas-item--active']" @click="onClickItem">
+            <template #prepend>
+              <div class="uas-item-icon-wrapper">
+                <VTooltip v-if="isRail" text="History" location="right" offset="8">
+                  <template #activator="{ props }">
+                    <VIcon v-bind="props" icon="mdi-history" class="uas-item-icon" />
+                  </template>
+                </VTooltip>
+                <VIcon v-else icon="mdi-history" class="uas-item-icon" />
+              </div>
+            </template>
+            <VListItemTitle v-if="!isRail" class="uas-item-title">History</VListItemTitle>
+          </VListItem>
+
+          <!-- Attendance -->
+          <VListItem :to="'/student/attendance'" nav :active="isActivePath('/student/attendance')"
+            :class="['uas-item', isActivePath('/student/attendance') && 'uas-item--active']" @click="onClickItem">
+            <template #prepend>
+              <div class="uas-item-icon-wrapper">
+                <VTooltip v-if="isRail" text="Attendance" location="right" offset="8">
+                  <template #activator="{ props }">
+                    <VIcon v-bind="props" icon="mdi-check-circle" class="uas-item-icon" />
+                  </template>
+                </VTooltip>
+                <VIcon v-else icon="mdi-check-circle" class="uas-item-icon" />
+              </div>
+            </template>
+            <VListItemTitle v-if="!isRail" class="uas-item-title">Scan Attendance</VListItemTitle>
+          </VListItem>
+
+          <!-- Leave Request -->
+          <VListItem :to="'/student/request-leaves'" nav :active="isActivePath('/student/request-leaves')"
+            :class="['uas-item', isActivePath('/student/request-leaves') && 'uas-item--active']" @click="onClickItem">
+            <template #prepend>
+              <div class="uas-item-icon-wrapper">
+                <VTooltip v-if="isRail" text="Leave Request" location="right" offset="8">
+                  <template #activator="{ props }">
+                    <VIcon v-bind="props" icon="mdi-calendar-remove" class="uas-item-icon" />
+                  </template>
+                </VTooltip>
+                <VIcon v-else icon="mdi-calendar-remove" class="uas-item-icon" />
+              </div>
+            </template>
+            <VListItemTitle v-if="!isRail" class="uas-item-title">Leave Request</VListItemTitle>
+          </VListItem>
         </template>
       </VList>
     </div>

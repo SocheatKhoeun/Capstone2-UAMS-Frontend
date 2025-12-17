@@ -4,11 +4,38 @@ import Cookies from 'js-cookie'; // Added import for js-cookie
 import axios from 'axios';
 export const userAuth = defineStore('userAuth', {
     state: () => ({
-        token: Cookies.get('token') || null, // Replaced getCookie with Cookies.get
+        token: Cookies.get('token') || null,
         user: null, 
         isLoggedIn: !!Cookies.get('token'),
+        tokenInitialized: false // Add initialization flag
     }),
     actions: {
+        // Initialize store and restore session
+        async init() {
+            if (this.tokenInitialized) return;
+            
+            const token = this.getToken();
+            const storedUser = localStorage.getItem('user');
+            
+            if (token) {
+                this.token = token;
+                this.isLoggedIn = true;
+                this.tokenInitialized = true;
+                if (storedUser) {
+                    try {
+                        this.user = JSON.parse(storedUser);
+                    } catch (e) {
+                        console.error('Failed to parse stored user:', e);
+                    }
+                }
+            }
+            
+            // Optionally refresh token on initialization
+            if (this.token) {
+                await this.checkTokenExpired();
+            }
+        },
+
         setUser(user) {
             this.user = user;
             try { localStorage.setItem('user', JSON.stringify(user)); } catch {}

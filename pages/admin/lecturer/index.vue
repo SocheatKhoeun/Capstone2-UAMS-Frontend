@@ -334,10 +334,7 @@
               <v-col cols="6">
                 <div class="form-group">
                   <label class="form-label">Department</label>
-                  <v-select v-model="formData.department_id"
-                    :items="departments"
-                    item-title="name"
-                    item-value="id"
+                  <v-select v-model="formData.department_id" :items="departments" item-title="name" item-value="id"
                     variant="outlined" density="comfortable" class="form-field" clearable />
                 </div>
               </v-col>
@@ -347,11 +344,8 @@
               <v-col cols="12">
                 <div class="form-group">
                   <label class="form-label">Specialization</label>
-                  <v-select v-model="formData.specialization_id"
-                    :items="specializations"
-                    item-title="name"
-                    item-value="id"
-                    variant="outlined" density="comfortable" class="form-field" clearable />
+                  <v-select v-model="formData.specialization_id" :items="specializations" item-title="name"
+                    item-value="id" variant="outlined" density="comfortable" class="form-field" clearable />
                 </div>
               </v-col>
             </v-row>

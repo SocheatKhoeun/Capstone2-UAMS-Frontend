@@ -12,12 +12,7 @@
               <h1 class="page-title">Department Management</h1>
               <div class="breadcrumb">
                 <span class="breadcrumb-item">Admin</span>
-                <v-icon
-                  icon="mdi-chevron-right"
-                  size="16"
-                  color="grey"
-                  class="breadcrumb-separator"
-                />
+                <v-icon icon="mdi-chevron-right" size="16" color="grey" class="breadcrumb-separator" />
                 <span class="breadcrumb-item active">Departments</span>
               </div>
             </div>
@@ -29,27 +24,31 @@
             </div>
             <div class="stat-card">
               <div class="stat-number">
-                {{ departments.filter((d) => d.active).length }}
+                {{departments.filter((d) => d.active).length}}
               </div>
               <div class="stat-label">Active</div>
             </div>
             <div class="stat-card">
               <div class="stat-number">
-                {{ departments.filter((d) => !d.active).length }}
+                {{departments.filter((d) => !d.active).length}}
               </div>
               <div class="stat-label">Inactive</div>
             </div>
           </div>
         </div>
         <div class="action-section">
-          <v-btn
-            class="modern-btn add-btn"
-            prepend-icon="mdi-plus"
-            variant="flat"
-            color="primary"
-            @click="openCreateDialog"
-            elevation="2"
-          >
+          <!-- Export Button Component -->
+          <ExportButtons :data="filteredDepartments" :columns="exportColumns" filename="Departments_Export"
+            @export-start="handleExportStart" @export-complete="handleExportComplete"
+            @export-error="handleExportError" />
+
+          <!-- Import Button Component -->
+          <ImportCsv :columns="importColumns" :validate-row="validateImportRow" :transform-row="transformImportRow"
+            @import-start="handleImportStart" @import-complete="handleImportComplete"
+            @import-error="handleImportError" />
+
+          <v-btn class="modern-btn add-btn" prepend-icon="mdi-plus" variant="flat" color="primary"
+            @click="openCreateDialog" elevation="2">
             Add Department
           </v-btn>
         </div>
@@ -70,32 +69,14 @@
           </div>
           <div class="toolbar-right">
             <div class="search-container">
-              <v-text-field
-                v-model="searchQuery"
-                placeholder="Search departments..."
-                prepend-inner-icon="mdi-magnify"
-                variant="outlined"
-                density="compact"
-                hide-details
-                class="search-input"
-                clearable
-              />
+              <v-text-field v-model="searchQuery" placeholder="Search departments..." prepend-inner-icon="mdi-magnify"
+                variant="outlined" density="compact" hide-details class="search-input" clearable />
             </div>
 
             <!-- REPLACED: simple filter button -> v-menu dropdown -->
-            <v-menu
-              v-model="showFilters"
-              offset-y
-              transition="scale-transition"
-              max-width="320"
-            >
+            <v-menu v-model="showFilters" offset-y transition="scale-transition" max-width="320">
               <template #activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  variant="outlined"
-                  class="filter-btn"
-                  aria-label="Open filters"
-                >
+                <v-btn v-bind="props" variant="outlined" class="filter-btn" aria-label="Open filters">
                   <v-icon icon="mdi-filter-variant" />
                 </v-btn>
               </template>
@@ -105,18 +86,10 @@
                   <div class="filters-content" style="min-width:220px;">
                     <div class="filter-group">
                       <label class="filter-label">Status</label>
-                      <v-chip-group
-                        v-model="statusFilter"
-                        selected-class="text-primary"
-                        column
-                      >
+                      <v-chip-group v-model="statusFilter" selected-class="text-primary" column>
                         <v-chip value="All" variant="outlined">All</v-chip>
-                        <v-chip value="1" variant="outlined" color="success"
-                          >Active</v-chip
-                        >
-                        <v-chip value="0" variant="outlined" color="error"
-                          >Inactive</v-chip
-                        >
+                        <v-chip value="1" variant="outlined" color="success">Active</v-chip>
+                        <v-chip value="0" variant="outlined" color="error">Inactive</v-chip>
                       </v-chip-group>
                     </div>
                   </div>
@@ -152,11 +125,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="department in paginatedDepartments"
-                :key="department.id"
-                class="modern-table-row"
-              >
+              <tr v-for="department in paginatedDepartments" :key="department.id" class="modern-table-row">
                 <!-- Only show numeric DB ID -->
                 <td class="modern-table-cell text-center id-column">
                   <span class="id-badge">{{ department.id }}</span>
@@ -166,9 +135,7 @@
                 <td class="modern-table-cell">
                   <div class="department-info">
                     <span class="department-avatar">
-                      <v-icon size="22" color="#1d4ed8"
-                        >mdi-account-group</v-icon
-                      >
+                      <v-icon size="22" color="#1d4ed8">mdi-account-group</v-icon>
                     </span>
                     <div class="department-details">
                       <div class="department-name">{{ department.name }}</div>
@@ -177,11 +144,7 @@
                 </td>
 
                 <td class="modern-table-cell text-center">
-                  <v-chip
-                    :color="department.active ? 'success' : 'error'"
-                    class="status-chip"
-                    size="small"
-                  >
+                  <v-chip :color="department.active ? 'success' : 'error'" class="status-chip" size="small">
                     <v-icon start size="16">mdi-check-circle</v-icon>
                     {{ department.active ? "Active" : "Inactive" }}
                   </v-chip>
@@ -212,20 +175,10 @@
 
                 <td class="modern-table-cell text-center">
                   <div class="action-group">
-                    <v-btn
-                      icon
-                      size="small"
-                      class="action-btn"
-                      @click="openEditDialog(department)"
-                    >
+                    <v-btn icon size="small" class="action-btn" @click="openEditDialog(department)">
                       <v-icon color="#fde047">mdi-pencil</v-icon>
                     </v-btn>
-                    <v-btn
-                      icon
-                      size="small"
-                      class="action-btn"
-                      @click="confirmDelete(department)"
-                    >
+                    <v-btn icon size="small" class="action-btn" @click="confirmDelete(department)">
                       <v-icon color="#dc2626">mdi-delete</v-icon>
                     </v-btn>
                   </div>
@@ -236,11 +189,7 @@
 
           <!-- Empty State -->
           <div v-if="filteredDepartments.length === 0" class="empty-state">
-            <v-icon
-              icon="mdi-account-group-outline"
-              size="64"
-              color="grey-lighten-1"
-            />
+            <v-icon icon="mdi-account-group-outline" size="64" color="grey-lighten-1" />
             <h3 class="empty-title">No departments found</h3>
             <p class="empty-subtitle">
               {{
@@ -249,13 +198,7 @@
                   : "Create your first department to get started"
               }}
             </p>
-            <v-btn
-              v-if="!searchQuery"
-              color="primary"
-              variant="flat"
-              @click="openCreateDialog"
-              class="mt-4"
-            >
+            <v-btn v-if="!searchQuery" color="primary" variant="flat" @click="openCreateDialog" class="mt-4">
               <v-icon start icon="mdi-plus" />
               Add First Department
             </v-btn>
@@ -263,25 +206,14 @@
 
           <!-- Pagination -->
           <div v-if="filteredDepartments.length > 0" class="pagination-section">
-            <v-btn
-              variant="outlined"
-              :disabled="currentPage === 1"
-              @click="goToPrevPage"
-              class="pagination-btn"
-            >
+            <v-btn variant="outlined" :disabled="currentPage === 1" @click="goToPrevPage" class="pagination-btn">
               Previous
             </v-btn>
             <div class="pagination-info">
-              <span class="pagination-text"
-                >Page {{ currentPage }} of {{ totalPages }}</span
-              >
+              <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
             </div>
-            <v-btn
-              variant="outlined"
-              :disabled="currentPage >= totalPages"
-              @click="goToNextPage"
-              class="pagination-btn"
-            >
+            <v-btn variant="outlined" :disabled="currentPage >= totalPages" @click="goToNextPage"
+              class="pagination-btn">
               Next
             </v-btn>
           </div>
@@ -295,11 +227,8 @@
         <div class="dialog-header">
           <div class="header-content">
             <div class="header-icon">
-              <v-icon
-                :icon="isEdit ? 'mdi-pencil-circle' : 'mdi-plus-circle'"
-                :color="isEdit ? '#fde047' : 'primary'"
-                size="28"
-              />
+              <v-icon :icon="isEdit ? 'mdi-pencil-circle' : 'mdi-plus-circle'" :color="isEdit ? '#fde047' : 'primary'"
+                size="28" />
             </div>
             <div class="header-text">
               <h2 class="dialog-title">
@@ -314,32 +243,16 @@
               </p>
             </div>
           </div>
-          <v-btn
-            icon="mdi-close"
-            variant="text"
-            size="small"
-            @click="closeDialog"
-            class="close-btn"
-          />
+          <v-btn icon="mdi-close" variant="text" size="small" @click="closeDialog" class="close-btn" />
         </div>
         <v-divider />
         <v-card-text class="dialog-content">
-          <v-form
-            ref="formRef"
-            v-model="formValid"
-            @submit.prevent="submitForm"
-          >
+          <v-form ref="formRef" v-model="formValid" @submit.prevent="submitForm">
             <div class="form-group">
               <label class="form-label">Department Name</label>
-              <v-text-field
-                v-model="formData.name"
-                placeholder="Enter department name"
-                variant="outlined"
-                density="comfortable"
-                prepend-inner-icon="mdi-account-group"
-                :rules="departmentNameRules"
-                hide-details="auto"
-              />
+              <v-text-field v-model="formData.name" placeholder="Enter department name" variant="outlined"
+                density="comfortable" prepend-inner-icon="mdi-account-group" :rules="departmentNameRules"
+                hide-details="auto" />
             </div>
             <div class="form-group">
               <div class="switch-container">
@@ -353,28 +266,16 @@
                     }}
                   </p>
                 </div>
-                <v-switch
-                  v-model="formData.active"
-                  color="success"
-                  inset
-                  hide-details
-                />
+                <v-switch v-model="formData.active" color="success" inset hide-details />
               </div>
             </div>
           </v-form>
         </v-card-text>
         <v-divider />
         <v-card-actions class="dialog-actions">
-          <v-btn variant="outlined" color="grey-darken-1" @click="closeDialog"
-            >Cancel</v-btn
-          >
-          <v-btn
-            :color="isEdit ? 'warning' : 'primary'"
-            variant="flat"
-            @click="submitForm"
-            :disabled="!formValid"
-            :loading="formLoading"
-          >
+          <v-btn variant="outlined" color="grey-darken-1" @click="closeDialog">Cancel</v-btn>
+          <v-btn :color="isEdit ? 'warning' : 'primary'" variant="flat" @click="submitForm" :disabled="!formValid"
+            :loading="formLoading">
             {{ isEdit ? "Update Department" : "Create Department" }}
           </v-btn>
         </v-card-actions>
@@ -394,11 +295,7 @@
         <v-divider />
         <v-card-text class="delete-content">
           <div class="warning-box">
-            <v-icon
-              icon="mdi-alert-circle"
-              color="warning"
-              class="warning-icon"
-            />
+            <v-icon icon="mdi-alert-circle" color="warning" class="warning-icon" />
             <p class="warning-message">
               You are about to permanently delete
               <strong class="department-name">{{
@@ -410,12 +307,7 @@
         <v-divider />
         <v-card-actions class="delete-actions">
           <v-btn variant="outlined" @click="deleteDialog = false">Cancel</v-btn>
-          <v-btn
-            color="error"
-            variant="flat"
-            @click="handleDelete"
-            :loading="deleteLoading"
-          >
+          <v-btn color="error" variant="flat" @click="handleDelete" :loading="deleteLoading">
             Delete Department
           </v-btn>
         </v-card-actions>
@@ -423,6 +315,7 @@
     </v-dialog>
   </div>
 </template>
+
 <script setup>
 definePageMeta({
   layout: "admin",
@@ -431,6 +324,8 @@ definePageMeta({
 
 import { ref, computed, watch, onMounted, reactive } from "vue";
 import { useAdminDepartments } from "~/store/adminDepartments";
+import ExportButtons from '~/components/ui/ExportButtons.vue'
+import ImportCsv from '~/components/ui/ImportCsv.vue'
 
 const adminDepartmentsStore = useAdminDepartments();
 
@@ -455,6 +350,123 @@ const formData = reactive({
   active: true,
 });
 
+// Export/Import Configuration
+const exportColumns = [
+  { key: 'global_id', header: 'Global ID', width: 15 },
+  { key: 'name', header: 'Department Name', width: 35 },
+  { key: 'active', header: 'Status', width: 12, format: 'status' },
+  { key: 'created_at', header: 'Created At', width: 20, format: 'datetime' },
+  { key: 'updated_at', header: 'Updated At', width: 20, format: 'datetime' }
+]
+
+const importColumns = [
+  { key: 'global_id', header: 'Global ID' },
+  { key: 'name', header: 'Department Name' },
+  { key: 'active', header: 'Status', format: 'status' }
+]
+
+// Export Handlers
+const handleExportStart = (type) => {
+  console.log(`Starting ${type} export...`)
+}
+
+const handleExportComplete = (type) => {
+  console.log(`Successfully exported to ${type.toUpperCase()}!`)
+  // You can add a toast notification here
+}
+
+const handleExportError = ({ type, error }) => {
+  console.error(`Export error (${type}):`, error)
+  alert(`Failed to export to ${type.toUpperCase()}`)
+}
+
+// Import Handlers
+const handleImportStart = () => {
+  console.log('Starting CSV import...')
+}
+
+const handleImportComplete = async (rows) => {
+  console.log('Importing rows:', rows)
+
+  let successCount = 0
+  let errorCount = 0
+
+  for (const row of rows) {
+    try {
+      await adminDepartmentsStore.createDepartment({
+        global_id: row.global_id,
+        name: row.name,
+        active: row.active
+      })
+      successCount++
+    } catch (error) {
+      console.error('Failed to import row:', row, error)
+      errorCount++
+    }
+  }
+
+  // Refresh the departments list
+  await adminDepartmentsStore.fetchDepartments()
+
+  if (successCount > 0) {
+    alert(
+      `Successfully imported ${successCount} department(s)${errorCount > 0 ? `, ${errorCount} failed` : ''}!`
+    )
+  } else {
+    alert('Failed to import departments')
+  }
+}
+
+const handleImportError = ({ error }) => {
+  console.error('Import error:', error)
+  alert('Failed to import CSV file')
+}
+
+// Validate imported row
+const validateImportRow = (row, rowNumber) => {
+  // Validate Global ID format
+  if (!row.global_id || !/^DEPT-\d{3}$/.test(row.global_id)) {
+    return {
+      valid: false,
+      error: 'Invalid Global ID format (must be DEPT-001)'
+    }
+  }
+
+  // Check if Global ID already exists
+  if (departments.value.some(d => d.global_id === row.global_id)) {
+    return {
+      valid: false,
+      error: `Global ID ${row.global_id} already exists`
+    }
+  }
+
+  // Validate Department Name
+  if (!row.name || row.name.length < 2) {
+    return {
+      valid: false,
+      error: 'Department name must be at least 2 characters'
+    }
+  }
+
+  if (row.name.length > 100) {
+    return {
+      valid: false,
+      error: 'Department name must not exceed 100 characters'
+    }
+  }
+
+  return { valid: true }
+}
+
+// Transform imported row before validation
+const transformImportRow = (row) => {
+  return {
+    ...row,
+    // Ensure active is 0 or 1
+    active: row.active === 1 || row.active === '1' ? 1 : 0
+  }
+}
+
 onMounted(() => {
   adminDepartmentsStore.fetchDepartments().catch(() => {
   });
@@ -473,8 +485,12 @@ const filteredDepartments = computed(() => {
     const q = searchQuery.value.toLowerCase();
     filtered = filtered.filter(
       (d) =>
-        String(d.name || "").toLowerCase().includes(q) ||
-        String(d.global_id || "").toLowerCase().includes(q)
+        String(d.name || "")
+          .toLowerCase()
+          .includes(q) ||
+        String(d.global_id || "")
+          .toLowerCase()
+          .includes(q)
     );
   }
 
@@ -514,6 +530,7 @@ const formatDate = (dateStr) => {
     return dateStr;
   }
 };
+
 const formatTime = (dateStr) => {
   if (!dateStr) return "";
   try {
@@ -532,13 +549,13 @@ const openCreateDialog = () => {
   dialogOpen.value = true;
 };
 
-const openEditDialog = (dept) => {
-  selectedDepartment.value = dept;
+const openEditDialog = (department) => {
+  selectedDepartment.value = department;
   isEdit.value = true;
   Object.assign(formData, {
-    global_id: dept.global_id || "",
-    name: dept.name || "",
-    active: !!dept.active,
+    global_id: department.global_id || "",
+    name: department.name || "",
+    active: !!department.active,
   });
   dialogOpen.value = true;
 };
@@ -553,22 +570,16 @@ const submitForm = async () => {
   formLoading.value = true;
   try {
     if (isEdit.value && selectedDepartment.value) {
-      const identifier = selectedDepartment.value.global_id
-        ? String(selectedDepartment.value.global_id)
-        : String(selectedDepartment.value.id);
-      await adminDepartmentsStore.updateDepartment(identifier, {
-        global_id: formData.global_id,
+      await adminDepartmentsStore.updateDepartment(selectedDepartment.value.global_id, {
         name: formData.name,
         active: formData.active ? 1 : 0,
       });
     } else {
       await adminDepartmentsStore.createDepartment({
-        global_id: formData.global_id,
         name: formData.name,
         active: formData.active ? 1 : 0,
       });
     }
-    await adminDepartmentsStore.fetchDepartments();
     closeDialog();
   } catch (e) {
     console.error("Department save error", e);
@@ -577,8 +588,8 @@ const submitForm = async () => {
   }
 };
 
-const confirmDelete = (dept) => {
-  selectedDepartment.value = dept;
+const confirmDelete = (department) => {
+  selectedDepartment.value = department;
   deleteDialog.value = true;
 };
 
@@ -586,12 +597,9 @@ const handleDelete = async () => {
   if (!selectedDepartment.value) return;
   deleteLoading.value = true;
   try {
-    const identifier = selectedDepartment.value.global_id
-      ? String(selectedDepartment.value.global_id)
-      : String(selectedDepartment.value.id);
-    await adminDepartmentsStore.deleteDepartment(identifier);
-    await adminDepartmentsStore.fetchDepartments();
+    await adminDepartmentsStore.deleteDepartment(selectedDepartment.value.global_id);
     deleteDialog.value = false;
+    selectedDepartment.value = null;
   } catch (e) {
     console.error("Delete department error", e);
   } finally {
@@ -599,18 +607,11 @@ const handleDelete = async () => {
   }
 };
 
-const handleImportCSV = () => alert("Import CSV feature ready (connect your composable)");
-const handleExportExcel = () => alert("Export to Excel ready");
-const handleExportPDF = () => alert("Export to PDF ready");
-
 const goToPrevPage = () => currentPage.value > 1 && currentPage.value--;
 const goToNextPage = () =>
   currentPage.value < totalPages.value && currentPage.value++;
 
-watch(
-  [searchQuery, statusFilter, tableSortOrder],
-  () => (currentPage.value = 1)
-);
+watch([searchQuery, statusFilter], () => (currentPage.value = 1));
 </script>
 
 <style scoped>
@@ -1269,6 +1270,7 @@ watch(
   padding: 20px 24px 24px !important;
   gap: 12px;
 }
+
 modern-action-btn .action-btn {
   height: 44px;
   border-radius: 12px;

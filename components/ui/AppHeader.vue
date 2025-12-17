@@ -21,9 +21,9 @@
         <template #activator="{ props }">
           <VBtn v-bind="props" class="user-btn header-icon">
             <VAvatar color="primary" size="32" class="avatar-circle">
-              <span class="text-white">A</span>
+              <span class="text-white">{{ userInitial }}</span>
             </VAvatar>
-            <span class="username">admin</span>
+            <span class="username">{{ userName }}</span>
             <VIcon icon="mdi-chevron-down" size="16" />
           </VBtn>
         </template>
@@ -31,11 +31,11 @@
         <VCard class="user-dropdown" elevation="8">
           <div class="user-info-header">
             <VAvatar color="primary" size="48" class="user-avatar">
-              <span class="text-white avatar-text">A</span>
+              <span class="text-white avatar-text">{{ userInitial }}</span>
             </VAvatar>
             <div class="user-details">
-              <div class="user-name">admin</div>
-              <div class="user-email">admin@gmail.com</div>
+              <div class="user-name">{{ userName }}</div>
+              <div class="user-email">{{ userEmail }}</div>
             </div>
           </div>
           <VDivider />
@@ -64,26 +64,70 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-import { adminAuth } from '~/store/adminAuth'; // <-- imported store
+import { computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { adminAuth } from '~/store/adminAuth'
+import { userAuth } from '~/store/userAuth'
 
-defineEmits(['toggle-drawer']);
+defineEmits(['toggle-drawer'])
 
-const router = useRouter();
-const authStore = adminAuth(); // <-- create store instance
+const router = useRouter()
+const adminStore = adminAuth()
+const studentStore = userAuth()
+
+// Computed properties for user info
+const currentUser = computed(() => {
+  const admin = adminStore.getAdmin?.() || adminStore.admin
+  const student = studentStore.getUser?.() || studentStore.user
+  return admin || student || null
+})
+
+const userName = computed(() => {
+  if (!currentUser.value) return 'User'
+  const user = currentUser.value as any
+  const first = user.first_name || user.firstName || ''
+  const last = user.last_name || user.lastName || ''
+  const full = `${first} ${last}`.trim()
+  return full || user.email || user.student_code || 'User'
+})
+
+const userEmail = computed(() => {
+  if (!currentUser.value) return 'user@example.com'
+  return (currentUser.value as any)?.email || 'user@example.com'
+})
+
+const userInitial = computed(() => {
+  const name = userName.value
+  return name.charAt(0).toUpperCase()
+})
 
 // Use a wrapper function to ensure reactivity
 const onSignOut = async () => {
   try {
-    // call logout action (clears token/cookies/localStorage)
-    await authStore.logout();
+    // Try both logout methods
+    if (typeof adminStore.logout === 'function') {
+      await adminStore.logout()
+    }
+    if (typeof studentStore.logout === 'function') {
+      await studentStore.logout()
+    }
   } catch (err) {
-    console.error('Sign out error:', err);
+    console.error('Sign out error:', err)
   } finally {
     // navigate to login page
-    router.push('/auth/login');
+    router.push('/auth/login')
   }
-};
+}
+
+// Initialize user data on mount
+onMounted(() => {
+  if (typeof adminStore.init === 'function') {
+    adminStore.init()
+  }
+  if (typeof studentStore.init === 'function') {
+    studentStore.init()
+  }
+})
 </script>
 
 
