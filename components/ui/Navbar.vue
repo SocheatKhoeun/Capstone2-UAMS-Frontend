@@ -208,20 +208,42 @@
               <div class="uas-item-icon-wrapper">
                 <VTooltip v-if="isRail" text="Generations" location="right" offset="8">
                   <template #activator="{ props }">
+<<<<<<< HEAD
+                    <VIcon v-bind="props" icon="mdi-calendar-clock" class="uas-item-icon" />
+                  </template>
+                </VTooltip>
+                <VIcon v-else icon="mdi-calendar-clock" class="uas-item-icon" />
+=======
                     <VIcon v-bind="props" icon="mdi-school-outline" class="uas-item-icon" />
                   </template>
                 </VTooltip>
                 <VIcon v-else icon="mdi-school-outline" class="uas-item-icon" />
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
               </div>
             </template>
             <VListItemTitle v-if="!isRail" class="uas-item-title">Generations</VListItemTitle>
           </VListItem>
 
+<<<<<<< HEAD
+          <!-- Specializations -->
+=======
           <!-- Specialization -->
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
           <VListItem :to="'/admin/specializations'" nav :active="isActivePath('/admin/specializations')"
             :class="['uas-item', isActivePath('/admin/specializations') && 'uas-item--active']" @click="onClickItem">
             <template #prepend>
               <div class="uas-item-icon-wrapper">
+<<<<<<< HEAD
+                <VTooltip v-if="isRail" text="Specializations" location="right" offset="8">
+                  <template #activator="{ props }">
+                    <VIcon v-bind="props" icon="mdi-certificate-outline" class="uas-item-icon" />
+                  </template>
+                </VTooltip>
+                <VIcon v-else icon="mdi-certificate-outline" class="uas-item-icon" />
+              </div>
+            </template>
+            <VListItemTitle v-if="!isRail" class="uas-item-title">Specializations</VListItemTitle>
+=======
                 <VTooltip v-if="isRail" text="Specialization" location="right" offset="8">
                   <template #activator="{ props }">
                     <VIcon v-bind="props" icon="mdi-star-settings" class="uas-item-icon" />
@@ -263,6 +285,7 @@
               </div>
             </template>
             <VListItemTitle v-if="!isRail" class="uas-item-title">Subjects</VListItemTitle>
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
           </VListItem>
 
           <!-- Operations Section -->

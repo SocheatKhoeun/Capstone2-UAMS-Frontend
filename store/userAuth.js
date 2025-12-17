@@ -78,11 +78,10 @@ export const userAuth = defineStore('userAuth', {
             let response;
             try {
                 if (rawBase) {
-                    let base = String(rawBase).replace(/\/+$/, '');
-                    if (base.endsWith('/auth')) {
-                        base = base.slice(0, base.length - '/auth'.length);
-                    }
-                    const loginUrl = `${base.replace(/\/+$/, '')}/login`;
+                    // Keep the full base URL including /auth
+                    const base = String(rawBase).replace(/\/+$/, '');
+                    const loginUrl = `${base}/login`;
+                    console.log('🔑 Login URL:', loginUrl); // Debug log
                     response = await axios.post(loginUrl, { email, password }, { withCredentials: true });
                 } else if (injected) {
                     response = await injected.post('/login', { email, password });

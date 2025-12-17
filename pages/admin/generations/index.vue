@@ -1,18 +1,30 @@
 <template>
     <div class="generations-page">
+<<<<<<< HEAD
+        <!-- Header -->
+=======
         <!-- Modern Header Section -->
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
         <div class="modern-header">
             <div class="header-container">
                 <div class="title-section">
                     <div class="title-wrapper">
                         <div class="title-icon">
+<<<<<<< HEAD
+                            <v-icon icon="mdi-calendar-clock" size="32" color="white" />
+=======
                             <v-icon icon="mdi-school-outline" size="32" color="white" />
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
                         </div>
                         <div class="title-content">
                             <h1 class="page-title">Generation Management</h1>
                             <div class="breadcrumb">
                                 <span class="breadcrumb-item">Admin</span>
+<<<<<<< HEAD
+                                <v-icon icon="mdi-chevron-right" size="16" color="grey" class="breadcrumb-separator" />
+=======
                                 <v-icon icon="mdi-chevron-right" size="16" class="breadcrumb-separator" />
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
                                 <span class="breadcrumb-item active">Generations</span>
                             </div>
                         </div>
@@ -23,6 +35,16 @@
                             <div class="stat-label">Total Generations</div>
                         </div>
                         <div class="stat-card">
+<<<<<<< HEAD
+                            <div class="stat-number">{{generations.filter(g => g.active).length}}</div>
+                            <div class="stat-label">Active</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-section">
+                    <v-btn class="modern-btn add-btn" prepend-icon="mdi-plus" variant="flat" color="primary"
+                        @click="openCreateDialog" elevation="2">
+=======
                             <div class="stat-number">{{ activeGenerations.length }}</div>
                             <div class="stat-label">Active</div>
                         </div>
@@ -46,12 +68,25 @@
 
                     <!-- Add Generation Button -->
                     <v-btn class="modern-btn add-btn" prepend-icon="mdi-plus" variant="flat" @click="openCreateDialog">
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
                         Add Generation
                     </v-btn>
                 </div>
             </div>
         </div>
 
+<<<<<<< HEAD
+        <!-- Table Section -->
+        <div class="modern-table-section">
+            <div class="table-container">
+                <div class="table-toolbar">
+                    <div class="toolbar-left">
+                        <h2 class="table-title">
+                            <v-icon icon="mdi-table" size="20" class="mr-2" />
+                            Generation Information
+                        </h2>
+                    </div>
+=======
         <!-- Rest of your existing template remains the same... -->
         <!-- Modern Table Section -->
         <div class="modern-table-section">
@@ -66,10 +101,75 @@
                         <div class="table-subtitle">Manage and organize student generations</div>
                     </div>
 
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
                     <div class="toolbar-right">
                         <div class="search-container">
                             <v-text-field v-model="searchQuery" placeholder="Search generations..."
                                 prepend-inner-icon="mdi-magnify" variant="outlined" density="compact" hide-details
+<<<<<<< HEAD
+                                clearable />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <v-table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Start Year</th>
+                            <th>End Year</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="gen in filteredGenerations" :key="gen.id">
+                            <td>{{ gen.id }}</td>
+                            <td>{{ gen.generation }}</td>
+                            <td>{{ gen.start_year || 'N/A' }}</td>
+                            <td>{{ gen.end_year || 'N/A' }}</td>
+                            <td>
+                                <v-chip :color="gen.active ? 'success' : 'error'" size="small">
+                                    {{ gen.active ? 'Active' : 'Inactive' }}
+                                </v-chip>
+                            </td>
+                            <td>
+                                <v-btn icon size="small" @click="openEditDialog(gen)">
+                                    <v-icon color="#fde047">mdi-pencil</v-icon>
+                                </v-btn>
+                                <v-btn icon size="small" @click="deleteGeneration(gen)" class="ml-1">
+                                    <v-icon color="error">mdi-delete</v-icon>
+                                </v-btn>
+                            </td>
+                        </tr>
+                    </tbody>
+                </v-table>
+            </div>
+        </div>
+
+        <!-- Create/Edit Dialog -->
+        <v-dialog v-model="dialogOpen" max-width="500" persistent>
+            <v-card>
+                <v-card-title>{{ isEdit ? 'Edit Generation' : 'Add Generation' }}</v-card-title>
+                <v-card-text>
+                    <v-form ref="formRef" v-model="formValid">
+                        <v-text-field v-model="formData.generation" label="Generation Name *" :rules="nameRules"
+                            variant="outlined" density="comfortable" />
+                        <v-text-field v-model.number="formData.start_year" label="Start Year" type="number"
+                            variant="outlined" density="comfortable" />
+                        <v-text-field v-model.number="formData.end_year" label="End Year" type="number"
+                            variant="outlined" density="comfortable" />
+                        <v-switch v-model="formData.active" label="Active" color="primary" />
+                    </v-form>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer />
+                    <v-btn @click="dialogOpen = false">Cancel</v-btn>
+                    <v-btn color="primary" :disabled="!formValid" :loading="formLoading" @click="submitForm">
+                        {{ isEdit ? 'Update' : 'Create' }}
+=======
                                 class="search-input" clearable />
                         </div>
 
@@ -285,10 +385,13 @@
                 <v-card-actions class="dialog-actions">
                     <v-btn variant="outlined" color="grey-darken-1" @click="viewDialog = false">
                         Close
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
                     </v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
+<<<<<<< HEAD
+=======
 
         <!-- Create/Edit Dialog -->
         <v-dialog v-model="dialogOpen" max-width="600" persistent>
@@ -409,10 +512,78 @@
         <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="3000" location="top right">
             {{ snackbarMessage }}
         </v-snackbar>
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
     </div>
 </template>
 
 <script setup>
+<<<<<<< HEAD
+import Swal from 'sweetalert2'
+
+definePageMeta({
+    layout: 'admin'
+})
+
+const { $AdminPrivateAxios } = useNuxtApp()
+
+const searchQuery = ref('')
+const dialogOpen = ref(false)
+const isEdit = ref(false)
+const formValid = ref(false)
+const formLoading = ref(false)
+const formRef = ref(null)
+const generations = ref([])
+const selectedGeneration = ref(null)
+
+const formData = reactive({
+    generation: '',
+    start_year: null,
+    end_year: null,
+    active: true
+})
+
+const nameRules = [
+    v => !!v || 'Generation name is required',
+    v => v.length >= 2 || 'At least 2 characters'
+]
+
+onMounted(async () => {
+    await fetchGenerations()
+})
+
+const fetchGenerations = async () => {
+    try {
+        const response = await $AdminPrivateAxios.get('/generations/')
+        generations.value = response.data.data || response.data || []
+    } catch (error) {
+        console.error('Error fetching generations:', error)
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to fetch generations' })
+    }
+}
+
+const filteredGenerations = computed(() => {
+    if (!searchQuery.value) return generations.value
+    const q = searchQuery.value.toLowerCase()
+    return generations.value.filter(g => g.generation?.toLowerCase().includes(q))
+})
+
+const openCreateDialog = () => {
+    isEdit.value = false
+    Object.assign(formData, { generation: '', start_year: null, end_year: null, active: true })
+    dialogOpen.value = true
+}
+
+const openEditDialog = (gen) => {
+    isEdit.value = true
+    selectedGeneration.value = gen
+    Object.assign(formData, {
+        generation: gen.generation,
+        start_year: gen.start_year,
+        end_year: gen.end_year,
+        active: gen.active === 1
+    })
+    dialogOpen.value = true
+=======
 import { useGenerationStore } from '~/store/useGenerationStore'
 import { storeToRefs } from 'pinia'
 import ExportButtons from '~/components/ui/ExportButtons.vue'
@@ -723,10 +894,36 @@ const closeDialog = () => {
     if (formRef.value) {
         formRef.value.reset()
     }
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
 }
 
 const submitForm = async () => {
     if (!formValid.value) return
+<<<<<<< HEAD
+    formLoading.value = true
+
+    try {
+        const payload = {
+            generation: formData.generation,
+            start_year: formData.start_year,
+            end_year: formData.end_year,
+            active: formData.active ? 1 : 0
+        }
+
+        if (isEdit.value) {
+            await $AdminPrivateAxios.patch(`/generations/${selectedGeneration.value.global_id}`, payload)
+            Swal.fire({ icon: 'success', title: 'Success', text: 'Generation updated successfully', timer: 2000 })
+        } else {
+            await $AdminPrivateAxios.post('/generations/', payload)
+            Swal.fire({ icon: 'success', title: 'Success', text: 'Generation created successfully', timer: 2000 })
+        }
+
+        await fetchGenerations()
+        dialogOpen.value = false
+    } catch (error) {
+        console.error('Error submitting form:', error)
+        Swal.fire({ icon: 'error', title: 'Error', text: error.response?.data?.message || 'Failed to save generation' })
+=======
 
     formLoading.value = true
 
@@ -754,11 +951,36 @@ const submitForm = async () => {
     } catch (error) {
         console.error('Form submission error:', error)
         showSnackbar(error.response?.data?.message || 'An error occurred. Please try again.', 'error')
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
     } finally {
         formLoading.value = false
     }
 }
 
+<<<<<<< HEAD
+const deleteGeneration = async (gen) => {
+    const result = await Swal.fire({
+        icon: 'warning',
+        title: 'Delete Generation?',
+        text: `Are you sure you want to delete "${gen.generation}"? This action cannot be undone.`,
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it',
+        confirmButtonColor: '#d33',
+        cancelButtonText: 'Cancel'
+    })
+
+    if (result.isConfirmed) {
+        try {
+            await $AdminPrivateAxios.post(`/generations/${gen.global_id}/delete`)
+            Swal.fire({ icon: 'success', title: 'Deleted', text: 'Generation deleted successfully', timer: 2000 })
+            await fetchGenerations()
+        } catch (error) {
+            console.error('Error deleting generation:', error)
+            Swal.fire({ icon: 'error', title: 'Error', text: error.response?.data?.message || 'Failed to delete generation' })
+        }
+    }
+}
+=======
 const handleView = (generation) => {
     selectedGeneration.value = generation
     viewDialog.value = true
@@ -830,10 +1052,28 @@ watch([searchQuery, statusFilter, sortOrder], () => {
 onMounted(() => {
     generationStore.fetchGenerations()
 })
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
 </script>
 
 <style scoped>
 .generations-page {
+<<<<<<< HEAD
+    padding: 20px;
+}
+
+.modern-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    color: white;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+=======
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
     min-height: 100vh;
     padding: 0;
@@ -858,10 +1098,15 @@ onMounted(() => {
 
 .title-section {
     flex: 1;
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
 }
 
 .title-wrapper {
     display: flex;
+<<<<<<< HEAD
+    gap: 16px;
+    align-items: center;
+=======
     align-items: center;
     gap: 16px;
     margin-bottom: 20px;
@@ -880,19 +1125,30 @@ onMounted(() => {
 
 .title-content {
     flex: 1;
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
 }
 
 .page-title {
     font-size: 28px;
+<<<<<<< HEAD
+    font-weight: 600;
+    margin: 0;
+=======
     font-weight: 700;
     color: #1e293b;
     margin: 0 0 4px 0;
     letter-spacing: -0.025em;
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
 }
 
 .breadcrumb {
     display: flex;
     align-items: center;
+<<<<<<< HEAD
+    gap: 8px;
+    margin-top: 8px;
+    opacity: 0.9;
+=======
     gap: 4px;
 }
 
@@ -908,6 +1164,7 @@ onMounted(() => {
 
 .breadcrumb-separator {
     opacity: 0.5;
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
 }
 
 .stats-cards {
@@ -916,6 +1173,30 @@ onMounted(() => {
 }
 
 .stat-card {
+<<<<<<< HEAD
+    background: rgba(255, 255, 255, 0.2);
+    padding: 16px 24px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-top: 4px;
+}
+
+.modern-table-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+=======
     background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
     border: 1px solid #e2e8f0;
     border-radius: 12px;
@@ -1004,11 +1285,16 @@ onMounted(() => {
     border-radius: 16px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     overflow: hidden;
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
 }
 
 .table-toolbar {
     display: flex;
     justify-content: space-between;
+<<<<<<< HEAD
+    align-items: center;
+    margin-bottom: 20px;
+=======
     align-items: flex-start;
     padding: 24px 24px 16px;
     border-bottom: 1px solid #f1f5f9;
@@ -1016,17 +1302,25 @@ onMounted(() => {
 
 .toolbar-left {
     flex: 1;
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
 }
 
 .table-title {
     font-size: 20px;
     font-weight: 600;
+<<<<<<< HEAD
+=======
     color: #1e293b;
     margin: 0 0 4px 0;
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
     display: flex;
     align-items: center;
 }
 
+<<<<<<< HEAD
+.search-container {
+    width: 300px;
+=======
 .table-subtitle {
     font-size: 14px;
     color: #64748b;
@@ -1649,5 +1943,6 @@ onMounted(() => {
         opacity: 1;
         transform: scale(1) translateY(0);
     }
+>>>>>>> b84a0ed0d1bf92b8fcc356ce33140513c8ab5917
 }
 </style>
