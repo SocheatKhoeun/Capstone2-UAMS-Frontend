@@ -1,144 +1,158 @@
 <template>
   <div class="schedules-page">
-    <!-- Header Section -->
+    <!-- Header -->
     <div class="modern-header">
       <div class="header-container">
         <div class="title-section">
           <div class="title-wrapper">
             <div class="title-icon">
-              <v-icon icon="mdi-calendar-clock" size="32" color="white" />
+              <v-icon icon="mdi-calendar-clock" size="28" color="white" />
             </div>
             <div class="title-content">
               <h1 class="page-title">Schedule Management</h1>
               <div class="breadcrumb">
                 <span class="breadcrumb-item">Admin</span>
-                <v-icon icon="mdi-chevron-right" size="16" color="grey" class="breadcrumb-separator" />
+                <v-icon icon="mdi-chevron-right" size="14" class="breadcrumb-separator" />
                 <span class="breadcrumb-item active">Schedules</span>
               </div>
             </div>
           </div>
+
           <div class="stats-cards">
-            <div class="stat-card">
-              <div class="stat-number">{{ schedules.length }}</div>
-              <div class="stat-label">Total Schedules</div>
+            <div class="stat-card stat-card-primary">
+              <div class="stat-icon">
+                <v-icon icon="mdi-calendar-multiple" size="20" color="white" />
+              </div>
+              <div class="stat-content">
+                <div class="stat-number">{{ schedules.length }}</div>
+                <div class="stat-label">Total Schedules</div>
+              </div>
             </div>
-            <div class="stat-card">
-              <div class="stat-number">{{ activeSchedules.length }}</div>
-              <div class="stat-label">Active</div>
+            <div class="stat-card stat-card-success">
+              <div class="stat-icon">
+                <v-icon icon="mdi-check-circle" size="20" color="white" />
+              </div>
+              <div class="stat-content">
+                <div class="stat-number">{{ activeSchedules.length }}</div>
+                <div class="stat-label">Active</div>
+              </div>
             </div>
-            <div class="stat-card">
-              <div class="stat-number">{{ groupsWithSchedule.length }}</div>
-              <div class="stat-label">Groups</div>
+            <div class="stat-card stat-card-info">
+              <div class="stat-icon">
+                <v-icon icon="mdi-account-group" size="20" color="white" />
+              </div>
+              <div class="stat-content">
+                <div class="stat-number">{{ groupsWithSchedule.length }}</div>
+                <div class="stat-label">Groups</div>
+              </div>
             </div>
           </div>
         </div>
 
         <div class="action-section">
-
-          <!-- Export Button Component -->
-          <ExportButtons :data="filteredSchedules" :columns="exportColumns" filename="Schedules_Export"
-            @export-start="handleExportStart" @export-complete="handleExportComplete"
-            @export-error="handleExportError" />
-
-          <!-- Import Button Component -->
-          <ImportCsv :columns="importColumns" :validate-row="validateImportRow" :transform-row="transformImportRow"
-            @import-start="handleImportStart" @import-complete="handleImportComplete"
-            @import-error="handleImportError" />
-
-          <v-btn class="modern-btn add-btn" prepend-icon="mdi-plus" variant="flat" color="primary"
-            @click="openCreateDialog" elevation="2">
+          <v-btn class="action-btn primary-btn" prepend-icon="mdi-plus" variant="flat" @click="openCreateDialog">
             Create Schedule
           </v-btn>
         </div>
       </div>
     </div>
 
-    <!-- Schedule Cards Grid -->
-    <div class="modern-table-section">
-      <div class="table-container">
-        <!-- Table Header with Search and Filters -->
-        <div class="table-toolbar">
-          <div class="toolbar-left">
-            <h2 class="table-title">
-              <v-icon icon="mdi-calendar-clock" size="20" class="mr-2" />
-              Schedule Information
-            </h2>
-            <div class="table-subtitle">Manage and organize your schedules</div>
-          </div>
-
-          <div class="toolbar-right">
-            <div class="search-container">
-              <v-text-field v-model="searchQuery" placeholder="Search schedules..." prepend-inner-icon="mdi-magnify"
-                variant="outlined" density="compact" hide-details class="search-input" clearable />
+    <!-- Content -->
+    <div class="content-wrapper">
+      <div class="content-container">
+        <!-- Toolbar -->
+        <div class="toolbar-section">
+          <div class="toolbar-header">
+            <div class="toolbar-title">
+              <v-icon icon="mdi-filter-variant" size="18" class="mr-2" color="primary" />
+              <span>Filter & Search</span>
             </div>
-
-            <v-select v-model="generationFilter" :items="generationOptions" label="Generation" variant="outlined"
-              density="compact" hide-details class="filter-select" />
-
-            <v-select v-model="yearFilter" :items="yearOptions" label="Year" variant="outlined" density="compact"
-              hide-details class="filter-select" />
-
-            <v-select v-model="statusFilter" :items="statusOptions" label="Status" variant="outlined" density="compact"
-              hide-details class="filter-select" />
+            <v-chip v-if="filteredSchedules.length !== schedules.length" size="small" color="primary" variant="tonal">
+              {{ filteredSchedules.length }} of {{ schedules.length }}
+            </v-chip>
+          </div>
+          <div class="toolbar-controls">
+            <div class="filters-row">
+              <v-select
+                v-model="statusFilter"
+                :items="statusOptions"
+                label="Status"
+                variant="solo"
+                density="comfortable"
+                hide-details
+                flat
+                class="filter-field"
+              />
+              <div class="search-wrapper">
+                <v-text-field
+                  v-model="searchQuery"
+                  placeholder="Search schedules..."
+                  prepend-inner-icon="mdi-magnify"
+                  variant="solo"
+                  density="comfortable"
+                  hide-details
+                  flat
+                  class="search-field"
+                  clearable
+                />
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Schedule Cards -->
-        <div class="cards-content">
-          <!-- Loading State -->
-          <div v-if="loading" class="loading-state">
-            <v-progress-circular indeterminate color="primary" size="64" />
-            <p class="mt-4 text-grey">Loading schedules...</p>
+        <!-- Cards -->
+        <div class="cards-section">
+          <!-- Loading -->
+          <div v-if="loading" class="state-container">
+            <div class="loading-content">
+              <v-progress-circular indeterminate color="primary" size="56" width="4" />
+              <p class="state-text">Loading schedules...</p>
+            </div>
           </div>
 
-          <!-- Empty State -->
-          <div v-else-if="filteredSchedules.length === 0" class="empty-state">
-            <v-icon icon="mdi-calendar-clock" size="64" color="grey-lighten-1" class="mb-4" />
-            <h3 class="text-h6 text-grey-darken-1 mb-2">No schedules found</h3>
-            <p class="text-body-2 text-grey">
-              {{ searchQuery ? 'Try adjusting your search terms' : 'Create your first schedule to get started' }}
-            </p>
-            <v-btn v-if="!searchQuery" color="primary" variant="flat" @click="openCreateDialog" class="mt-4">
-              <v-icon start>mdi-plus</v-icon>
-              Create Schedule
-            </v-btn>
+          <!-- Empty -->
+          <div v-else-if="filteredSchedules.length === 0" class="state-container">
+            <div class="empty-content">
+              <div class="empty-icon">
+                <v-icon icon="mdi-calendar-remove" size="72" color="grey-lighten-2" />
+              </div>
+              <h3 class="empty-title">No schedules found</h3>
+              <p class="empty-text">
+                {{ searchQuery ? "Try adjusting your search or filters" : "Create your first schedule to get started" }}
+              </p>
+              <v-btn v-if="!searchQuery" color="primary" variant="flat" size="large" @click="openCreateDialog" class="mt-6">
+                <v-icon start>mdi-plus</v-icon>
+                Create Schedule
+              </v-btn>
+            </div>
           </div>
 
-          <!-- Cards Grid -->
+          <!-- Schedules Grid -->
           <div v-else class="cards-grid">
-            <v-card v-for="schedule in paginatedSchedules" :key="schedule.id" class="schedule-card" elevation="2"
-              @click="viewSchedule(schedule)">
+            <v-card
+              v-for="schedule in paginatedSchedules"
+              :key="schedule.id"
+              class="schedule-card"
+              @click="openDetailDialog(schedule)"
+            >
               <div class="card-header">
-                <div class="group-info">
-                  <h3 class="group-name">{{ getGroupName(schedule.group_id) }}</h3>
-                  <div class="group-details">
-                    <span class="group-id">{{ getSubjectName(schedule.subject_id) }}</span>
-                    <v-chip :color="schedule.active ? 'success' : 'error'" size="small" variant="flat">
-                      {{ schedule.active ? 'Active' : 'Inactive' }}
-                    </v-chip>
-                  </div>
+                <div class="header-left">
+                  <v-chip :color="schedule.active ? 'success' : 'red'" size="small" variant="flat" class="status-chip">
+                    <v-icon start size="14">{{ schedule.active ? 'mdi-check-circle' : 'mdi-circle-outline' }}</v-icon>
+                    {{ schedule.active ? 'Active' : 'Inactive' }}
+                  </v-chip>
                 </div>
                 <v-menu>
                   <template v-slot:activator="{ props }">
-                    <v-btn icon="mdi-dots-vertical" variant="text" size="small" v-bind="props" @click.stop></v-btn>
+                    <v-btn icon="mdi-dots-vertical" variant="text" size="small" density="comfortable" v-bind="props" @click.stop />
                   </template>
-                  <v-list>
-                    <v-list-item @click.stop="editSchedule(schedule)">
-                      <template v-slot:prepend>
-                        <v-icon icon="mdi-pencil" />
-                      </template>
+                  <v-list class="action-menu" density="compact">
+                    <v-list-item @click.stop="editSchedule(schedule)" class="menu-item">
+                      <template v-slot:prepend><v-icon icon="mdi-pencil" size="18" /></template>
                       <v-list-item-title>Edit</v-list-item-title>
                     </v-list-item>
-                    <v-list-item @click.stop="duplicateSchedule(schedule)">
-                      <template v-slot:prepend>
-                        <v-icon icon="mdi-content-copy" />
-                      </template>
-                      <v-list-item-title>Duplicate</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click.stop="deleteSchedule(schedule)">
-                      <template v-slot:prepend>
-                        <v-icon icon="mdi-delete" color="error" />
-                      </template>
+                    <v-list-item @click.stop="deleteSchedule(schedule)" class="menu-item danger">
+                      <template v-slot:prepend><v-icon icon="mdi-delete" size="18" color="error" /></template>
                       <v-list-item-title class="text-error">Delete</v-list-item-title>
                     </v-list-item>
                   </v-list>
@@ -146,183 +160,272 @@
               </div>
 
               <div class="card-content">
-                <div class="schedule-info">
-                  <div class="info-row">
-                    <v-icon icon="mdi-account-school" size="16" class="mr-2" />
+                <h3 class="card-title">{{ getGroupName(schedule.group_id) }}</h3>
+                <p class="card-subtitle">{{ getSubjectName(schedule.subject_id) }}</p>
+                <div class="info-grid">
+                  <div class="info-item">
+                    <v-icon icon="mdi-school" size="16" color="primary" />
                     <span>{{ getGenerationName(schedule.generation_id) }}</span>
                   </div>
-                  <div class="info-row">
-                    <v-icon icon="mdi-calendar-clock" size="16" class="mr-2" />
+                  <div class="info-item">
+                    <v-icon icon="mdi-door" size="16" color="primary" />
+                    <span>{{ getRoomName(schedule.room_id) }}</span>
+                  </div>
+                  <div class="info-item">
+                    <v-icon icon="mdi-account-tie" size="16" color="primary" />
+                    <span>{{ getInstructorName(schedule.instructor_id) }}</span>
+                  </div>
+                  <div class="info-item">
+                    <v-icon icon="mdi-clock-outline" size="16" color="primary" />
                     <span>{{ formatDateRange(schedule.start_time, schedule.end_time) }}</span>
-                  </div>
-                  <div class="info-row">
-                    <v-icon icon="mdi-door" size="16" class="mr-2" />
-                    <span>Room: {{ getRoomName(schedule.room_id) }}</span>
-                  </div>
-                  <div class="info-row">
-                    <v-icon icon="mdi-account-tie" size="16" class="mr-2" />
-                    <span>Instructor: {{ getInstructorName(schedule.instructor_id) }}</span>
-                  </div>
-                  <div class="info-row">
-                    <v-icon icon="mdi-information" size="16" class="mr-2" />
-                    <span>Status: {{ getStatusLabel(schedule.status) }}</span>
                   </div>
                 </div>
               </div>
 
               <div class="card-footer">
-                <span class="updated-date">Updated {{ formatDate(schedule.updated_at) }}</span>
-                <v-btn variant="outlined" size="small" @click.stop="viewSchedule(schedule)">
-                  View Schedule
+                <span class="footer-text">
+                  <v-icon icon="mdi-update" size="14" />
+                  {{ formatDate(schedule.updated_at) }}
+                </span>
+                <v-btn variant="tonal" size="small" color="primary" @click.stop="openDetailDialog(schedule)" class="view-btn">
+                  View Details
+                  <v-icon end size="16">mdi-arrow-right</v-icon>
                 </v-btn>
               </div>
             </v-card>
           </div>
 
-          <!-- Pagination Footer -->
-          <div v-if="filteredSchedules.length > 0" class="pagination-section">
-            <v-btn variant="outlined" :disabled="currentPage === 1" @click="goToPrevPage" class="pagination-btn">
-              Previous
-            </v-btn>
-
+          <!-- Pagination -->
+          <div v-if="filteredSchedules.length > 0" class="pagination-container">
             <div class="pagination-info">
-              <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
+              <span class="info-text">
+                Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to
+                {{ Math.min(currentPage * itemsPerPage, filteredSchedules.length) }}
+                of {{ filteredSchedules.length }} schedules
+              </span>
             </div>
-
-            <v-btn variant="outlined" :disabled="currentPage >= totalPages" @click="goToNextPage"
-              class="pagination-btn">
-              Next
-            </v-btn>
+            <div class="pagination-controls">
+              <v-btn variant="outlined" :disabled="currentPage === 1" @click="currentPage--" icon="mdi-chevron-left" size="small" />
+              <div class="page-numbers">
+                <v-btn
+                  v-for="page in visiblePages"
+                  :key="page"
+                  :variant="page === currentPage ? 'flat' : 'text'"
+                  :color="page === currentPage ? 'primary' : 'default'"
+                  size="small"
+                  @click="currentPage = page"
+                  class="page-btn"
+                >
+                  {{ page }}
+                </v-btn>
+              </div>
+              <v-btn variant="outlined" :disabled="currentPage >= totalPages" @click="currentPage++" icon="mdi-chevron-right" size="small" />
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Create/Edit Schedule Dialog -->
-    <v-dialog v-model="scheduleDialog" max-width="800" persistent>
-      <v-card class="modern-dialog" elevation="24">
-        <!-- Dialog Header -->
+    <!-- Create / Edit Dialog -->
+    <v-dialog v-model="scheduleDialog" max-width="900" persistent scrollable>
+      <v-card class="dialog-card">
         <div class="dialog-header">
-          <div class="header-content">
-            <div class="header-icon">
-              <v-icon :icon="isEdit ? 'mdi-pencil' : 'mdi-plus'" color="#fde047" size="24" />
+          <div class="header-left">
+            <div class="header-icon-wrapper">
+              <v-icon :icon="isEdit ? 'mdi-pencil' : 'mdi-plus'" size="24" color="white" />
             </div>
-            <div class="header-text">
+            <div>
               <h2 class="dialog-title">{{ isEdit ? 'Edit Schedule' : 'Create New Schedule' }}</h2>
-              <p class="dialog-subtitle">{{ isEdit ? 'Update schedule information and settings' : 'Set up a new schedule for the group' }}</p>
+              <p class="dialog-subtitle">{{ isEdit ? 'Update schedule information' : 'Add a new schedule' }}</p>
             </div>
           </div>
           <v-btn icon="mdi-close" variant="text" size="small" @click="closeDialog" class="close-btn" />
         </div>
-
         <v-divider />
 
-        <!-- Dialog Content -->
-        <v-card-text class="dialog-content">
+        <v-card-text class="dialog-body">
           <v-form ref="formRef" v-model="formValid" @submit.prevent="submitForm">
-            <v-row>
-              <v-col cols="12" md="6">
-                <div class="form-group">
-                  <label class="form-label">Group *</label>
-                  <v-select v-model="formData.group_id" :items="groupOptions" :rules="requiredRules" variant="outlined"
-                    density="comfortable" hide-details="auto" class="form-field" :loading="loadingOptions"
-                    placeholder="Select a group" />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6">
-                <div class="form-group">
-                  <label class="form-label">Subject *</label>
-                  <v-select v-model="formData.subject_id" :items="subjectOptions" :rules="requiredRules"
-                    variant="outlined" density="comfortable" hide-details="auto" class="form-field"
-                    :loading="loadingOptions" placeholder="Select a subject" />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6">
-                <div class="form-group">
-                  <label class="form-label">Term *</label>
-                  <v-select v-model="formData.term_id" :items="termOptions" variant="outlined" density="comfortable"
-                    hide-details="auto" :rules="requiredRules" class="form-field" :loading="loadingOptions"
-                    placeholder="Select a term" />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6">
-                <div class="form-group">
-                  <label class="form-label">Generation *</label>
-                  <v-select v-model="formData.generation_id" :items="generationOptions" variant="outlined"
-                    density="comfortable" hide-details="auto" :rules="requiredRules" class="form-field"
-                    :loading="loadingOptions" placeholder="Select a generation" />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6">
-                <div class="form-group">
-                  <label class="form-label">Instructor *</label>
-                  <v-select v-model="formData.instructor_id" :items="instructorOptions" variant="outlined"
-                    density="comfortable" hide-details="auto" :rules="requiredRules" class="form-field"
-                    :loading="loadingOptions" placeholder="Select an instructor" />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6">
-                <div class="form-group">
-                  <label class="form-label">Assistant *</label>
-                  <v-select v-model="formData.assistant_id" :items="instructorOptions" variant="outlined"
-                    density="comfortable" hide-details="auto" :rules="requiredRules" class="form-field"
-                    :loading="loadingOptions" placeholder="Select an assistant" />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6">
-                <div class="form-group">
-                  <label class="form-label">Room</label>
-                  <v-select v-model="formData.room_id" :items="roomOptions" variant="outlined" density="comfortable"
-                    hide-details="auto" class="form-field" :loading="loadingOptions" clearable
-                    placeholder="Select a room (optional)" />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6">
-                <div class="form-group">
-                  <label class="form-label">Status *</label>
-                  <v-select v-model="formData.status" :items="statusItems" variant="outlined" density="comfortable"
-                    hide-details="auto" :rules="requiredRules" class="form-field" />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6">
-                <div class="form-group">
-                  <label class="form-label">Start Time</label>
-                  <v-text-field v-model="formData.start_time" type="datetime-local" variant="outlined"
-                    density="comfortable" hide-details="auto" class="form-field" />
-                </div>
-              </v-col>
-              <v-col cols="12" md="6">
-                <div class="form-group">
-                  <label class="form-label">End Time</label>
-                  <v-text-field v-model="formData.end_time" type="datetime-local" variant="outlined"
-                    density="comfortable" hide-details="auto" class="form-field" />
-                </div>
-              </v-col>
-              <v-col cols="12">
-                <div class="form-group">
-                  <label class="form-label">Description</label>
-                  <v-textarea v-model="formData.description" variant="outlined" density="comfortable"
-                    hide-details="auto" class="form-field" rows="3" placeholder="Additional notes or description" />
-                </div>
-              </v-col>
-              <v-col cols="12">
-                <v-checkbox v-model="formData.active" label="Active" hide-details color="primary" />
-              </v-col>
-            </v-row>
+            <!-- Basic Information -->
+            <div class="form-section">
+              <h3 class="section-title">Basic Information</h3>
+              <v-row dense>
+                <v-col cols="12" md="6">
+                  <v-select
+                    v-model="formData.group_id"
+                    :items="groupOptions"
+                    item-title="title"
+                    item-value="value"
+                    :rules="requiredRules"
+                    label="Group *"
+                    variant="outlined"
+                    density="comfortable"
+                    hide-details="auto"
+                    :loading="loadingOptions"
+                  />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-select
+                    v-model="formData.subject_id"
+                    :items="subjectOptions"
+                    item-title="title"
+                    item-value="value"
+                    :rules="requiredRules"
+                    label="Subject *"
+                    variant="outlined"
+                    density="comfortable"
+                    hide-details="auto"
+                    :loading="loadingOptions"
+                  />
+                </v-col>
+                <v-col cols="12" md="4">
+                  <v-select
+                    v-model="formData.term_id"
+                    :items="termOptions"
+                    item-title="title"
+                    item-value="value"
+                    :rules="requiredRules"
+                    label="Term *"
+                    variant="outlined"
+                    density="comfortable"
+                    hide-details="auto"
+                    :loading="loadingOptions"
+                  />
+                </v-col>
+                <v-col cols="12" md="4">
+                  <v-select
+                    v-model="formData.generation_id"
+                    :items="generationOptions"
+                    item-title="title"
+                    item-value="value"
+                    :rules="requiredRules"
+                    label="Generation *"
+                    variant="outlined"
+                    density="comfortable"
+                    hide-details="auto"
+                    :loading="loadingOptions"
+                  />
+                </v-col>
+                <v-col cols="12" md="4">
+                  <v-select
+                    v-model="formData.room_id"
+                    :items="roomOptions"
+                    item-title="title"
+                    item-value="value"
+                    label="Room"
+                    variant="outlined"
+                    density="comfortable"
+                    hide-details="auto"
+                    :loading="loadingOptions"
+                    clearable
+                  />
+                </v-col>
+              </v-row>
+            </div>
+
+            <v-divider class="my-6" />
+
+            <!-- Staff Assignment -->
+            <div class="form-section">
+              <h3 class="section-title">Staff Assignment</h3>
+              <v-row dense>
+                <v-col cols="12" md="6">
+                  <v-select
+                    v-model="formData.instructor_id"
+                    :items="instructorOptions"
+                    item-title="title"
+                    item-value="value"
+                    :rules="requiredRules"
+                    label="Instructor *"
+                    variant="outlined"
+                    density="comfortable"
+                    hide-details="auto"
+                    :loading="loadingOptions"
+                  />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-select
+                    v-model="formData.assistant_id"
+                    :items="instructorOptions"
+                    item-title="title"
+                    item-value="value"
+                    :rules="requiredRules"
+                    label="Assistant *"
+                    variant="outlined"
+                    density="comfortable"
+                    hide-details="auto"
+                    :loading="loadingOptions"
+                  />
+                </v-col>
+              </v-row>
+            </div>
+
+            <v-divider class="my-6" />
+
+            <!-- Schedule Details -->
+            <div class="form-section">
+              <h3 class="section-title">Schedule Details</h3>
+              <v-row dense>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="formData.start_time"
+                    type="datetime-local"
+                    label="Start Time"
+                    variant="outlined"
+                    density="comfortable"
+                    hide-details="auto"
+                  />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="formData.end_time"
+                    type="datetime-local"
+                    label="End Time"
+                    variant="outlined"
+                    density="comfortable"
+                    hide-details="auto"
+                  />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-select
+                    v-model="formData.status"
+                    :items="statusItems"
+                    item-title="title"
+                    item-value="value"
+                    :rules="requiredRules"
+                    label="Status *"
+                    variant="outlined"
+                    density="comfortable"
+                    hide-details="auto"
+                  />
+                </v-col>
+                <v-col cols="12" md="6" class="d-flex align-center">
+                  <v-switch v-model="formData.active" label="Active Schedule" color="success" hide-details inset />
+                </v-col>
+                <v-col cols="12">
+                  <v-textarea
+                    v-model="formData.description"
+                    label="Description"
+                    rows="3"
+                    variant="outlined"
+                    density="comfortable"
+                    hide-details="auto"
+                  />
+                </v-col>
+              </v-row>
+            </div>
           </v-form>
         </v-card-text>
 
         <v-divider />
-
-        <!-- Dialog Actions -->
         <v-card-actions class="dialog-actions">
-          <v-btn variant="outlined" color="grey-darken-1" @click="closeDialog" class="action-btn cancel-btn">
-            <v-icon start>mdi-close</v-icon>
-            Cancel
-          </v-btn>
-
-          <v-btn :color="isEdit ? 'warning' : 'primary'" variant="flat" @click="submitForm" :disabled="!formValid"
-            :loading="loading" class="action-btn submit-btn">
+          <v-btn variant="outlined" @click="closeDialog" :disabled="loading">Cancel</v-btn>
+          <v-btn
+            :color="isEdit ? 'warning' : 'primary'"
+            variant="flat"
+            @click="submitForm"
+            :disabled="!formValid || loading"
+            :loading="loading"
+          >
             <v-icon start>{{ isEdit ? 'mdi-content-save' : 'mdi-plus' }}</v-icon>
             {{ isEdit ? 'Update Schedule' : 'Create Schedule' }}
           </v-btn>
@@ -330,74 +433,101 @@
       </v-card>
     </v-dialog>
 
-    <!-- Schedule Detail View Dialog -->
-    <v-dialog v-model="scheduleDetailDialog" max-width="1200" persistent>
-      <v-card v-if="selectedSchedule" class="schedule-detail-card">
+    <!-- Detail View Dialog -->
+    <v-dialog v-model="detailDialog" max-width="1000" persistent scrollable>
+      <v-card class="detail-card" v-if="selectedSchedule">
         <div class="detail-header">
           <div class="header-info">
-            <h2 class="schedule-title">{{ selectedSchedule.group_name }}</h2>
-            <div class="schedule-meta">
-              <v-chip color="primary" variant="flat" class="mr-2">{{ selectedSchedule.group_id }}</v-chip>
-              <v-chip :color="selectedSchedule.active ? 'success' : 'error'" variant="flat">
+            <h2 class="detail-title">{{ getGroupName(selectedSchedule.group_id) }}</h2>
+            <p class="detail-subtitle">{{ getSubjectName(selectedSchedule.subject_id) }}</p>
+            <div class="detail-meta">
+              <v-chip color="primary" variant="tonal" size="small" class="mr-2">
+                {{ getGenerationName(selectedSchedule.generation_id) }}
+              </v-chip>
+              <v-chip :color="selectedSchedule.active ? 'success' : 'grey'" variant="flat" size="small">
                 {{ selectedSchedule.active ? 'Active' : 'Inactive' }}
               </v-chip>
             </div>
           </div>
           <div class="header-actions">
-            <v-btn icon="mdi-pencil" variant="outlined" @click="editScheduleFromDetail" class="mr-2" />
-            <v-btn icon="mdi-close" variant="text" @click="scheduleDetailDialog = false" />
+            <v-btn icon="mdi-pencil" variant="outlined" @click="editFromDetail" class="mr-2" />
+            <v-btn icon="mdi-close" variant="text" @click="detailDialog = false" />
           </div>
         </div>
 
         <v-divider />
 
-        <div class="schedule-content">
-          <!-- Schedule details content here -->
-          <div class="pa-6">
-            <p class="text-grey">Schedule detail view component goes here</p>
-          </div>
-        </div>
+        <v-card-text class="detail-body">
+          <v-row>
+            <v-col cols="12" md="6">
+              <div class="detail-item">
+                <span class="detail-label">Room</span>
+                <span class="detail-value">{{ getRoomName(selectedSchedule.room_id) }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Instructor</span>
+                <span class="detail-value">{{ getInstructorName(selectedSchedule.instructor_id) }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Assistant</span>
+                <span class="detail-value">{{ getInstructorName(selectedSchedule.assistant_id) }}</span>
+              </div>
+            </v-col>
+            <v-col cols="12" md="6">
+              <div class="detail-item">
+                <span class="detail-label">Start Time</span>
+                <span class="detail-value">{{ formatDateTime(selectedSchedule.start_time) }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">End Time</span>
+                <span class="detail-value">{{ formatDateTime(selectedSchedule.end_time) }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Status</span>
+                <span class="detail-value">{{ getStatusLabel(selectedSchedule.status) }}</span>
+              </div>
+            </v-col>
+            <v-col cols="12">
+              <div class="detail-item">
+                <span class="detail-label">Description</span>
+                <span class="detail-value description">{{ selectedSchedule.description || 'No description' }}</span>
+              </div>
+            </v-col>
+            <v-col cols="12">
+              <div class="detail-item">
+                <span class="detail-label">Last Updated</span>
+                <span class="detail-value">{{ formatDate(selectedSchedule.updated_at) }}</span>
+              </div>
+            </v-col>
+          </v-row>
+        </v-card-text>
       </v-card>
     </v-dialog>
 
-    <!-- Delete Confirmation Dialog -->
-    <v-dialog v-model="deleteDialog" max-width="420" persistent>
-      <v-card class="delete-dialog" elevation="24">
-        <!-- Delete Header -->
+    <!-- Delete Confirmation -->
+    <v-dialog v-model="deleteDialog" max-width="480" persistent>
+      <v-card class="delete-card">
         <div class="delete-header">
-          <div class="delete-icon-container">
-            <v-icon icon="mdi-delete-alert" color="error" size="48" />
+          <div class="delete-icon-wrapper">
+            <v-icon icon="mdi-alert-circle" size="48" color="error" />
           </div>
-          <h2 class="delete-title">Delete Schedule</h2>
+          <h2 class="delete-title">Delete Schedule?</h2>
           <p class="delete-subtitle">This action cannot be undone</p>
         </div>
-
-        <v-divider />
-
-        <!-- Delete Content -->
-        <v-card-text class="delete-content">
-          <div class="warning-box">
-            <v-icon icon="mdi-alert-circle" color="warning" class="warning-icon" />
-            <div class="warning-text">
-              <p class="warning-message">
-                You are about to permanently delete the schedule for
-                <strong class="schedule-name">{{ scheduleToDelete ? getGroupName(scheduleToDelete.group_id) : 'this schedule' }}</strong>
+        <v-card-text class="delete-body">
+          <div class="warning-banner">
+            <v-icon icon="mdi-information" color="warning" class="banner-icon" />
+            <div class="banner-content">
+              <p class="banner-text">
+                You're about to permanently delete the schedule for
+                <strong>{{ scheduleToDelete ? getGroupName(scheduleToDelete.group_id) : 'this schedule' }}</strong>
               </p>
             </div>
           </div>
         </v-card-text>
-
-        <v-divider />
-
-        <!-- Delete Actions -->
         <v-card-actions class="delete-actions">
-          <v-btn variant="outlined" color="grey-darken-1" @click="deleteDialog = false" class="action-btn cancel-btn">
-            <v-icon start>mdi-cancel</v-icon>
-            Cancel
-          </v-btn>
-
-          <v-btn color="error" variant="flat" @click="confirmDelete" :loading="deleteLoading"
-            class="action-btn delete-btn">
+          <v-btn variant="outlined" @click="deleteDialog = false" :disabled="deleteLoading">Cancel</v-btn>
+          <v-btn color="error" variant="flat" @click="confirmDelete" :loading="deleteLoading">
             <v-icon start>mdi-delete</v-icon>
             Delete Schedule
           </v-btn>
@@ -408,39 +538,34 @@
 </template>
 
 <script setup>
-import { useScheduleStore } from '~/store/useScheduleStore'
 import { storeToRefs } from 'pinia'
-import ExportButtons from '~/components/ui/ExportButtons.vue'
-import ImportCsv from '~/components/ui/ImportCsv.vue'
+import Swal from 'sweetalert2'
+import { useScheduleStore } from '@/store/useScheduleStore'
 
 definePageMeta({
   layout: 'admin',
   middleware: ['auth']
 })
 
-// Store
 const scheduleStore = useScheduleStore()
 const { schedules, loading } = storeToRefs(scheduleStore)
 
-// Reactive data
 const searchQuery = ref('')
-const generationFilter = ref('All')
-const yearFilter = ref('All')
 const statusFilter = ref('All')
 const currentPage = ref(1)
 const itemsPerPage = ref(9)
 
 const scheduleDialog = ref(false)
-const scheduleDetailDialog = ref(false)
+const detailDialog = ref(false)
 const deleteDialog = ref(false)
-const selectedSchedule = ref(null)
-const scheduleToDelete = ref(null)
 const isEdit = ref(false)
 const formValid = ref(false)
 const formRef = ref(null)
 const deleteLoading = ref(false)
 
-// Reference data
+const selectedSchedule = ref(null)
+const scheduleToDelete = ref(null)
+
 const groups = ref([])
 const subjects = ref([])
 const terms = ref([])
@@ -449,8 +574,8 @@ const rooms = ref([])
 const generations = ref([])
 const loadingOptions = ref(false)
 
-// Form data - matched to backend CourseOffering model
 const formData = reactive({
+  global_id: null,
   group_id: null,
   subject_id: null,
   term_id: null,
@@ -459,175 +584,13 @@ const formData = reactive({
   assistant_id: null,
   generation_id: null,
   description: '',
-  status: 1, // 1=planned, 2=active, 3=completed, 4=canceled
+  status: 1,
   active: true,
   start_time: null,
   end_time: null
 })
 
-// ...existing code...
-
-// --- EXPORT/IMPORT CONFIGURATION ---
-
-// Export columns for Excel/PDF/CSV
-const exportColumns = [
-  { label: 'ID', field: 'id' },
-  { label: 'Group', field: row => getGroupName(row.group_id) },
-  { label: 'Subject', field: row => getSubjectName(row.subject_id) },
-  { label: 'Term', field: row => getTermName(row.term_id) },
-  { label: 'Generation', field: row => getGenerationName(row.generation_id) },
-  { label: 'Room', field: row => getRoomName(row.room_id) },
-  { label: 'Instructor', field: row => getInstructorName(row.instructor_id) },
-  { label: 'Assistant', field: row => getInstructorName(row.assistant_id) },
-  { label: 'Status', field: row => getStatusLabel(row.status) },
-  { label: 'Active', field: row => (row.active ? 'Active' : 'Inactive') },
-  { label: 'Start Time', field: row => formatDate(row.start_time) },
-  { label: 'End Time', field: row => formatDate(row.end_time) },
-  { label: 'Description', field: 'description' },
-  { label: 'Updated At', field: row => formatDate(row.updated_at) }
-]
-
-// Import columns (CSV header mapping)
-const importColumns = [
-  { label: 'Group', field: 'group_id', required: true },
-  { label: 'Subject', field: 'subject_id', required: true },
-  { label: 'Term', field: 'term_id', required: true },
-  { label: 'Generation', field: 'generation_id', required: true },
-  { label: 'Room', field: 'room_id' },
-  { label: 'Instructor', field: 'instructor_id', required: true },
-  { label: 'Assistant', field: 'assistant_id', required: true },
-  { label: 'Status', field: 'status', required: true },
-  { label: 'Active', field: 'active' },
-  { label: 'Start Time', field: 'start_time' },
-  { label: 'End Time', field: 'end_time' },
-  { label: 'Description', field: 'description' }
-]
-
-// Validate each imported row
-function validateImportRow(row) {
-  // Check required fields
-  const requiredFields = ['group_id', 'subject_id', 'term_id', 'generation_id', 'instructor_id', 'assistant_id', 'status']
-  for (const field of requiredFields) {
-    if (!row[field] || String(row[field]).trim() === '') {
-      return `Missing required field: ${field}`
-    }
-  }
-  // Optionally, add more validation (e.g., check if IDs exist in reference data)
-  return true
-}
-
-// Transform imported row to match backend model
-function transformImportRow(row) {
-  // Helper to parse boolean/active
-  const parseActive = v => (v === '1' || v === 1 || v === true || String(v).toLowerCase() === 'active')
-  // Helper to parse int
-  const parseIntOrNull = v => (v === '' || v == null ? null : parseInt(v, 10))
-
-  return {
-    group_id: parseIntOrNull(row.group_id),
-    subject_id: parseIntOrNull(row.subject_id),
-    term_id: parseIntOrNull(row.term_id),
-    generation_id: parseIntOrNull(row.generation_id),
-    room_id: parseIntOrNull(row.room_id),
-    instructor_id: parseIntOrNull(row.instructor_id),
-    assistant_id: parseIntOrNull(row.assistant_id),
-    status: parseIntOrNull(row.status) || 1,
-    active: row.active !== undefined ? parseActive(row.active) : true,
-    start_time: row.start_time ? new Date(row.start_time).toISOString() : null,
-    end_time: row.end_time ? new Date(row.end_time).toISOString() : null,
-    description: row.description || ''
-  }
-}
-
-function handleExportStart() {
-  // Optionally show a loading indicator
-}
-function handleExportComplete() {
-  // Optionally show a success message
-}
-function handleExportError(e) {
-  alert('Export failed: ' + (e?.message || e))
-}
-
-async function handleImportStart() {
-  // Optionally show a loading indicator
-}
-async function handleImportComplete(importedRows) {
-  // Bulk create schedules
-  let successCount = 0
-  let failCount = 0
-  for (const row of importedRows) {
-    try {
-      const result = await scheduleStore.createSchedule(row)
-      if (result.success) successCount++
-      else failCount++
-    } catch {
-      failCount++
-    }
-  }
-  await scheduleStore.fetchSchedules()
-  alert(`Import complete: ${successCount} succeeded, ${failCount} failed`)
-}
-function handleImportError(e) {
-  alert('Import failed: ' + (e?.message || e))
-}
-
-// Helper for export columns
-function getTermName(termId) {
-  const term = terms.value.find(t => t.id === termId)
-  return term?.term || 'N/A'
-}
-
-// Computed
-const activeSchedules = computed(() => schedules.value.filter(s => s.active))
-const groupsWithSchedule = computed(() => [...new Set(schedules.value.map(s => s.group_id))])
-
-const filteredSchedules = computed(() => {
-  let filtered = schedules.value
-
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(s => {
-      const groupName = getGroupName(s.group_id).toLowerCase()
-      const subjectName = getSubjectName(s.subject_id).toLowerCase()
-      return groupName.includes(query) || subjectName.includes(query)
-    })
-  }
-
-  if (generationFilter.value !== 'All') {
-    filtered = filtered.filter(s => String(s.generation_id) === generationFilter.value)
-  }
-
-  if (yearFilter.value !== 'All') {
-    // Filter by year if you have a year field in the backend
-    // filtered = filtered.filter(s => String(s.year) === yearFilter.value)
-  }
-
-  if (statusFilter.value !== 'All') {
-    const isActive = statusFilter.value === 'active'
-    filtered = filtered.filter(s => !!s.active === isActive)
-  }
-
-  return filtered
-})
-
-// Pagination computed properties
-const totalPages = computed(() => Math.ceil(filteredSchedules.value.length / itemsPerPage.value))
-
-const paginatedSchedules = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  return filteredSchedules.value.slice(start, end)
-})
-
-// Computed options for dropdowns
-const groupOptions = computed(() => groups.value.map(g => ({ title: g.group_name || g.id, value: g.id })))
-const subjectOptions = computed(() => subjects.value.map(s => ({ title: `${s.code} - ${s.name}`, value: s.id })))
-const termOptions = computed(() => terms.value.map(t => ({ title: t.term, value: t.id })))
-const instructorOptions = computed(() => instructors.value.map(i => ({ title: `${i.first_name} ${i.last_name}`, value: i.id })))
-const roomOptions = computed(() => rooms.value.map(r => ({ title: r.room, value: r.id })))
-const generationOptions = computed(() => generations.value.map(g => ({ title: g.generation, value: g.id })))
-const statusOptions = ['All', 'active', 'inactive']
+const statusOptions = ['All', 'Active', 'Inactive']
 const statusItems = [
   { title: 'Planned', value: 1 },
   { title: 'Active', value: 2 },
@@ -635,43 +598,96 @@ const statusItems = [
   { title: 'Canceled', value: 4 }
 ]
 
-// Validation rules
-const requiredRules = [v => (v !== null && v !== undefined && v !== '') || 'Field is required']
+const requiredRules = [(v) => (v !== null && v !== undefined && v !== '') || 'Field is required']
 
-// Methods
+// Computed
+const activeSchedules = computed(() => schedules.value.filter(s => s.active))
+const groupsWithSchedule = computed(() => [...new Set(schedules.value.map(s => s.group_id))])
+
+const filteredSchedules = computed(() => {
+  let list = schedules.value
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase()
+    list = list.filter(s =>
+      getGroupName(s.group_id).toLowerCase().includes(q) ||
+      getSubjectName(s.subject_id).toLowerCase().includes(q)
+    )
+  }
+  if (statusFilter.value !== 'All') {
+    const active = statusFilter.value === 'Active'
+    list = list.filter(s => s.active === active)
+  }
+  return list
+})
+
+const totalPages = computed(() => Math.ceil(filteredSchedules.value.length / itemsPerPage.value))
+const paginatedSchedules = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  return filteredSchedules.value.slice(start, start + itemsPerPage.value)
+})
+const visiblePages = computed(() => {
+  const pages = []
+  const max = 5
+  let start = Math.max(1, currentPage.value - Math.floor(max / 2))
+  let end = Math.min(totalPages.value, start + max - 1)
+  if (end - start < max - 1) start = Math.max(1, end - max + 1)
+  for (let i = start; i <= end; i++) pages.push(i)
+  return pages
+})
+
+const groupOptions = computed(() => groups.value.map(g => ({ title: g.group_name || g.id, value: g.id })))
+const subjectOptions = computed(() => subjects.value.map(s => ({ title: `${s.name}`, value: s.id })))
+const termOptions = computed(() => terms.value.map(t => ({ title: t.term, value: t.id })))
+const instructorOptions = computed(() => instructors.value.map(i => ({ title: `${i.first_name} ${i.last_name}`, value: i.id })))
+const roomOptions = computed(() => rooms.value.map(r => ({ title: r.room || 'No Room', value: r.id })))
+const generationOptions = computed(() => generations.value.map(g => ({ title: g.generation, value: g.id })))
+
+// Functions
 const openCreateDialog = () => {
   resetForm()
   isEdit.value = false
   scheduleDialog.value = true
 }
 
-const editSchedule = (schedule) => {
-  // Only copy the actual model fields, not computed/display fields
+const openDetailDialog = (schedule) => {
+  selectedSchedule.value = schedule
+  detailDialog.value = true
+}
+
+const editFromDetail = () => {
+  detailDialog.value = false
+  editSchedule(selectedSchedule.value)
+}
+
+const editSchedule = async (schedule) => {
+  if (loadingOptions.value || groups.value.length === 0) {
+    await fetchReferenceData()
+  }
+
+  const toLocalDateTime = (iso) => {
+    if (!iso) return null
+    const d = new Date(iso)
+    return d.toISOString().slice(0, 16)
+  }
+
   Object.assign(formData, {
-    id: schedule.id,
     global_id: schedule.global_id,
     group_id: schedule.group_id,
     subject_id: schedule.subject_id,
     term_id: schedule.term_id,
-    room_id: schedule.room_id,
+    room_id: schedule.room_id || null,
     instructor_id: schedule.instructor_id,
     assistant_id: schedule.assistant_id,
     generation_id: schedule.generation_id,
-    description: schedule.description,
-    status: schedule.status,
-    active: schedule.active,
-    start_time: schedule.start_time,
-    end_time: schedule.end_time
+    description: schedule.description || '',
+    status: schedule.status || 1,
+    active: !!schedule.active,
+    start_time: toLocalDateTime(schedule.start_time),
+    end_time: toLocalDateTime(schedule.end_time)
   })
+
   isEdit.value = true
   scheduleDialog.value = true
-}
-
-const editScheduleFromDetail = () => {
-  if (selectedSchedule.value) {
-    scheduleDetailDialog.value = false
-    editSchedule(selectedSchedule.value)
-  }
 }
 
 const closeDialog = () => {
@@ -681,6 +697,7 @@ const closeDialog = () => {
 
 const resetForm = () => {
   Object.assign(formData, {
+    global_id: null,
     group_id: null,
     subject_id: null,
     term_id: null,
@@ -700,211 +717,108 @@ const resetForm = () => {
 const submitForm = async () => {
   if (!formValid.value) return
 
+  const toISO = (local) => local ? new Date(local).toISOString() : null
+
+  const payload = {
+    group_id: formData.group_id,
+    subject_id: formData.subject_id,
+    term_id: formData.term_id,
+    room_id: formData.room_id,
+    instructor_id: formData.instructor_id,
+    assistant_id: formData.assistant_id,
+    generation_id: formData.generation_id,
+    description: formData.description || null,
+    status: formData.status,
+    active: formData.active,
+    start_time: toISO(formData.start_time),
+    end_time: toISO(formData.end_time)
+  }
+
   try {
-    // Helper function to ensure ID is valid (number or numeric string)
-    const sanitizeId = (value) => {
-      if (value === null || value === undefined || value === '') return null
-      // If it's already a number, return it
-      if (typeof value === 'number') return value
-      // If it's a string that's purely numeric, convert to number
-      if (typeof value === 'string' && /^\d+$/.test(value.trim())) {
-        return parseInt(value.trim(), 10)
+    let result
+
+    if (isEdit.value) {
+      // Critical: Ensure global_id is valid and not subject name!
+      if (!formData.global_id || typeof formData.global_id !== 'string' || formData.global_id.includes(' ')) {
+        throw new Error('Invalid or missing global_id. Cannot update schedule.')
       }
-      // Otherwise return null (invalid ID)
-      return null
+
+      result = await scheduleStore.updateSchedule(formData.global_id, payload)
+    } else {
+      result = await scheduleStore.createSchedule(payload)
     }
-
-    // Create a clean payload that matches the backend API with sanitized IDs
-    const payload = {
-      group_id: sanitizeId(formData.group_id),
-      subject_id: sanitizeId(formData.subject_id),
-      term_id: sanitizeId(formData.term_id),
-      room_id: sanitizeId(formData.room_id),
-      instructor_id: sanitizeId(formData.instructor_id),
-      assistant_id: sanitizeId(formData.assistant_id),
-      generation_id: sanitizeId(formData.generation_id),
-      description: formData.description || null,
-      status: formData.status,
-      active: formData.active,
-      start_time: formData.start_time ? new Date(formData.start_time).toISOString() : null,
-      end_time: formData.end_time ? new Date(formData.end_time).toISOString() : null
-    }
-
-    // Validate required fields
-    if (!payload.group_id || !payload.subject_id || !payload.term_id ||
-      !payload.instructor_id || !payload.assistant_id || !payload.generation_id) {
-      alert('Please fill in all required fields with valid values')
-      return
-    }
-
-    console.log('Submitting payload:', payload)
-
-    const result = isEdit.value
-      ? await scheduleStore.updateSchedule(formData.global_id || formData.id, payload)
-      : await scheduleStore.createSchedule(payload)
 
     if (result.success) {
-      scheduleDialog.value = false
-      resetForm()
-      await scheduleStore.fetchSchedules() // Refresh the list
-      // Show success message
-      alert(isEdit.value ? 'Schedule updated successfully!' : 'Schedule created successfully!')
+      closeDialog()
+      await scheduleStore.fetchSchedules()
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: isEdit.value ? 'Schedule updated successfully!' : 'Schedule created successfully!',
+        timer: 2000,
+        showConfirmButton: false
+      })
     } else {
-      alert(`Error: ${result.error || 'Unknown error'}`)
+      throw new Error(result.error || 'Update failed')
     }
-  } catch (error) {
-    console.error('Error submitting form:', error)
-    alert(`Error: ${error.message}`)
+  } catch (err) {
+    console.error('Submit error:', err)
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: err.message || 'Failed to save schedule'
+    })
   }
-}
-
-const viewSchedule = (schedule) => {
-  selectedSchedule.value = schedule
-  scheduleDetailDialog.value = true
-}
-
-const duplicateSchedule = async (schedule) => {
-  const duplicated = {
-    group_id: schedule.group_id,
-    subject_id: schedule.subject_id,
-    term_id: schedule.term_id,
-    room_id: schedule.room_id,
-    instructor_id: schedule.instructor_id,
-    assistant_id: schedule.assistant_id,
-    generation_id: schedule.generation_id,
-    description: schedule.description ? schedule.description + ' (Copy)' : 'Copy',
-    status: 1, // Set to planned
-    active: false,
-    start_time: schedule.start_time,
-    end_time: schedule.end_time
-  }
-  await scheduleStore.createSchedule(duplicated)
-  await scheduleStore.fetchSchedules() // Refresh the list
 }
 
 const deleteSchedule = (schedule) => {
-  console.log("Opening delete dialog for schedule:", schedule)
   scheduleToDelete.value = schedule
   deleteDialog.value = true
 }
 
 const confirmDelete = async () => {
   if (!scheduleToDelete.value) return
+  deleteLoading.value = true
+  const result = await scheduleStore.deleteSchedule(scheduleToDelete.value.global_id)
+  deleteLoading.value = false
 
-  try {
-    deleteLoading.value = true
-    const result = await scheduleStore.deleteSchedule(scheduleToDelete.value.id)
-
-    if (result.success) {
-      console.log("Schedule deleted successfully, closing dialog")
-      deleteDialog.value = false
-      scheduleToDelete.value = null
-    } else {
-      console.error("Delete failed:", result.error)
-      alert(`Failed to delete schedule: ${result.error}`)
-    }
-  } catch (error) {
-    console.error('Error deleting schedule:', error)
-    alert(`Failed to delete schedule: ${error.message}`)
-  } finally {
-    deleteLoading.value = false
+  if (result.success) {
+    deleteDialog.value = false
+    scheduleToDelete.value = null
+    await scheduleStore.fetchSchedules()
+    Swal.fire({ icon: 'success', title: 'Deleted!', timer: 2000, showConfirmButton: false })
+  } else {
+    Swal.fire({ icon: 'error', title: 'Failed', text: result.error })
   }
 }
 
-// Export methods
-const exportSchedulesPDF = () => {
-  console.log('Exporting schedules to PDF...')
+// Helpers
+const getGroupName = (id) => groups.value.find(g => g.id === id)?.group_name || 'Unknown Group'
+const getSubjectName = (id) => subjects.value.find(s => s.id === id)?.name || 'Unknown Subject'
+const getRoomName = (id) => rooms.value.find(r => r.id === id)?.room || 'No Room'
+const getGenerationName = (id) => generations.value.find(g => g.id === id)?.generation || 'N/A'
+const getInstructorName = (id) => {
+  const i = instructors.value.find(x => x.id === id)
+  return i ? `${i.first_name} ${i.last_name}` : 'N/A'
 }
+const getStatusLabel = (status) => ({
+  1: 'Planned', 2: 'Active', 3: 'Completed', 4: 'Canceled'
+}[status] || 'Unknown')
 
-const exportSchedulesExcel = () => {
-  console.log('Exporting schedules to Excel...')
-}
-
-// Utility methods
-const getGroupName = (groupId) => {
-  const group = groups.value.find(g => g.id === groupId)
-  return group?.group_name || group?.id || 'Unknown Group'
-}
-
-const getSubjectName = (subjectId) => {
-  const subject = subjects.value.find(s => s.id === subjectId)
-  return subject ? `${subject.code} - ${subject.name}` : 'Unknown Subject'
-}
-
-const getRoomName = (roomId) => {
-  const room = rooms.value.find(r => r.id === roomId)
-  return room?.room || 'TBD'
-}
-
-const getGenerationName = (generationId) => {
-  const generation = generations.value.find(g => g.id === generationId)
-  return generation?.generation || 'N/A'
-}
-
-const getInstructorName = (instructorId) => {
-  const instructor = instructors.value.find(i => i.id === instructorId)
-  return instructor ? `${instructor.first_name} ${instructor.last_name}` : 'N/A'
-}
-
-const getStatusLabel = (status) => {
-  const statusMap = {
-    1: 'Planned',
-    2: 'Active',
-    3: 'Completed',
-    4: 'Canceled'
-  }
-  return statusMap[status] || 'Unknown'
-}
-
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-  try {
-    return new Date(dateString).toLocaleDateString()
-  } catch {
-    return 'N/A'
-  }
-}
-
+const formatDate = (iso) => iso ? new Date(iso).toLocaleDateString() : 'N/A'
+const formatDateTime = (iso) => iso ? new Date(iso).toLocaleString() : 'N/A'
 const formatDateRange = (start, end) => {
-  if (!start || !end) return 'No date range'
-  try {
-    const startDate = new Date(start).toLocaleDateString()
-    const endDate = new Date(end).toLocaleDateString()
-    return `${startDate} - ${endDate}`
-  } catch {
-    return 'Invalid date range'
-  }
+  if (!start || !end) return 'No date'
+  return `${new Date(start).toLocaleString()} – ${new Date(end).toLocaleString()}`
 }
 
-// Pagination methods
-const goToPrevPage = () => {
-  if (currentPage.value > 1) currentPage.value--
-}
-
-const goToNextPage = () => {
-  if (currentPage.value < totalPages.value) currentPage.value++
-}
-
-// Watch for filter changes and reset pagination
-watch([searchQuery, generationFilter, yearFilter, statusFilter], () => {
-  currentPage.value = 1
-})
-
-// Lifecycle
-onMounted(async () => {
-  await Promise.all([
-    scheduleStore.fetchSchedules(),
-    fetchReferenceData()
-  ])
-})
-
-// Fetch all reference data for dropdowns
 const fetchReferenceData = async () => {
   loadingOptions.value = true
   try {
     const { $AdminPrivateAxios } = useNuxtApp()
-
-    const [groupsRes, subjectsRes, termsRes, instructorsRes, roomsRes, generationsRes] = await Promise.all([
+    const [
+      g, s, t, i, r, gen
+    ] = await Promise.all([
       $AdminPrivateAxios.get('/groups/'),
       $AdminPrivateAxios.get('/subjects/'),
       $AdminPrivateAxios.get('/terms/'),
@@ -912,47 +826,43 @@ const fetchReferenceData = async () => {
       $AdminPrivateAxios.get('/rooms/'),
       $AdminPrivateAxios.get('/generations/')
     ])
-
-    groups.value = groupsRes.data?.data || []
-    subjects.value = subjectsRes.data?.data || []
-    terms.value = termsRes.data?.data || []
-    instructors.value = instructorsRes.data?.data || []
-    rooms.value = roomsRes.data?.data || []
-    generations.value = generationsRes.data?.data || []
-
-    console.log('Reference data loaded:', {
-      groups: groups.value.length,
-      subjects: subjects.value.length,
-      terms: terms.value.length,
-      instructors: instructors.value.length,
-      rooms: rooms.value.length,
-      generations: generations.value.length
-    })
-  } catch (error) {
-    console.error('Failed to fetch reference data:', error)
+    groups.value = g.data?.data || []
+    subjects.value = s.data?.data || []
+    terms.value = t.data?.data || []
+    instructors.value = i.data?.data || []
+    rooms.value = r.data?.data || []
+    generations.value = gen.data?.data || []
+  } catch (e) {
+    console.error('Failed to load reference data', e)
   } finally {
     loadingOptions.value = false
   }
 }
+
+watch([searchQuery, statusFilter], () => { currentPage.value = 1 })
+
+onMounted(async () => {
+  await Promise.all([scheduleStore.fetchSchedules(), fetchReferenceData()])
+})
 </script>
 
 <style scoped>
 .schedules-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
 }
 
 /* Header Styles */
 .modern-header {
   background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   border-bottom: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .header-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 24px 32px;
+  padding: 28px 32px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -967,32 +877,36 @@ const fetchReferenceData = async () => {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .title-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+}
+
+.title-content {
+  flex: 1;
 }
 
 .page-title {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
   color: #1e293b;
   margin: 0 0 4px 0;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
 }
 
 .breadcrumb {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .breadcrumb-item {
@@ -1009,30 +923,60 @@ const fetchReferenceData = async () => {
   opacity: 0.5;
 }
 
+/* Enhanced Stats Cards */
 .stats-cards {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
-  flex-wrap: wrap;
 }
 
 .stat-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  background: white;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 16px 20px;
-  min-width: 100px;
-  text-align: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 .stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card-primary .stat-icon {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.stat-card-success .stat-icon {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.stat-card-info .stat-icon {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-content {
+  flex: 1;
+  min-width: 0;
 }
 
 .stat-number {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
   color: #1e293b;
   line-height: 1;
@@ -1040,13 +984,14 @@ const fetchReferenceData = async () => {
 }
 
 .stat-label {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
+/* Action Section */
 .action-section {
   display: flex;
   gap: 12px;
@@ -1054,432 +999,495 @@ const fetchReferenceData = async () => {
   flex-wrap: wrap;
 }
 
-.modern-btn {
+.action-btn {
   height: 44px;
   border-radius: 12px;
   text-transform: none;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 14px;
-  padding: 0 20px;
+  padding: 0 24px;
   transition: all 0.2s ease;
-  border: 1px solid #e2e8f0;
+  letter-spacing: 0.01em;
 }
 
-.modern-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.add-btn {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
-  border: none !important;
+.primary-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
   color: white !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-/* Main Content Styles */
-.modern-table-section {
+.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Content Wrapper */
+.content-wrapper {
+  padding: 24px 32px;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 24px 32px;
 }
 
-.table-container {
+.content-container {
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.table-toolbar {
+/* Toolbar Section */
+.toolbar-section {
+  padding: 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.toolbar-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  padding: 24px 24px 16px;
-  border-bottom: 1px solid #f1f5f9;
-  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.toolbar-title {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.toolbar-controls {
+  display: flex;
+  flex-direction: column;
   gap: 16px;
 }
 
-.toolbar-left {
-  flex: 1;
-  min-width: 200px;
+.search-wrapper {
+  width: 100%;
 }
 
-.table-title {
-  font-size: 20px;
+.search-field {
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.search-field :deep(.v-field) {
+  border-radius: 12px;
+}
+
+.filters-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.filter-field {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.filter-field :deep(.v-field) {
+  border-radius: 12px;
+}
+
+/* Cards Section */
+.cards-section {
+  padding: 32px 24px;
+}
+
+.state-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.loading-content,
+.empty-content {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.state-text,
+.empty-text {
+  margin-top: 16px;
+  font-size: 15px;
+  color: #64748b;
+}
+
+.empty-icon {
+  margin-bottom: 16px;
+}
+
+.empty-title {
+  font-size: 22px;
   font-weight: 600;
   color: #1e293b;
-  margin: 0 0 4px 0;
-  display: flex;
-  align-items: center;
-}
-
-.table-subtitle {
-  font-size: 14px;
-  color: #64748b;
-  margin: 0;
-}
-
-.toolbar-right {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.search-container {
-  min-width: 300px;
-}
-
-.search-input :deep(.v-field) {
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.filter-select {
-  min-width: 120px;
-  background: white;
-  border-radius: 8px;
-}
-
-.filter-select :deep(.v-field) {
-  border-radius: 12px;
-}
-
-/* Cards Content */
-.cards-content {
-  padding: 24px;
-}
-
-/* Loading State */
-.loading-state {
-  text-align: center;
-  padding: 80px 20px;
-}
-
-/* Pagination */
-.pagination-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 0 0;
-  margin-top: 20px;
-  border-top: 1px solid #f1f5f9;
-}
-
-.pagination-btn {
-  min-width: 100px;
-  height: 40px;
-  border-radius: 8px;
-  font-weight: 500;
-  text-transform: none;
-}
-
-.pagination-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.pagination-info {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.pagination-text {
-  font-size: 14px;
-  color: #64748b;
-  font-weight: 500;
+  margin-bottom: 8px;
 }
 
 /* Cards Grid */
-.empty-state {
-  text-align: center;
-  padding: 80px 20px;
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-}
-
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
 }
 
 .schedule-card {
   background: white;
-  border-radius: 12px;
-  padding: 20px;
-  transition: all 0.2s ease;
-  cursor: pointer;
+  border-radius: 16px;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+}
+
+.schedule-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .schedule-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
   border-color: #3b82f6;
+}
+
+.schedule-card:hover::before {
+  opacity: 1;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
+  align-items: center;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.group-info {
-  flex: 1;
-}
-
-.group-name {
-  font-size: 18px;
+.status-chip {
   font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 8px 0;
+  font-size: 12px;
 }
 
-.group-details {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.menu-btn {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
 }
 
-.group-id {
-  font-size: 14px;
-  color: #64748b;
-  font-weight: 500;
+.menu-btn:hover {
+  opacity: 1;
 }
 
-.schedule-info {
-  margin-bottom: 20px;
+.action-menu {
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
-.info-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
-  font-size: 14px;
-  color: #64748b;
+.menu-item {
+  border-radius: 8px;
+  margin-bottom: 4px;
+  transition: all 0.2s ease;
+}
+
+.menu-item:last-child {
+  margin-bottom: 0;
+}
+
+.menu-item:hover {
+  background: #f8fafc;
+}
+
+.menu-item.danger:hover {
+  background: #fef2f2;
 }
 
 .card-content {
-  margin-bottom: 16px;
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 6px 0;
+}
+
+.card-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 16px 0;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #64748b;
+  padding: 8px;
+  background: #f8fafc;
+  border-radius: 8px;
 }
 
 .card-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 16px;
-  border-top: 1px solid #f1f5f9;
+  padding: 16px 20px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
 }
 
-.updated-date {
+.footer-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 12px;
   color: #94a3b8;
 }
 
-/* Modern Dialog Styles */
-.modern-dialog {
-  border-radius: 16px !important;
+.view-btn {
+  font-weight: 600;
+  text-transform: none;
+}
+
+/* Pagination */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.pagination-info {
+  flex: 1;
+}
+
+.info-text {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 4px;
+}
+
+.page-btn {
+  min-width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Dialog Styles */
+.dialog-card {
+  border-radius: 20px;
   overflow: hidden;
 }
 
 .dialog-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 24px 24px 20px;
-  background: linear-gradient(135deg, #f8f9fc 0%, #f1f3f8 100%);
+  align-items: center;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.header-content {
+.header-left {
   display: flex;
   align-items: center;
   gap: 16px;
-  flex: 1;
 }
 
-.header-icon {
+.header-icon-wrapper {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.header-text {
-  flex: 1;
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
 }
 
 .dialog-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1a1a1a;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e293b;
   margin: 0 0 4px 0;
-  line-height: 1.2;
 }
 
 .dialog-subtitle {
   font-size: 14px;
-  color: #6b7280;
+  color: #64748b;
   margin: 0;
-  line-height: 1.3;
 }
 
 .close-btn {
   opacity: 0.7;
-  transition: all 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 
 .close-btn:hover {
   opacity: 1;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 
-.dialog-content {
-  padding: 24px !important;
+.dialog-body {
+  padding: 32px 28px !important;
+  max-height: 65vh;
+  overflow-y: auto;
 }
 
-.form-group {
-  margin-bottom: 4px;
+.form-section {
+  margin-bottom: 24px;
 }
 
-.form-label {
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 8px;
+.form-section:last-child {
+  margin-bottom: 0;
 }
 
-.form-field :deep(.v-field) {
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.form-field :deep(.v-field:hover) {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-}
-
-.form-field :deep(.v-field--focused) {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+.section-title::before {
+  content: "";
+  width: 4px;
+  height: 18px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-radius: 2px;
 }
 
 .dialog-actions {
-  padding: 20px 24px 24px !important;
+  padding: 20px 28px !important;
   gap: 12px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
 }
 
-.action-btn {
-  height: 44px;
-  border-radius: 12px;
-  text-transform: none;
-  font-weight: 500;
-  font-size: 14px;
-  padding: 0 24px;
-  transition: all 0.2s ease;
-}
-
-.cancel-btn {
-  min-width: 100px;
-}
-
-.submit-btn {
+.dialog-actions .action-btn {
   min-width: 140px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  height: 44px;
+  font-weight: 600;
+  text-transform: none;
+  border-radius: 10px;
 }
 
-.submit-btn:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transform: translateY(-1px);
-}
-
-/* Delete Dialog Styles */
-.delete-dialog {
-  border-radius: 16px !important;
+/* Delete Dialog */
+.delete-card {
+  border-radius: 20px;
   overflow: hidden;
 }
 
 .delete-header {
   text-align: center;
-  padding: 32px 24px 24px;
-  background: linear-gradient(135deg, #fef7f7 0%, #fdf2f2 100%);
+  padding: 40px 28px 28px;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
 }
 
-.delete-icon-container {
-  display: flex;
+.delete-icon-wrapper {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: white;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
-  background: white;
-  border-radius: 50%;
-  margin: 0 auto 16px;
-  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.15);
+  margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(220, 38, 38, 0.2);
 }
 
 .delete-title {
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 700;
   color: #dc2626;
-  margin: 0 0 4px 0;
+  margin: 0 0 6px 0;
 }
 
 .delete-subtitle {
   font-size: 14px;
-  color: #6b7280;
+  color: #991b1b;
   margin: 0;
 }
 
-.delete-content {
-  padding: 24px !important;
+.delete-body {
+  padding: 28px !important;
 }
 
-.warning-box {
+.warning-banner {
   display: flex;
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid #fde047;
+  gap: 14px;
+  padding: 18px;
+  background: #fffbeb;
+  border: 2px solid #fef3c7;
   border-radius: 12px;
-  background: #fef3c7;
 }
 
-.warning-icon {
+.banner-icon {
   flex-shrink: 0;
-  margin-top: 2px;
 }
 
-.warning-text {
+.banner-content {
   flex: 1;
 }
 
-.warning-message {
+.banner-text {
   font-size: 14px;
   color: #92400e;
   margin: 0;
-  line-height: 1.4;
-}
-
-.schedule-name {
-  color: #dc2626;
-  font-weight: 600;
+  line-height: 1.5;
 }
 
 .delete-actions {
-  padding: 20px 24px 24px !important;
+  padding: 20px 28px 28px !important;
   gap: 12px;
 }
 
+.delete-actions .v-btn {
+  height: 44px;
+  font-weight: 600;
+  text-transform: none;
+  border-radius: 10px;
+}
+
 .delete-btn {
+  background: white;
   min-width: 130px;
   box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
 }
@@ -1493,9 +1501,6 @@ const fetchReferenceData = async () => {
 .schedule-detail-card {
   border-radius: 16px;
   overflow: hidden;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
 }
 
 .detail-header {
@@ -1503,8 +1508,6 @@ const fetchReferenceData = async () => {
   justify-content: space-between;
   align-items: flex-start;
   padding: 24px;
-  background: linear-gradient(135deg, #3b82f6, #1e40af);
-  color: white;
 }
 
 .header-info {
@@ -1512,8 +1515,9 @@ const fetchReferenceData = async () => {
 }
 
 .schedule-title {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 600;
+  color: #1e293b;
   margin: 0 0 8px 0;
 }
 
@@ -1521,11 +1525,6 @@ const fetchReferenceData = async () => {
   display: flex;
   gap: 8px;
   align-items: center;
-}
-
-.header-actions {
-  display: flex;
-  gap: 8px;
 }
 
 .schedule-content {
