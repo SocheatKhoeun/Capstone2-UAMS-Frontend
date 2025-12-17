@@ -1,5 +1,10 @@
 <template>
     <div class="dashboard-page">
+        <!-- Loading Overlay -->
+        <v-overlay v-model="loading" class="align-center justify-center" persistent>
+            <v-progress-circular color="primary" indeterminate size="64"></v-progress-circular>
+        </v-overlay>
+
         <!-- Modern Header Section -->
         <div class="modern-header">
             <div class="header-container">
@@ -40,22 +45,23 @@
                             <div class="filter-item">
                                 <v-select v-model="filters.generation" :items="generationOptions" label="Generation"
                                     variant="outlined" density="compact" clearable prepend-inner-icon="mdi-school"
-                                    hide-details class="filter-select" />
+                                    hide-details class="filter-select" item-title="title" item-value="value" />
                             </div>
-                            <div class="filter-item">
+                            <!-- <div class="filter-item">
                                 <v-select v-model="filters.year" :items="yearOptions" label="Academic Year"
                                     variant="outlined" density="compact" clearable prepend-inner-icon="mdi-calendar"
                                     hide-details class="filter-select" />
-                            </div>
+                            </div> -->
                             <div class="filter-item">
                                 <v-select v-model="filters.group" :items="groupOptions" label="Group" variant="outlined"
                                     density="compact" clearable prepend-inner-icon="mdi-account-group" hide-details
-                                    class="filter-select" />
+                                    class="filter-select" item-title="title" item-value="value" />
                             </div>
                             <div class="filter-item">
                                 <v-select v-model="filters.specialize" :items="specializeOptions" label="Specialization"
                                     variant="outlined" density="compact" clearable
-                                    prepend-inner-icon="mdi-school-outline" hide-details class="filter-select" />
+                                    prepend-inner-icon="mdi-school-outline" hide-details class="filter-select"
+                                    item-title="title" item-value="value" />
                             </div>
                             <div class="filter-actions">
                                 <v-btn color="primary" variant="flat" prepend-icon="mdi-magnify" @click="applyFilters"
@@ -78,13 +84,19 @@
                             <v-avatar size="56" color="#3b82f6" class="stat-icon">
                                 <v-icon size="32" color="white">mdi-account-group</v-icon>
                             </v-avatar>
-                            <v-chip color="blue" size="x-small" variant="flat" class="stat-trend">
-                                +5%
+                            <v-chip v-if="!loading" color="blue" size="x-small" variant="flat" class="stat-trend">
+                                {{ totalStudentsCount }}
                             </v-chip>
                         </div>
-                        <div class="stat-value">45</div>
+                        <div class="stat-value">
+                            <span v-if="loading">...</span>
+                            <span v-else>{{ totalStudentsCount }}</span>
+                        </div>
                         <div class="stat-label">Total Students</div>
-                        <div class="stat-details">Female: 23 • Male: 22</div>
+                        <div class="stat-details">
+                            <span v-if="loading">Loading...</span>
+                            <span v-else>Female: {{ totalFemaleStudents }} • Male: {{ totalMaleStudents }}</span>
+                        </div>
                     </div>
 
                     <div class="stat-card stat-card-1">
@@ -92,13 +104,19 @@
                             <v-avatar size="56" color="#22c55e" class="stat-icon">
                                 <v-icon size="32" color="white">mdi-account-check</v-icon>
                             </v-avatar>
-                            <v-chip color="green" size="x-small" variant="flat" class="stat-trend">
-                                +8%
+                            <v-chip v-if="!loading" color="green" size="x-small" variant="flat" class="stat-trend">
+                                {{ activeStudentsCount }}
                             </v-chip>
                         </div>
-                        <div class="stat-value">45</div>
-                        <div class="stat-label">Present Today</div>
-                        <div class="stat-details">Female: 23 • Male: 22</div>
+                        <div class="stat-value">
+                            <span v-if="loading">...</span>
+                            <span v-else>{{ activeStudentsCount }}</span>
+                        </div>
+                        <div class="stat-label">Active Students</div>
+                        <div class="stat-details">
+                            <span v-if="loading">Loading...</span>
+                            <span v-else>Currently enrolled</span>
+                        </div>
                     </div>
 
                     <div class="stat-card stat-card-2">
@@ -106,76 +124,173 @@
                             <v-avatar size="56" color="#f59e0b" class="stat-icon">
                                 <v-icon size="32" color="white">mdi-account-remove</v-icon>
                             </v-avatar>
-                            <v-chip color="orange" size="x-small" variant="flat" class="stat-trend">
-                                -2%
+                            <v-chip v-if="!loading" color="orange" size="x-small" variant="flat" class="stat-trend">
+                                {{ inactiveStudentsCount }}
                             </v-chip>
                         </div>
-                        <div class="stat-value">45</div>
-                        <div class="stat-label">Absent Today</div>
-                        <div class="stat-details">Female: 23 • Male: 22</div>
+                        <div class="stat-value">
+                            <span v-if="loading">...</span>
+                            <span v-else>{{ inactiveStudentsCount }}</span>
+                        </div>
+                        <div class="stat-label">Inactive Students</div>
+                        <div class="stat-details">
+                            <span v-if="loading">Loading...</span>
+                            <span v-else>Not currently enrolled</span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Charts Section -->
                 <div class="charts-grid">
-                    <!-- Attendance Distribution Chart -->
+                    <!-- Status Distribution Chart -->
                     <v-card class="pa-6" elevation="2" rounded="xl">
-                        <v-card-title class="d-flex align-center justify-space-between">
+                        <v-card-title class="d-flex align-center justify-space-between mb-4">
                             <div class="chart-title-section">
                                 <v-icon icon="mdi-chart-donut" size="20" class="mr-2" color="primary" />
-                                <span class="font-weight-bold">Attendance Distribution</span>
+                                <span class="font-weight-bold">Student Status Distribution</span>
                             </div>
-                            <v-select v-model="attendanceFilter" :items="['This Week', 'This Month', 'This Year']"
-                                density="compact" max-width="150" variant="solo-filled" flat hide-details single-line />
                         </v-card-title>
 
-                        <v-pie :key="attendanceFilter" :items="attendanceItems"
-                            :legend="{ position: $vuetify.display.mdAndUp ? 'right' : 'bottom' }"
-                            :tooltip="{ subtitleFormat: '[value]%' }" class="pa-3 mt-3 justify-center" gap="2"
-                            inner-cut="70" item-key="id" rounded="2" size="300" animation hide-slice reveal>
-                            <template v-slot:center>
-                                <div class="text-center">
-                                    <div class="text-h3">{{ attendanceTotal }}</div>
-                                    <div class="opacity-70 mt-1 mb-n1">Students</div>
-                                </div>
-                            </template>
+                        <div v-if="loading" class="d-flex justify-center align-center" style="height: 400px;">
+                            <v-progress-circular color="primary" indeterminate></v-progress-circular>
+                        </div>
 
-                            <template v-slot:legend="{ items, toggle, isActive }">
-                                <v-list class="py-0 mb-n5 mb-md-0 bg-transparent" density="compact" width="300">
-                                    <v-list-item v-for="item in items" :key="item.key"
-                                        :class="['my-1', { 'opacity-40': !isActive(item) }]" :title="item.title"
-                                        rounded="lg" link @click="toggle(item)">
-                                        <template v-slot:prepend>
-                                            <v-avatar :color="item.color" :size="16"></v-avatar>
-                                        </template>
-                                        <template v-slot:append>
-                                            <div class="font-weight-bold">{{ item.value }}%</div>
-                                        </template>
-                                    </v-list-item>
-                                </v-list>
-                            </template>
-                        </v-pie>
+                        <div v-else-if="totalStudentsCount === 0" class="d-flex justify-center align-center flex-column"
+                            style="height: 400px;">
+                            <v-icon icon="mdi-account-off" size="64" color="grey-lighten-2"></v-icon>
+                            <div class="text-h6 mt-4 text-grey">No Students Data</div>
+                        </div>
+
+                        <div v-else class="d-flex flex-column align-center py-4">
+                            <!-- SVG Donut Chart -->
+                            <div class="position-relative" style="width: 300px; height: 300px;">
+                                <svg viewBox="0 0 200 200" style="transform: rotate(-90deg);">
+                                    <!-- Background circle -->
+                                    <circle cx="100" cy="100" r="80" fill="none" stroke="#f0f0f0" stroke-width="40" />
+
+                                    <!-- Active segment -->
+                                    <circle v-if="activeStudentsCount > 0" cx="100" cy="100" r="80" fill="none"
+                                        stroke="#22c55e" stroke-width="40"
+                                        :stroke-dasharray="`${(activeStudentsCount / totalStudentsCount) * 502.4} 502.4`"
+                                        class="chart-segment" />
+
+                                    <!-- Inactive segment -->
+                                    <circle v-if="inactiveStudentsCount > 0" cx="100" cy="100" r="80" fill="none"
+                                        stroke="#ef4444" stroke-width="40"
+                                        :stroke-dasharray="`${(inactiveStudentsCount / totalStudentsCount) * 502.4} 502.4`"
+                                        :stroke-dashoffset="`-${(activeStudentsCount / totalStudentsCount) * 502.4}`"
+                                        class="chart-segment" />
+                                </svg>
+
+                                <!-- Center text -->
+                                <div class="chart-center-text">
+                                    <div class="text-h3 font-weight-bold">{{ totalStudentsCount }}</div>
+                                    <div class="text-caption text-grey">Total</div>
+                                </div>
+                            </div>
+
+                            <!-- Legend -->
+                            <v-list class="bg-transparent mt-4" density="compact" width="100%">
+                                <v-list-item v-for="item in attendanceItems" :key="item.key" class="mb-2">
+                                    <template v-slot:prepend>
+                                        <div :style="{
+                                            backgroundColor: item.key === 1 ? '#22c55e' : '#ef4444',
+                                            width: '16px',
+                                            height: '16px',
+                                            borderRadius: '4px',
+                                            marginRight: '12px'
+                                        }"></div>
+                                    </template>
+                                    <v-list-item-title>
+                                        <div class="d-flex justify-space-between align-center">
+                                            <span class="font-weight-medium">{{ item.title }}</span>
+                                            <span class="font-weight-bold">{{ item.value }} ({{ Math.round((item.value /
+                                                totalStudentsCount) * 100)
+                                            }}%)</span>
+                                        </div>
+                                    </v-list-item-title>
+                                </v-list-item>
+                            </v-list>
+                        </div>
                     </v-card>
 
                     <!-- Gender Distribution Chart -->
                     <v-card class="pa-6" elevation="2" rounded="xl">
-                        <v-card-title class="d-flex align-center justify-space-between">
+                        <v-card-title class="d-flex align-center justify-space-between mb-4">
                             <div class="chart-title-section">
                                 <v-icon icon="mdi-gender-male-female" size="20" class="mr-2" color="secondary" />
                                 <span class="font-weight-bold">Gender Distribution</span>
                             </div>
                         </v-card-title>
 
-                        <v-pie :items="genderItems" :legend="{ position: 'bottom' }"
-                            :tooltip="{ subtitleFormat: '[value] students' }" class="pa-3 mt-3 justify-center" gap="3"
-                            item-key="id" rounded="3" size="280" animation>
-                            <template v-slot:center>
-                                <div class="text-center">
-                                    <div class="text-h3">{{ genderTotal }}</div>
-                                    <div class="opacity-70 mt-1 mb-n1">Total</div>
+                        <div v-if="loading" class="d-flex justify-center align-center" style="height: 400px;">
+                            <v-progress-circular color="primary" indeterminate></v-progress-circular>
+                        </div>
+
+                        <div v-else-if="totalStudentsCount === 0" class="d-flex justify-center align-center flex-column"
+                            style="height: 400px;">
+                            <v-icon icon="mdi-account-off" size="64" color="grey-lighten-2"></v-icon>
+                            <div class="text-h6 mt-4 text-grey">No Students Data</div>
+                        </div>
+
+                        <div v-else class="d-flex flex-column align-center py-4">
+                            <!-- SVG Pie Chart -->
+                            <div class="position-relative" style="width: 280px; height: 280px;">
+                                <svg viewBox="0 0 200 200" style="transform: rotate(-90deg);">
+                                    <!-- Background circle -->
+                                    <circle cx="100" cy="100" r="90" fill="none" stroke="#f0f0f0" stroke-width="20" />
+
+                                    <!-- Male segment -->
+                                    <circle v-if="totalMaleStudents > 0" cx="100" cy="100" r="90" fill="none"
+                                        stroke="#3b82f6" stroke-width="20"
+                                        :stroke-dasharray="`${(totalMaleStudents / totalStudentsCount) * 565.2} 565.2`"
+                                        class="chart-segment" />
+
+                                    <!-- Female segment -->
+                                    <circle v-if="totalFemaleStudents > 0" cx="100" cy="100" r="90" fill="none"
+                                        stroke="#ec4899" stroke-width="20"
+                                        :stroke-dasharray="`${(totalFemaleStudents / totalStudentsCount) * 565.2} 565.2`"
+                                        :stroke-dashoffset="`-${(totalMaleStudents / totalStudentsCount) * 565.2}`"
+                                        class="chart-segment" />
+
+                                    <!-- Other segment if exists -->
+                                    <circle v-if="(totalStudentsCount - totalMaleStudents - totalFemaleStudents) > 0"
+                                        cx="100" cy="100" r="90" fill="none" stroke="#8b5cf6" stroke-width="20"
+                                        :stroke-dasharray="`${((totalStudentsCount - totalMaleStudents - totalFemaleStudents) / totalStudentsCount) * 565.2} 565.2`"
+                                        :stroke-dashoffset="`-${((totalMaleStudents + totalFemaleStudents) / totalStudentsCount) * 565.2}`"
+                                        class="chart-segment" />
+                                </svg>
+
+                                <!-- Center text -->
+                                <div class="chart-center-text">
+                                    <div class="text-h3 font-weight-bold">{{ totalStudentsCount }}</div>
+                                    <div class="text-caption text-grey">Students</div>
                                 </div>
-                            </template>
-                        </v-pie>
+                            </div>
+
+                            <!-- Legend -->
+                            <v-list class="bg-transparent mt-4" density="compact" width="100%">
+                                <v-list-item v-for="item in genderItems" :key="item.key" class="mb-2">
+                                    <template v-slot:prepend>
+                                        <div :style="{
+                                            backgroundColor: item.key === 1 ? '#3b82f6' : item.key === 2 ? '#ec4899' : '#8b5cf6',
+                                            width: '16px',
+                                            height: '16px',
+                                            borderRadius: '4px',
+                                            marginRight: '12px'
+                                        }"></div>
+                                    </template>
+                                    <v-list-item-title>
+                                        <div class="d-flex justify-space-between align-center">
+                                            <span class="font-weight-medium">{{ item.title }}</span>
+                                            <span class="font-weight-bold">{{ item.value }} ({{ Math.round((item.value /
+                                                totalStudentsCount)
+                                                * 100) }}%)</span>
+                                        </div>
+                                    </v-list-item-title>
+                                </v-list-item>
+                            </v-list>
+                        </div>
                     </v-card>
                 </div>
 
@@ -265,12 +380,24 @@
 </template>
 
 <script setup>
+import { useStudentStore } from '~/store/studentStore'
+import { useGenerationStore } from '~/store/useGenerationStore'
+import { useAdminGroups } from '~/store/adminGroups'
+import { useSpecializationStore } from '~/store/useSpecializationStore'
+
 definePageMeta({
     layout: 'admin',
     middleware: ['auth']
 })
 
-// Search and filters
+// Stores
+const studentStore = useStudentStore()
+const generationStore = useGenerationStore()
+const groupStore = useAdminGroups()
+const specializationStore = useSpecializationStore()
+
+// State
+const loading = ref(false)
 const search = ref('')
 
 const filters = ref({
@@ -280,17 +407,135 @@ const filters = ref({
     specialize: null
 })
 
-const generationOptions = ['9', '10', '11', '12']
-const yearOptions = ['2023', '2024', '2025', '2026']
-const groupOptions = ['G1', 'G2', 'G3', 'G4']
-const specializeOptions = ['CS', 'IT', 'IS', 'SE']
+// Fetch data on mount
+onMounted(async () => {
+    await fetchDashboardData()
+})
+
+// Watch for generation store changes
+watch(() => generationStore.generations, (newVal) => {
+    console.log('Generations updated:', newVal?.length || 0)
+}, { deep: true })
+
+// Fetch all required data
+const fetchDashboardData = async () => {
+    loading.value = true
+    try {
+        await Promise.all([
+            studentStore.getAllStudents(),
+            generationStore.fetchGenerations(),
+            groupStore.fetchGroups(),
+            specializationStore.fetchSpecializations()
+        ])
+
+        // Debug log
+        console.log('Dashboard data loaded:', {
+            students: studentStore.students?.length || 0,
+            generations: generationStore.generations?.length || 0,
+            activeGenerations: generationStore.activeGenerations?.length || 0,
+            groups: groupStore.groups?.length || 0,
+            specializations: specializationStore.specializations?.length || 0
+        })
+
+        // Log generation details for debugging
+        console.log('Generation details:', generationStore.generations.map(g => ({
+            id: g.id,
+            generation: g.generation,
+            generation_name: g.generation_name,
+            active: g.active
+        })))
+    } catch (error) {
+        console.error('Error fetching dashboard data:', error)
+    } finally {
+        loading.value = false
+    }
+}
+
+// Filter options from stores
+const generationOptions = computed(() => {
+    // Use all generations if activeGenerations is empty, otherwise use activeGenerations
+    const generations = generationStore.activeGenerations.length > 0
+        ? generationStore.activeGenerations
+        : generationStore.generations
+
+    return generations.map(g => ({
+        title: g.generation || g.generation_name || `Generation ${g.id}`,
+        value: g.id
+    }))
+})
+
+const yearOptions = computed(() => {
+    // Get unique years from generations
+    const years = new Set()
+    generationStore.generations.forEach(g => {
+        if (g.start_year) years.add(g.start_year)
+        if (g.end_year) years.add(g.end_year)
+    })
+    return Array.from(years).sort().reverse()
+})
+
+const groupOptions = computed(() => {
+    return groupStore.groups
+        .filter(g => g.active)
+        .map(g => ({
+            title: g.group_name,
+            value: g.id
+        }))
+})
+
+const specializeOptions = computed(() => {
+    return specializationStore.specializations
+        .filter(s => s.active === 1)
+        .map(s => ({
+            title: s.name || s.specialization_name,
+            value: s.id
+        }))
+})
+
+// Filtered students based on filters
+const filteredStudents = computed(() => {
+    let students = studentStore.students || []
+
+    if (filters.value.generation) {
+        students = students.filter(s => s.generationId === filters.value.generation)
+    }
+    if (filters.value.group) {
+        students = students.filter(s => s.groupId === filters.value.group)
+    }
+    if (filters.value.specialize) {
+        students = students.filter(s => s.specializationId === filters.value.specialize)
+    }
+
+    return students
+})
+
+// Statistics computed from real data
+const totalStudentsCount = computed(() => filteredStudents.value.length)
+
+const totalMaleStudents = computed(() => {
+    return filteredStudents.value.filter(s =>
+        s.gender && (s.gender.toLowerCase() === 'male' || s.gender.toLowerCase() === 'm')
+    ).length
+})
+
+const totalFemaleStudents = computed(() => {
+    return filteredStudents.value.filter(s =>
+        s.gender && (s.gender.toLowerCase() === 'female' || s.gender.toLowerCase() === 'f')
+    ).length
+})
+
+const activeStudentsCount = computed(() => {
+    return filteredStudents.value.filter(s => s.active === true || s.status === 'Active').length
+})
+
+const inactiveStudentsCount = computed(() => {
+    return filteredStudents.value.filter(s => s.active === false || s.status === 'Inactive').length
+})
 
 // Filter actions
-const applyFilters = () => {
+const applyFilters = async () => {
     console.log('Applying filters:', filters.value)
-    // Filter dashboard data based on selected criteria
-    // This would typically refresh data from the API with filter parameters
-    // Example: fetchDashboardData(filters.value)
+    // Data is already filtered via computed property
 }
 
 const resetFilters = () => {
@@ -300,35 +545,74 @@ const resetFilters = () => {
         group: null,
         specialize: null
     }
-    console.log('Filters reset')
-    // Optionally reload data without filters
-    // fetchDashboardData()
 }
 
 // Chart data and filters
 const attendanceFilter = ref('This Week')
 
-// Attendance Distribution Data
+// Attendance Distribution Data (using active/inactive students as proxy)
 const attendanceTotal = computed(() => {
-    const total = attendanceItems.value.reduce((sum, item) => sum + item.value, 0)
-    return Math.round((total / 100) * 45) // Based on percentage
+    return totalStudentsCount.value
 })
 
-const attendanceItems = computed(() => [
-    { id: 1, title: 'Present', value: 75, color: '#22c55e' },
-    { id: 2, title: 'Absent', value: 15, color: '#ef4444' },
-    { id: 3, title: 'Leave', value: 10, color: '#f59e0b' }
-])
+const attendanceItems = computed(() => {
+    const total = totalStudentsCount.value
+    if (total === 0) return []
 
-// Gender Distribution Data
+    const active = activeStudentsCount.value
+    const inactive = inactiveStudentsCount.value
+
+    return [
+        {
+            key: 1,
+            title: 'Active',
+            value: active
+        },
+        {
+            key: 2,
+            title: 'Inactive',
+            value: inactive
+        }
+    ].filter(item => item.value > 0) // Only show items with data
+})
+
+// Gender Distribution Data from real data
 const genderTotal = computed(() => {
-    return genderItems.value.reduce((sum, item) => sum + item.value, 0)
+    return totalStudentsCount.value
 })
 
-const genderItems = ref([
-    { id: 1, title: 'Male', value: 23, color: '#3b82f6' },
-    { id: 2, title: 'Female', value: 22, color: '#ec4899' }
-])
+const genderItems = computed(() => {
+    const total = totalStudentsCount.value
+    if (total === 0) return []
+
+    const male = totalMaleStudents.value
+    const female = totalFemaleStudents.value
+    const other = total - male - female
+
+    const items = [
+        {
+            key: 1,
+            title: 'Male',
+            value: male
+        },
+        {
+            key: 2,
+            title: 'Female',
+            value: female
+        }
+    ]
+
+    // Add "Other" category if there are students without male/female gender
+    if (other > 0) {
+        items.push({
+            key: 3,
+            title: 'Other',
+            value: other
+        })
+    }
+
+    return items.filter(item => item.value > 0) // Only show items with data
+})
 </script>
 
 <style scoped>
@@ -604,6 +888,14 @@ const genderItems = ref([
     font-size: 16px;
 }
 
+.chart-circle {
+    position: relative;
+}
+
+.chart-circle :deep(.v-progress-circular__underlay) {
+    opacity: 0.3;
+}
+
 /* Table Card */
 .table-card {
     background: white;
@@ -780,5 +1072,26 @@ const genderItems = ref([
     .reset-btn {
         flex: 1;
     }
+}
+
+/* Chart Styles */
+.chart-center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.chart-segment {
+    transition: opacity 0.3s ease;
+}
+
+.chart-segment:hover {
+    opacity: 0.8;
+}
+
+.position-relative {
+    position: relative;
 }
 </style>
