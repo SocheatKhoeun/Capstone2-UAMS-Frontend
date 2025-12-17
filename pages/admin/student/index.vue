@@ -164,9 +164,6 @@
                                     <div class="header-content">Student Name</div>
                                 </th>
                                 <th class="modern-header-cell">
-                                    <div class="header-content">Student ID</div>
-                                </th>
-                                <th class="modern-header-cell">
                                     <div class="header-content">Email</div>
                                 </th>
                                 <th class="modern-header-cell">
@@ -201,9 +198,6 @@
                                         </v-avatar> -->
                                         <div class="group-name">{{ student.name }}</div>
                                     </div>
-                                </td>
-                                <td class="modern-table-cell">
-                                    <span class="">{{ student.studentId }}</span>
                                 </td>
                                 <td class="modern-table-cell">{{ student.email }}</td>
                                 <td class="modern-table-cell">
