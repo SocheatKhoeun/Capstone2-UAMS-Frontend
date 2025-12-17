@@ -1,9 +1,6 @@
 import Swal from "sweetalert2";
 
-// const swal = require('sweetalert2');
-
-export default {
-  install(Vue) {
-    Vue.prototype.$swal = Swal;
-  }
-};
+export default defineNuxtPlugin((nuxtApp) => {
+  nuxtApp.vueApp.config.globalProperties.$swal = Swal;
+  nuxtApp.provide("swal", Swal);
+});

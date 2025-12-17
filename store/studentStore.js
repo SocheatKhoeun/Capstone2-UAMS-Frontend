@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { useNuxtApp } from "#app";
+import { useUploadStore } from "~/store/uploadStore";
 import {
   transformStudentFromBackend,
   transformStudentsFromBackend,
@@ -154,34 +155,65 @@ export const useStudentStore = defineStore("studentStore", {
 
     // Create new student with profile image
     async createStudentWithImage(formData) {
-      const { $AdminPrivateAxios } = useNuxtApp();
+      const { $AdminPrivateAxios, $UserPrivateAxios } = useNuxtApp();
+      const uploadStore = useUploadStore();
       this.loading = true;
       this.error = null;
 
       try {
-        console.log("Sending student data with image...");
-        // Log all form data entries for debugging
+        console.log("Uploading profile image to uploads endpoint...");
+
+        // Find the file entry in the provided FormData
+        let file = null
+        let fileKey = null
         for (let [key, value] of formData.entries()) {
-          console.log(`${key}:`, value);
+          if (
+            (typeof File !== 'undefined' && value instanceof File) ||
+            (value && value.size && value.name)
+          ) {
+            file = value
+            fileKey = key
+            break
+          }
         }
 
-        const response = await $AdminPrivateAxios.post(
-          "/students/with-image",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-        const backendStudent = response.data.data || response.data;
-        const newStudent = transformStudentFromBackend(backendStudent);
+        if (!file) {
+          throw new Error('No file found in formData to upload')
+        }
+
+        const uploadForm = new FormData()
+        uploadForm.append('file', file)
+
+        // Upload via central uploadStore (it will prefer USER_PRIVATE_API from env)
+        const uploadResp = await uploadStore.uploadImage(uploadForm)
+
+        const uploadData = uploadResp.data?.data || uploadResp.data || uploadResp
+        const imageUrl = uploadData?.url || uploadData?.secure_url || null
+
+        if (!imageUrl) {
+          console.warn('Upload completed but no URL returned', uploadData)
+        }
+
+        // Build backend payload from original FormData (skip the file entry)
+        const backendPayload = {}
+        for (let [key, value] of formData.entries()) {
+          if (key === fileKey) continue
+          backendPayload[key] = value
+        }
+
+        // Attach uploaded image URL so backend can persist it
+        if (imageUrl) backendPayload.profile_image = imageUrl
+
+        // Create student using regular student creation endpoint
+        const response = await $AdminPrivateAxios.post('/students/', backendPayload)
+        const backendStudent = response.data?.data || response.data
+        const newStudent = transformStudentFromBackend(backendStudent)
 
         // Add to local state
-        this.students.push(newStudent);
+        this.students.push(newStudent)
 
-        console.log("Student created with image:", newStudent);
-        return newStudent;
+        console.log('Student created with image:', newStudent)
+        return newStudent
       } catch (error) {
         console.error("Failed to create student with image", error);
         console.error("Error response:", error.response?.data);

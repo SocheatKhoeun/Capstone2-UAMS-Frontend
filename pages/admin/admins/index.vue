@@ -142,9 +142,6 @@
                                     <div class="header-content">Admin Name</div>
                                 </th>
                                 <th class="modern-header-cell">
-                                    <div class="header-content">Admin ID</div>
-                                </th>
-                                <th class="modern-header-cell">
                                     <div class="header-content">Email</div>
                                 </th>
                                 <th class="modern-header-cell">
@@ -165,9 +162,6 @@
                                 </td>
                                 <td class="modern-table-cell">
                                     <div class="group-name">{{ admin.name }}</div>
-                                </td>
-                                <td class="modern-table-cell">
-                                    <span class="">{{ admin.adminId }}</span>
                                 </td>
                                 <td class="modern-table-cell">{{ admin.email }}</td>
                                 <td class="modern-table-cell">{{ admin.department }}</td>
