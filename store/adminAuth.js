@@ -167,7 +167,7 @@ export const adminAuth = defineStore('adminAuth', {
                     return;
                 }
 
-                const response = await $AdminPrivateAxios.post('/refresh-token');
+                const response = await $AdminPrivateAxios.post('/refresh');
                 
                 if(response.data.success === false) {
                     console.error('Refresh token failed:', response.data.message);
