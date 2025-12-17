@@ -110,9 +110,6 @@
                                     <div class="header-content">#</div>
                                 </th>
                                 <th class="modern-header-cell center-align">
-                                    <div class="header-content">Global ID</div>
-                                </th>
-                                <th class="modern-header-cell center-align">
                                     <div class="header-content">Term Name</div>
                                 </th>
                                 <th class="modern-header-cell center-align">
@@ -130,9 +127,6 @@
                             <tr v-for="(term, index) in paginatedTerms" :key="term.id" class="modern-table-row">
                                 <td class="modern-table-cell id-column">
                                     <div class="id-badge">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</div>
-                                </td>
-                                <td class="modern-table-cell center-align">
-                                    <div class="code-badge">{{ term.global_id }}</div>
                                 </td>
                                 <td class="modern-table-cell center-align">
                                     <div class="term-info">
@@ -235,10 +229,6 @@
                                 <div class="detail-item">
                                     <div class="detail-label">Term ID</div>
                                     <div class="detail-value">{{ selectedTerm.id }}</div>
-                                </div>
-                                <div class="detail-item">
-                                    <div class="detail-label">Global ID</div>
-                                    <div class="detail-value">{{ selectedTerm.global_id }}</div>
                                 </div>
                                 <div class="detail-item">
                                     <div class="detail-label">Term Name</div>

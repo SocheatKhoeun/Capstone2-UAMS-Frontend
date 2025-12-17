@@ -12,7 +12,12 @@
               <h1 class="page-title">Lecturer Management</h1>
               <div class="breadcrumb">
                 <span class="breadcrumb-item">Admin</span>
-                <v-icon icon="mdi-chevron-right" size="16" color="grey" class="breadcrumb-separator" />
+                <v-icon
+                  icon="mdi-chevron-right"
+                  size="16"
+                  color="grey"
+                  class="breadcrumb-separator"
+                />
                 <span class="breadcrumb-item active">Lecturers</span>
               </div>
             </div>
@@ -20,66 +25,26 @@
           <div class="stats-cards">
             <div class="stat-card">
               <div class="stat-number">{{ lecturers.length }}</div>
-              <div class="stat-label">Total Lecturers</div>
+              <div class="stat-label">Total</div>
             </div>
             <div class="stat-card">
-              <div class="stat-number">{{ activeLecturerCount }}</div>
+              <div class="stat-number">{{ activeCount }}</div>
               <div class="stat-label">Active</div>
             </div>
             <div class="stat-card">
-              <div class="stat-number">{{ inactiveLecturerCount }}</div>
+              <div class="stat-number">{{ inactiveCount }}</div>
               <div class="stat-label">Inactive</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-number">{{ uniqueDepartments }}</div>
-              <div class="stat-label">Departments</div>
             </div>
           </div>
         </div>
 
         <div class="action-section">
-          <v-menu offset-y>
-            <template v-slot:activator="{ props }">
-              <v-btn class="modern-btn import-btn" prepend-icon="mdi-download" variant="outlined" v-bind="props">
-                Import
-                <v-icon icon="mdi-chevron-down" size="16" class="ml-1" />
-              </v-btn>
-            </template>
-            <v-list class="modern-menu">
-              <v-list-item class="menu-item">
-                <template v-slot:prepend>
-                  <v-icon icon="mdi-file-excel" color="success" />
-                </template>
-                <v-list-item-title>Import from CSV/Excel</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-
-          <v-menu offset-y>
-            <template v-slot:activator="{ props }">
-              <v-btn class="modern-btn export-btn" prepend-icon="mdi-upload" variant="outlined" v-bind="props">
-                Export
-                <v-icon icon="mdi-chevron-down" size="16" class="ml-1" />
-              </v-btn>
-            </template>
-            <v-list class="modern-menu">
-              <v-list-item class="menu-item">
-                <template v-slot:prepend>
-                  <v-icon icon="mdi-file-excel" color="success" />
-                </template>
-                <v-list-item-title>Export to Excel</v-list-item-title>
-              </v-list-item>
-              <v-list-item class="menu-item">
-                <template v-slot:prepend>
-                  <v-icon icon="mdi-file-pdf-box" color="error" />
-                </template>
-                <v-list-item-title>Export to PDF</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-
-          <v-btn class="modern-btn add-btn" prepend-icon="mdi-plus" variant="flat" color="primary"
-            @click="openCreateDialog" elevation="2">
+          <v-btn
+            class="modern-btn add-btn"
+            prepend-icon="mdi-plus"
+            variant="flat"
+            @click="openCreateDialog"
+          >
             Add Lecturer
           </v-btn>
         </div>
@@ -89,328 +54,447 @@
     <!-- Modern Table Section -->
     <div class="modern-table-section">
       <div class="table-container">
-        <!-- Table Header with Search and Filters -->
+        <!-- Toolbar -->
         <div class="table-toolbar">
           <div class="toolbar-left">
             <h2 class="table-title">
-              <v-icon icon="mdi-table" size="20" class="mr-2" />
+              <v-icon icon="mdi-account-group" size="20" class="mr-2" />
               Lecturer Information
             </h2>
-            <!-- <div class="table-subtitle">Manage and organize lecturer accounts</div> -->
+            <div class="table-subtitle">
+              Manage and organize lecturer accounts
+            </div>
           </div>
-
           <div class="toolbar-right">
             <div class="search-container">
-              <v-text-field v-model="searchQuery" prepend-inner-icon="mdi-magnify" label="Search lecturers..."
-                variant="outlined" density="compact" hide-details class="search-input" clearable />
+              <v-text-field
+                v-model="searchQuery"
+                placeholder="Search lecturers..."
+                prepend-inner-icon="mdi-magnify"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="search-input"
+                clearable
+              />
             </div>
 
-            <v-select v-model="tableSortOrder" :items="tableSortOptions" label="Sort By" variant="outlined"
-              density="compact" hide-details class="sort-select" />
+            <v-menu
+              v-model="showFilters"
+              offset-y
+              transition="scale-transition"
+              max-width="320"
+            >
+              <template #activator="{ props }">
+                <v-btn v-bind="props" variant="outlined" class="filter-btn">
+                  <v-icon icon="mdi-filter-variant" />
+                </v-btn>
+              </template>
 
-            <v-btn icon="mdi-filter-variant" variant="outlined" density="comfortable" class="filter-btn"
-              :class="{ 'active': showFilters }" @click="showFilters = !showFilters" />
+              <v-card elevation="4" class="pa-2">
+                <v-card-text class="py-2 px-3">
+                  <div class="filters-content">
+                    <div class="filter-group">
+                      <label class="filter-label">Status</label>
+                      <v-chip-group
+                        v-model="statusFilter"
+                        selected-class="text-primary"
+                        column
+                      >
+                        <v-chip value="All" variant="outlined">All</v-chip>
+                        <v-chip value="1" variant="outlined" color="success"
+                          >Active</v-chip
+                        >
+                        <v-chip value="0" variant="outlined" color="error"
+                          >Inactive</v-chip
+                        >
+                      </v-chip-group>
+                    </div>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </v-menu>
           </div>
         </div>
 
-        <!-- Collapsible Filters -->
-        <v-expand-transition>
-          <div v-show="showFilters" class="filters-section">
-            <div class="filters-grid">
-              <div class="filter-item">
-                <label class="filter-label">Department</label>
-                <v-select v-model="departmentFilter" :items="departmentOptions" variant="outlined" density="compact"
-                  hide-details clearable />
-              </div>
-              <div class="filter-item">
-                <label class="filter-label">Specialization</label>
-                <v-select v-model="specializationFilter" :items="specializationOptions" variant="outlined"
-                  density="compact" hide-details clearable />
-              </div>
-              <div class="filter-item">
-                <label class="filter-label">Status</label>
-                <v-select v-model="statusFilter" :items="statusOptions" variant="outlined" density="compact"
-                  hide-details clearable />
-              </div>
-              <div class="filter-item">
-                <label class="filter-label" style="opacity: 0;">Actions</label>
-                <v-btn class="reset-btn" prepend-icon="mdi-refresh" variant="outlined" block @click="resetFilters">
-                  Reset
-                </v-btn>
-              </div>
-            </div>
-          </div>
-        </v-expand-transition>
-
-        <!-- Modern Table -->
-        <div class="modern-table-wrapper">
+        <!-- Table -->
+        <div class="table-scroll-wrapper">
           <v-table class="modern-table">
             <thead>
               <tr class="modern-header-row">
-                <th class="modern-header-cell id-column">
-                  <div class="header-content">ID</div>
-                </th>
-                <th class="modern-header-cell">
-                  <div class="header-content">Lecturer Name</div>
-                </th>
-                <th class="modern-header-cell">
-                  <div class="header-content">Employee ID</div>
-                </th>
-                <th class="modern-header-cell">
-                  <div class="header-content">Email</div>
-                </th>
-                <th class="modern-header-cell">
-                  <div class="header-content">Phone</div>
-                </th>
-                <th class="modern-header-cell">
-                  <div class="header-content">Position</div>
-                </th>
-                <th class="modern-header-cell center-align">
-                  <div class="header-content">Courses</div>
-                </th>
-                <th class="modern-header-cell center-align">
-                  <div class="header-content">Status</div>
-                </th>
-                <th class="modern-header-cell center-align">
-                  <div class="header-content">Actions</div>
-                </th>
+                <th class="modern-header-cell">#</th>
+                <th class="modern-header-cell">Full Name</th>
+                <th class="modern-header-cell">Email</th>
+                <th class="modern-header-cell">Phone</th>
+                <th class="modern-header-cell">Position</th>
+                <th class="modern-header-cell">Status</th>
+                <th class="modern-header-cell">Actions</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(lecturer, index) in paginatedLecturers" :key="lecturer.id" class="modern-table-row">
-                <td class="modern-table-cell id-column">
-                  <span class="">{{ index + 1 }}</span>
-                </td>
+              <tr
+                v-for="(lecturer, index) in paginatedLecturers"
+                :key="lecturer.global_id"
+                class="modern-table-row"
+              >
                 <td class="modern-table-cell">
-                  <div class="group-info">
-                    <!-- <v-avatar size="36" class="group-avatar" color="green">
-                      <span class="text-white text-subtitle-2 font-weight-medium">
-                        {{ lecturer.name.charAt(0) }}
-                      </span>
-                    </v-avatar> -->
-                    <div class="group-name">{{ lecturer.name }}</div>
+                  <div class="id-badge">
+                    {{ (currentPage - 1) * itemsPerPage + index + 1 }}
                   </div>
                 </td>
                 <td class="modern-table-cell">
-                  <span class="">{{ lecturer.employeeId }}</span>
+                  <div class="lecturer-name">
+                    {{ lecturer.first_name }} {{ lecturer.last_name }}
+                  </div>
                 </td>
                 <td class="modern-table-cell">{{ lecturer.email }}</td>
-                <td class="modern-table-cell">{{ lecturer.phone || 'N/A' }}</td>
                 <td class="modern-table-cell">
-                  <v-chip size="small" variant="tonal"
-                    :color="lecturer.position === 'professor' ? 'purple' : lecturer.position === 'assistant' ? 'blue' : 'green'">
-                    {{ lecturer.position || 'Lecturer' }}
+                  {{ lecturer.phone_number || "N/A" }}
+                </td>
+                <td class="modern-table-cell">
+                  <v-chip
+                    size="small"
+                    variant="tonal"
+                    :color="positionColor(lecturer.position)"
+                  >
+                    {{ capitalize(lecturer.position || "Lecturer") }}
                   </v-chip>
                 </td>
-                <td class="modern-table-cell center-align">
-                  <v-chip size="small" variant="outlined" color="primary">
-                    {{ lecturer.courseCount || 0 }} courses
+                <td class="modern-table-cell">
+                  <v-chip
+                    :color="lecturer.active === 1 ? 'success' : 'error'"
+                    size="small"
+                    class="status-chip"
+                  >
+                    <v-icon start size="16">
+                      {{
+                        lecturer.active === 1
+                          ? "mdi-check-circle"
+                          : "mdi-close-circle"
+                      }}
+                    </v-icon>
+                    {{ lecturer.active === 1 ? "Active" : "Inactive" }}
                   </v-chip>
                 </td>
-                <td class="modern-table-cell center-align">
-                  <v-chip :color="lecturer.status === 'Active' ? 'success' : 'warning'" class="status-chip"
-                    size="small">
-                    <v-icon start size="16">mdi-check-circle</v-icon>
-                    {{ lecturer.status === 'Active' ? 'active' : 'on leave' }}
-                  </v-chip>
-                </td>
-                <td class="modern-table-cell center-align">
+                <td class="modern-table-cell">
                   <div class="action-group">
-                    <v-btn icon class="action-btn" @click="openEditDialog(lecturer)">
-                      <v-icon color="#fde047">mdi-pencil</v-icon>
+                    <v-btn
+                      icon
+                      size="small"
+                      class="action-btn"
+                      @click="openViewDialog(lecturer)"
+                    >
+                      <v-icon size="18" color="#3b82f6">mdi-eye</v-icon>
                     </v-btn>
-                    <v-btn icon class="action-btn" @click="confirmDelete(lecturer)">
-                      <v-icon color="#dc2626">mdi-delete</v-icon>
+                    <v-btn
+                      icon
+                      size="small"
+                      class="action-btn"
+                      @click="openEditDialog(lecturer)"
+                    >
+                      <v-icon size="18" color="#f59e0b">mdi-pencil</v-icon>
                     </v-btn>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Empty State -->
-              <tr v-if="filteredLecturers.length === 0">
-                <td colspan="7" class="modern-table-cell">
-                  <div class="empty-state">
-                    <v-icon size="64" color="grey-lighten-1">mdi-account-tie-outline</v-icon>
-                    <p class="empty-title">No lecturers found</p>
-                    <p class="empty-subtitle">Try adjusting your filters or add a new lecturer</p>
+                    <v-btn
+                      icon
+                      size="small"
+                      class="action-btn"
+                      @click="toggleStatus(lecturer)"
+                    >
+                      <v-icon
+                        size="18"
+                        :color="lecturer.active === 1 ? '#dc2626' : '#10b981'"
+                      >
+                        {{
+                          lecturer.active === 1
+                            ? "mdi-account-off"
+                            : "mdi-account-check"
+                        }}
+                      </v-icon>
+                    </v-btn>
                   </div>
                 </td>
               </tr>
             </tbody>
           </v-table>
 
-          <!-- Pagination Footer -->
-          <div v-if="filteredLecturers.length > 0" class="pagination-section">
-            <v-btn variant="outlined" :disabled="currentPage === 1" @click="goToPrevPage" class="pagination-btn">
-              Previous
-            </v-btn>
-
-            <div class="pagination-info">
-              <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
-            </div>
-
-            <v-btn variant="outlined" :disabled="currentPage >= totalPages" @click="goToNextPage"
-              class="pagination-btn">
-              Next
+          <!-- Empty State -->
+          <div v-if="filteredLecturers.length === 0" class="empty-state">
+            <v-icon
+              icon="mdi-account-tie-outline"
+              size="64"
+              color="grey-lighten-1"
+            />
+            <h3 class="empty-title">No lecturers found</h3>
+            <p class="empty-subtitle">
+              Create your first lecturer to get started with teaching staff
+              management.
+            </p>
+            <v-btn
+              color="primary"
+              variant="flat"
+              @click="openCreateDialog"
+              class="mt-4"
+            >
+              <v-icon start>mdi-plus</v-icon>
+              Add Lecturer
             </v-btn>
           </div>
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="filteredLecturers.length > 0" class="pagination-section">
+          <v-btn
+            variant="outlined"
+            :disabled="currentPage === 1"
+            @click="currentPage--"
+            class="pagination-btn"
+          >
+            Previous
+          </v-btn>
+          <div class="pagination-info">
+            <span class="pagination-text"
+              >Page {{ currentPage }} of {{ totalPages }}</span
+            >
+          </div>
+          <v-btn
+            variant="outlined"
+            :disabled="currentPage >= totalPages"
+            @click="currentPage++"
+            class="pagination-btn"
+          >
+            Next
+          </v-btn>
         </div>
       </div>
     </div>
 
     <!-- Create/Edit Dialog -->
-    <v-dialog v-model="dialogOpen" max-width="700px" persistent class="modern-dialog">
-      <v-card>
+    <v-dialog v-model="dialog" max-width="700px" persistent>
+      <v-card class="modern-dialog" elevation="24">
+        <!-- Dialog Header -->
         <div class="dialog-header">
           <div class="header-content">
             <div class="header-icon">
-              <v-icon color="white" size="24">{{ isEdit ? 'mdi-pencil' : 'mdi-plus' }}</v-icon>
+              <v-icon :icon="isEdit ? 'mdi-pencil' : 'mdi-plus'" size="24" />
             </div>
             <div class="header-text">
-              <h3 class="dialog-title">{{ isEdit ? 'Edit Lecturer' : 'Add New Lecturer' }}</h3>
+              <h2 class="dialog-title">
+                {{ isEdit ? "Edit Lecturer" : "Create Lecturer" }}
+              </h2>
               <p class="dialog-subtitle">
-                {{ isEdit ? 'Update lecturer information' : 'Fill in the lecturer details below' }}
+                {{
+                  isEdit
+                    ? "Update lecturer information"
+                    : "Add a new lecturer to the system"
+                }}
               </p>
             </div>
           </div>
-          <v-btn icon variant="text" class="close-btn" @click="closeDialog">
+          <v-btn icon variant="text" @click="closeDialog" class="close-btn">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </div>
 
+        <v-divider />
+
+        <!-- Dialog Form -->
         <v-card-text class="dialog-content">
-          <v-form ref="formRef" v-model="formValid">
-            <div class="form-group">
-              <label class="form-label">Employee ID *</label>
-              <v-text-field v-model="formData.employeeId" :rules="employeeIdRules" variant="outlined"
-                density="comfortable" placeholder="e.g., EMP001" class="form-field" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Full Name *</label>
-              <v-text-field v-model="formData.name" :rules="nameRules" variant="outlined" density="comfortable"
-                placeholder="Enter lecturer full name" class="form-field" />
-            </div>
-
-            <v-row>
-              <v-col cols="6">
-                <div class="form-group">
-                  <label class="form-label">Email *</label>
-                  <v-text-field v-model="formData.email" :rules="emailRules" variant="outlined" density="comfortable"
-                    placeholder="lecturer@example.com" class="form-field" />
-                </div>
+          <v-form
+            ref="formRef"
+            v-model="formValid"
+            @submit.prevent="submitForm"
+          >
+            <v-row dense>
+              <!-- First Name -->
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="formData.first_name"
+                  label="First Name *"
+                  placeholder="John"
+                  :rules="requiredRules"
+                  variant="outlined"
+                  density="comfortable"
+                  hide-details="auto"
+                />
               </v-col>
-              <v-col cols="6">
-                <div class="form-group">
-                  <label class="form-label">Phone *</label>
-                  <v-text-field v-model="formData.phone" :rules="phoneRules" variant="outlined" density="comfortable"
-                    placeholder="+855 11 234 567" class="form-field" />
-                </div>
+
+              <!-- Last Name -->
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="formData.last_name"
+                  label="Last Name *"
+                  placeholder="Doe"
+                  :rules="requiredRules"
+                  variant="outlined"
+                  density="comfortable"
+                  hide-details="auto"
+                />
+              </v-col>
+
+              <!-- Email -->
+              <v-col cols="12" md="8">
+                <v-text-field
+                  v-model="formData.email"
+                  label="Email Address *"
+                  type="email"
+                  placeholder="john.doe@example.com"
+                  :rules="emailRules"
+                  variant="outlined"
+                  density="comfortable"
+                  hide-details="auto"
+                />
+              </v-col>
+
+              <!-- Phone -->
+              <v-col cols="12" md="4">
+                <v-text-field
+                  v-model="formData.phone_number"
+                  label="Phone Number"
+                  placeholder="+855 12 345 678"
+                  variant="outlined"
+                  density="comfortable"
+                  hide-details="auto"
+                />
+              </v-col>
+
+              <!-- Position -->
+              <v-col cols="12" md="6">
+                <v-select
+                  v-model="formData.position"
+                  label="Position *"
+                  :items="positionOptions"
+                  :rules="requiredRules"
+                  variant="outlined"
+                  density="comfortable"
+                  hide-details="auto"
+                />
+              </v-col>
+
+              <!-- Password (only on create) -->
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="formData.password"
+                  label="Password"
+                  type="password"
+                  placeholder="Min 8 characters"
+                  :rules="passwordRules"
+                  variant="outlined"
+                  density="comfortable"
+                  hide-details="auto"
+                />
+              </v-col>
+
+              <!-- Status -->
+              <v-col cols="12" md="6">
+                <v-select
+                  v-model="formData.active"
+                  label="Status *"
+                  :items="statusItems"
+                  item-title="title"
+                  item-value="value"
+                  variant="outlined"
+                  density="comfortable"
+                  hide-details="auto"
+                />
               </v-col>
             </v-row>
 
-            <v-row v-if="!isEdit">
-              <v-col cols="12">
-                <div class="form-group">
-                  <label class="form-label">Password *</label>
-                  <v-text-field v-model="formData.password" :rules="passwordRules" type="password" variant="outlined"
-                    density="comfortable" placeholder="Min 8 characters" class="form-field" />
-                </div>
-              </v-col>
-            </v-row>
-
-            <v-row>
-              <v-col cols="6">
-                <div class="form-group">
-                  <label class="form-label">Position *</label>
-                  <v-select v-model="formData.position" :items="[
-                    { title: 'Professor', value: 'professor' },
-                    { title: 'Lecturer', value: 'lecturer' },
-                    { title: 'Assistant', value: 'assistant' }
-                  ]" :rules="positionRules" variant="outlined" density="comfortable" class="form-field"
-                    item-title="title" item-value="value" />
-                </div>
-              </v-col>
-              <v-col cols="6">
-                <div class="form-group">
-                  <label class="form-label">Department</label>
-                  <v-select v-model="formData.department_id" :items="departments" item-title="name" item-value="id"
-                    variant="outlined" density="comfortable" class="form-field" clearable />
-                </div>
-              </v-col>
-            </v-row>
-
-            <v-row>
-              <v-col cols="12">
-                <div class="form-group">
-                  <label class="form-label">Specialization</label>
-                  <v-select v-model="formData.specialization_id" :items="specializations" item-title="name"
-                    item-value="id" variant="outlined" density="comfortable" class="form-field" clearable />
-                </div>
-              </v-col>
-            </v-row>
-
-            <div class="form-group">
-              <div class="switch-container">
-                <v-switch v-model="formData.active" color="green-darken-1" hide-details>
-                  <template v-slot:label>
-                    <div class="switch-info">
-                      <span class="form-label">Active Status</span>
-                      <span class="switch-description">Lecturer is currently active</span>
-                    </div>
-                  </template>
-                </v-switch>
-              </div>
+            <!-- Actions -->
+            <div class="form-actions mt-6 d-flex justify-space-between w-100">
+              <v-btn
+                variant="outlined"
+                @click="closeDialog"
+                :disabled="loading"
+              >
+                Cancel
+              </v-btn>
+              <v-btn
+                type="submit"
+                color="primary"
+                variant="flat"
+                :loading="loading"
+                :disabled="!formValid"
+              >
+                {{ isEdit ? "Update" : "Create" }} Lecturer
+              </v-btn>
             </div>
           </v-form>
         </v-card-text>
-
-        <v-card-actions class="dialog-actions">
-          <v-spacer />
-          <v-btn variant="outlined" class="action-btn cancel-btn" @click="closeDialog" :disabled="formLoading">
-            Cancel
-          </v-btn>
-          <v-btn :color="isEdit ? 'warning' : 'primary'" class="action-btn submit-btn" @click="submitForm"
-            :loading="formLoading" :disabled="!formValid">
-            {{ isEdit ? 'Update' : 'Create' }} Lecturer
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <!-- Delete Confirmation Dialog -->
-    <v-dialog v-model="deleteDialog" max-width="500px" persistent class="delete-dialog">
-      <v-card>
-        <div class="delete-header">
-          <div class="delete-icon-container">
-            <v-icon size="48" color="error">mdi-alert-circle-outline</v-icon>
+    <!-- View Dialog -->
+    <v-dialog v-model="viewDialog" max-width="600px">
+      <v-card class="modern-dialog" elevation="24">
+        <div class="dialog-header">
+          <div class="header-content">
+            <div class="header-icon">
+              <v-icon icon="mdi-eye" color="info" size="24" />
+            </div>
+            <div class="header-text">
+              <h2 class="dialog-title">Lecturer Details</h2>
+              <p class="dialog-subtitle">View complete lecturer information</p>
+            </div>
           </div>
-          <h3 class="delete-title">Delete Lecturer</h3>
-          <p class="delete-subtitle">This action cannot be undone</p>
+          <v-btn
+            icon
+            variant="text"
+            @click="viewDialog = false"
+            class="close-btn"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
         </div>
-
-        <v-card-text class="delete-content">
-          <div class="warning-box">
-            <v-icon class="warning-icon" color="warning">mdi-alert</v-icon>
-            <div class="warning-text">
-              <p class="warning-message">
-                Are you sure you want to delete
-                <strong class="group-name">{{ selectedLecturer?.name }}</strong>?
-              </p>
-              <p class="warning-details">
-                All associated data will be permanently removed from the system.
-              </p>
+        <v-divider />
+        <v-card-text v-if="selectedLecturer" class="dialog-content">
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label class="detail-label">Full Name</label>
+              <div class="detail-value">
+                {{ selectedLecturer.first_name }}
+                {{ selectedLecturer.last_name }}
+              </div>
+            </div>
+            <div class="detail-item">
+              <label class="detail-label">Email</label>
+              <div class="detail-value">{{ selectedLecturer.email }}</div>
+            </div>
+            <div class="detail-item">
+              <label class="detail-label">Phone</label>
+              <div class="detail-value">
+                {{ selectedLecturer.phone_number || "N/A" }}
+              </div>
+            </div>
+            <div class="detail-item">
+              <label class="detail-label">Position</label>
+              <div class="detail-value">
+                <v-chip
+                  size="small"
+                  variant="tonal"
+                  :color="positionColor(selectedLecturer.position)"
+                >
+                  {{ capitalize(selectedLecturer.position || "Lecturer") }}
+                </v-chip>
+              </div>
+            </div>
+            <div class="detail-item">
+              <label class="detail-label">Status</label>
+              <div class="detail-value">
+                <v-chip
+                  :color="selectedLecturer.active === 1 ? 'success' : 'error'"
+                  size="small"
+                >
+                  {{ selectedLecturer.active === 1 ? "Active" : "Inactive" }}
+                </v-chip>
+              </div>
             </div>
           </div>
         </v-card-text>
-
-        <v-card-actions class="delete-actions">
+        <v-divider />
+        <v-card-actions class="dialog-actions">
           <v-spacer />
-          <v-btn variant="outlined" @click="deleteDialog = false" :disabled="deleteLoading">
-            Cancel
-          </v-btn>
-          <v-btn color="error" class="delete-btn" @click="handleDelete" :loading="deleteLoading">
-            Delete Lecturer
+          <v-btn color="primary" variant="flat" @click="viewDialog = false">
+            Close
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -418,430 +502,288 @@
   </div>
 </template>
 
-<script setup>
-import { useLecturerStore } from '@/store/lecturerStore'
-import Swal from 'sweetalert2'
+<script setup lang="ts">
+import { ref, computed, onMounted } from "vue";
+import { useLecturerStore } from "@/store/admins/LecturerStore";
+import Swal from "sweetalert2";
+
+interface Lecturer {
+  global_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number?: string;
+  position: string;
+  active: number;
+}
 
 definePageMeta({
-  layout: 'admin',
-})
+  layout: "admin",
+  middleware: ["auth"],
+});
 
-const lecturerStore = useLecturerStore()
-const pageLoading = ref(false)
+const lecturerStore = useLecturerStore();
 
-// Reactive data
-const showFilters = ref(false)
-const dialogOpen = ref(false)
-const deleteDialog = ref(false)
-const selectedLecturer = ref(null)
-const isEdit = ref(false)
-const formValid = ref(false)
-const formRef = ref(null)
-const formLoading = ref(false)
-const deleteLoading = ref(false)
+const searchQuery = ref("");
+const statusFilter = ref("All");
+const showFilters = ref(false);
+const currentPage = ref(1);
+const itemsPerPage = 10;
 
-// Search and filters
-const searchQuery = ref('')
-const statusFilter = ref('All')
-const departmentFilter = ref('All')
-const specializationFilter = ref('All')
-const tableSortOrder = ref('A-Z')
+const dialog = ref(false);
+const viewDialog = ref(false);
+const isEdit = ref(false);
+const loading = ref(false);
+const selectedLecturer = ref<any>(null);
+const formValid = ref(false);
 
-// Pagination
-const currentPage = ref(1)
-const itemsPerPage = ref(10)
+const formData = ref({
+  first_name: "",
+  last_name: "",
+  email: "",
+  phone_number: "",
+  position: "lecturer",
+  password: "",
+  active: true,
+});
 
-// Form data
-const formData = reactive({
-  employeeId: '',
-  name: '',
-  email: '',
-  phone: '',
-  password: '',
-  position: 'lecturer', // professor, lecturer, or assistant
-  department_id: null,
-  specialization_id: null,
-  active: true
-})
-
-// Validation rules
-const employeeIdRules = [
-  v => !!v || 'Employee ID is required',
-  v => (v && v.length >= 3) || 'Employee ID must be at least 3 characters'
-]
-
-const nameRules = [
-  v => !!v || 'Name is required',
-  v => (v && v.length >= 2) || 'Name must be at least 2 characters'
-]
-
+const requiredRules = [(v: any) => !!v || "This field is required"];
 const emailRules = [
-  v => !!v || 'Email is required',
-  v => /.+@.+\..+/.test(v) || 'Email must be valid'
-]
-
+  ...requiredRules,
+  (v: string) => /.+@.+\..+/.test(v) || "Valid email required",
+];
 const passwordRules = [
-  v => !!v || 'Password is required',
-  v => (v && v.length >= 8) || 'Password must be at least 8 characters'
-]
+  (v: any) => !!v || "Password required",
+  (v: string) => v.length >= 8 || "Min 8 characters",
+];
 
-const phoneRules = [v => !!v || 'Phone is required']
-const positionRules = [v => !!v || 'Position is required']
-const departmentRules = [] // Optional
-const specializationRules = [] // Optional
+const positionOptions = [
+  { title: "Professor", value: "professor" },
+  { title: "Lecturer", value: "lecturer" },
+  { title: "Assistant", value: "assistant" },
+];
 
-// Dynamic data from database
-const specializations = ref([])
-const departments = ref([])
+const statusItems = [
+  { title: "Active", value: true },
+  { title: "Inactive", value: false },
+];
 
-// Filter options - dynamic from database
-const departmentOptions = computed(() => {
-  const depts = departments.value.map(d => d.name)
-  return ['All', ...depts]
-})
-const specializationOptions = computed(() => {
-  const specs = specializations.value.map(s => s.name)
-  return ['All', ...specs]
-})
-const statusOptions = ['All', 'Active', 'Inactive']
-const tableSortOptions = ['A-Z', 'Z-A', 'Active First', 'Department']
+const lecturers = computed<Lecturer[]>(() => lecturerStore.lecturers);
 
-// Lecturer data from store
-const lecturers = computed(() => lecturerStore.lecturers)
+const activeCount = computed(
+  () => lecturers.value.filter((l) => l.active === 1).length
+);
+const inactiveCount = computed(
+  () => lecturers.value.filter((l) => l.active === 0).length
+);
 
-// Fetch lecturers on mount
-onMounted(async () => {
-  await Promise.all([
-    fetchLecturers(),
-    fetchSpecializations(),
-    fetchDepartments()
-  ])
-})
+const filteredLecturers = computed<Lecturer[]>(() => {
+  let list = lecturers.value;
 
-const fetchLecturers = async () => {
-  pageLoading.value = true
-  try {
-    await lecturerStore.getAllLecturers()
-  } catch (error) {
-    console.error('Error fetching lecturers:', error)
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Failed to load lecturers. Please try again.',
-      confirmButtonColor: '#3b82f6'
-    })
-  } finally {
-    pageLoading.value = false
-  }
-}
-
-const fetchSpecializations = async () => {
-  try {
-    specializations.value = await lecturerStore.fetchSpecializations()
-  } catch (error) {
-    console.error('Failed to fetch specializations:', error)
-  }
-}
-
-const fetchDepartments = async () => {
-  try {
-    departments.value = await lecturerStore.fetchDepartments()
-  } catch (error) {
-    console.error('Failed to fetch departments:', error)
-  }
-}
-
-// Pagination computed
-const totalPages = computed(() => {
-  return Math.ceil(filteredLecturers.value.length / itemsPerPage.value)
-})
-
-const paginatedLecturers = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  return filteredLecturers.value.slice(start, end)
-})
-
-const goToPrevPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--
-  }
-}
-
-const goToNextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++
-  }
-}
-
-// Computed filtered lecturers
-const filteredLecturers = computed(() => {
-  let filtered = [...lecturers.value]
-
-  // Search filter
   if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(l =>
-      l.name.toLowerCase().includes(query) ||
-      l.email.toLowerCase().includes(query) ||
-      l.employeeId.toLowerCase().includes(query)
-    )
+    const q = searchQuery.value.toLowerCase();
+    list = list.filter(
+      (l) =>
+        `${l.first_name} ${l.last_name}`.toLowerCase().includes(q) ||
+        l.email.toLowerCase().includes(q)
+    );
   }
 
-  // Status filter
-  if (statusFilter.value !== 'All') {
-    filtered = filtered.filter(l => l.status === statusFilter.value)
+  if (statusFilter.value !== "All") {
+    list = list.filter((l) => l.active === Number(statusFilter.value));
   }
 
-  // Department filter
-  if (departmentFilter.value !== 'All') {
-    filtered = filtered.filter(l => l.department === departmentFilter.value)
-  }
+  return list;
+});
 
-  // Specialization filter
-  if (specializationFilter.value !== 'All') {
-    filtered = filtered.filter(l => l.specialization === specializationFilter.value)
-  }
+const totalPages = computed(
+  () => Math.ceil(filteredLecturers.value.length / itemsPerPage) || 1
+);
+const paginatedLecturers = computed<Lecturer[]>(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  return filteredLecturers.value.slice(start, start + itemsPerPage);
+});
 
-  // Sort
-  filtered.sort((a, b) => {
-    if (tableSortOrder.value === 'Z-A') {
-      return b.name.localeCompare(a.name)
-    } else if (tableSortOrder.value === 'Active First') {
-      return a.status === 'Active' ? -1 : b.status === 'Active' ? 1 : 0
-    } else if (tableSortOrder.value === 'Department') {
-      return a.department.localeCompare(b.department)
-    }
-    return a.name.localeCompare(b.name)
-  })
+const capitalize = (s: string) =>
+  s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
+const positionColor = (pos: string) => {
+  if (pos === "professor") return "purple";
+  if (pos === "assistant") return "blue";
+  return "green";
+};
 
-  return filtered
-})
+onMounted(async () => {
+  await lecturerStore.fetchLecturers();
+});
 
-// Computed stats
-const activeLecturerCount = computed(() => {
-  return lecturers.value.filter(l => l.status === 'Active').length
-})
-
-const inactiveLecturerCount = computed(() => {
-  return lecturers.value.filter(l => l.status === 'Inactive').length
-})
-
-const uniqueDepartments = computed(() => {
-  const uniqueDepts = new Set(lecturers.value.map(l => l.department))
-  return uniqueDepts.size
-})
-
-// Dialog methods
 const openCreateDialog = () => {
-  selectedLecturer.value = null
-  isEdit.value = false
-  formData.employeeId = ''
-  formData.name = ''
-  formData.email = ''
-  formData.phone = ''
-  formData.password = ''
-  formData.position = 'lecturer'
-  formData.department_id = null
-  formData.specialization_id = null
-  formData.active = true
-  dialogOpen.value = true
-}
+  isEdit.value = false;
+  formData.value = {
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone_number: "",
+    position: "lecturer",
+    password: "",
+    active: true,
+  };
+  dialog.value = true;
+};
 
-const openEditDialog = (lecturer) => {
-  selectedLecturer.value = lecturer
-  isEdit.value = true
-  formData.employeeId = lecturer.employeeId
-  formData.name = lecturer.name
-  formData.email = lecturer.email
-  formData.phone = lecturer.phone
-  formData.password = ''
-  formData.position = lecturer.position || 'lecturer'
-  formData.department_id = lecturer.department_id || null
-  formData.specialization_id = lecturer.specialization_id || null
-  formData.active = lecturer.status === 'Active'
-  dialogOpen.value = true
-}
+const openEditDialog = (lecturer: any) => {
+  selectedLecturer.value = lecturer;
+  isEdit.value = true;
+  formData.value = {
+    first_name: lecturer.first_name,
+    last_name: lecturer.last_name,
+    email: lecturer.email,
+    phone_number: lecturer.phone_number || "",
+    position: lecturer.position || "lecturer",
+    active: lecturer.active === 1,
+    password: "",
+  };
+  dialog.value = true;
+};
+
+const openViewDialog = (lecturer: any) => {
+  selectedLecturer.value = lecturer;
+  viewDialog.value = true;
+};
 
 const closeDialog = () => {
-  dialogOpen.value = false
-  selectedLecturer.value = null
-  isEdit.value = false
-}
+  dialog.value = false;
+  selectedLecturer.value = null;
+};
 
-// Form submission
 const submitForm = async () => {
-  if (!formValid.value) return
-
-  formLoading.value = true
+  if (!formValid.value) return;
+  loading.value = true;
 
   try {
-    const lecturerData = {
-      employeeId: formData.employeeId,
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      position: formData.position,
-      department_id: formData.department_id,
-      specialization_id: formData.specialization_id,
-      active: formData.active
+    const payload = { ...formData.value };
+    if (!isEdit.value && !payload.password) {
+      throw new Error("Password is required for new lecturer");
     }
 
-    // Include password only when creating
-    if (!isEdit.value && formData.password) {
-      lecturerData.password = formData.password
-    }
-
-    if (isEdit.value && selectedLecturer.value) {
-      await lecturerStore.updateLecturer(selectedLecturer.value.lecturerId, lecturerData)
-
+    if (isEdit.value) {
+      await lecturerStore.updateLecturer(
+        selectedLecturer.value.global_id,
+        payload
+      );
       Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'Lecturer updated successfully!',
-        confirmButtonColor: '#3b82f6',
-        timer: 2000
-      })
+        icon: "success",
+        title: "Success!",
+        text: "Lecturer updated successfully!",
+        timer: 2000,
+        showConfirmButton: false,
+      });
     } else {
-      await lecturerStore.createLecturer(lecturerData)
-
+      await lecturerStore.createLecturer(payload);
       Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'Lecturer created successfully!',
-        confirmButtonColor: '#3b82f6',
-        timer: 2000
-      })
+        icon: "success",
+        title: "Success!",
+        text: "Lecturer created successfully!",
+        timer: 2000,
+        showConfirmButton: false,
+      });
     }
 
-    closeDialog()
-  } catch (error) {
-    console.error('Error submitting form:', error)
-
-    let errorMessage = 'Failed to save lecturer. Please try again.'
-    if (error.message) {
-      errorMessage = error.message
-    } else if (error.response?.data) {
-      const errorData = error.response.data
-      if (errorData.detail && Array.isArray(errorData.detail)) {
-        errorMessage = errorData.detail.map(err => `${err.loc ? err.loc.join('.') + ': ' : ''}${err.msg || err.message}`).join('\n')
-      } else if (errorData.detail) {
-        errorMessage = errorData.detail
-      } else if (errorData.message) {
-        errorMessage = errorData.message
-      }
-    }
-
+    closeDialog();
+    await lecturerStore.fetchLecturers();
+  } catch (err: any) {
     Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: errorMessage,
-      confirmButtonColor: '#3b82f6'
-    })
+      icon: "error",
+      title: "Error",
+      text: err.message || "Operation failed",
+    });
   } finally {
-    formLoading.value = false
+    loading.value = false;
   }
-}
+};
 
-// Filter methods
-const resetFilters = () => {
-  statusFilter.value = 'All'
-  departmentFilter.value = 'All'
-  specializationFilter.value = 'All'
-  currentPage.value = 1
-}
-
-// Delete methods
-const confirmDelete = (lecturer) => {
-  selectedLecturer.value = lecturer
-  deleteDialog.value = true
-}
-
-const handleDelete = async () => {
-  if (!selectedLecturer.value) return
-
-  deleteLoading.value = true
-
+const toggleStatus = async (lecturer: any) => {
+  const newActive = lecturer.active === 1 ? 0 : 1; // numeric 1/0
   try {
-    await lecturerStore.deleteLecturer(selectedLecturer.value.lecturerId)
+    await lecturerStore.toggleLecturerStatus(lecturer.global_id, newActive);
 
     Swal.fire({
-      icon: 'success',
-      title: 'Success',
-      text: 'Lecturer deleted successfully!',
-      confirmButtonColor: '#3b82f6',
-      timer: 2000
-    })
-
-    deleteDialog.value = false
-    selectedLecturer.value = null
-  } catch (error) {
-    console.error('Error deleting lecturer:', error)
-
+      icon: "success",
+      title: "Success!",
+      text: `Lecturer is now ${newActive === 1 ? "active" : "inactive"}`,
+      timer: 2000,
+      showConfirmButton: false,
+    });
+  } catch (err) {
     Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: error.message || 'Failed to delete lecturer. Please try again.',
-      confirmButtonColor: '#3b82f6'
-    })
-  } finally {
-    deleteLoading.value = false
+      icon: "error",
+      title: "Error",
+      text: "Failed to update status",
+    });
   }
-}
+};
+
 </script>
 
 <style scoped>
+/* Use the exact same beautiful styles from your Subjects page */
 .lecturers-page {
-  background: #f5f5f5;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   min-height: 100vh;
   padding: 0;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* Modern Header Styles */
 .modern-header {
   background: white;
-  border-bottom: 1px solid #e0e0e0;
-  box-shadow: none;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 100%;
 }
 
 .header-container {
-  max-width: 1400px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 16px 24px;
+  padding: 20px 24px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 20px;
+  gap: 24px;
+  flex-wrap: wrap;
 }
 
 .title-section {
   flex: 1;
+  min-width: 0;
 }
 
 .title-wrapper {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .title-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  border-radius: 10px;
+  border-radius: 12px;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  flex-shrink: 0;
 }
 
 .title-content {
   flex: 1;
+  min-width: 0;
 }
 
 .page-title {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   color: #1e293b;
   margin: 0 0 4px 0;
@@ -852,6 +794,7 @@ const handleDelete = async () => {
   display: flex;
   align-items: center;
   gap: 4px;
+  flex-wrap: wrap;
 }
 
 .breadcrumb-item {
@@ -864,21 +807,18 @@ const handleDelete = async () => {
   color: #3b82f6;
 }
 
-.breadcrumb-separator {
-  opacity: 0.5;
-}
-
 .stats-cards {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .stat-card {
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border: 1px solid #e2e8f0;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 12px 16px;
-  min-width: 100px;
+  min-width: 80px;
   text-align: center;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
@@ -890,7 +830,7 @@ const handleDelete = async () => {
 }
 
 .stat-number {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   color: #1e293b;
   line-height: 1;
@@ -898,7 +838,7 @@ const handleDelete = async () => {
 }
 
 .stat-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   color: #64748b;
   text-transform: uppercase;
@@ -907,19 +847,21 @@ const handleDelete = async () => {
 
 .action-section {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .modern-btn {
-  height: 38px;
+  height: 40px;
   border-radius: 10px;
   text-transform: none;
   font-weight: 500;
   font-size: 14px;
-  padding: 0 16px;
+  padding: 0 18px;
   transition: all 0.2s ease;
   border: 1px solid #e2e8f0;
+  white-space: nowrap;
 }
 
 .modern-btn:hover {
@@ -933,43 +875,25 @@ const handleDelete = async () => {
   color: white !important;
 }
 
-.modern-menu {
-  border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  border: 1px solid #e2e8f0;
-}
-
-.menu-item {
-  padding: 10px 14px;
-  border-radius: 6px;
-  margin: 4px;
-  transition: all 0.2s ease;
-}
-
-.menu-item:hover {
-  background: #f8fafc;
-}
-
 /* Modern Table Section */
 .modern-table-section {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 16px 24px;
+  padding: 24px 32px;
 }
 
 .table-container {
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  border: 1px solid #e0e0e0;
 }
 
 .table-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 16px 20px 12px;
+  padding: 24px 24px 16px;
   border-bottom: 1px solid #f1f5f9;
 }
 
@@ -1007,40 +931,13 @@ const handleDelete = async () => {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.sort-select {
-  min-width: 140px;
-}
-
-.sort-select :deep(.v-field) {
-  border-radius: 12px;
-}
-
 .filter-btn {
   height: 40px;
   width: 40px;
   border-radius: 12px;
 }
 
-.filter-btn.active {
-  background: #3b82f6 !important;
-  color: white !important;
-  border-color: #3b82f6 !important;
-}
-
-.filters-section {
-  padding: 12px 20px;
-  background: #f8fafc;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.filters-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  align-items: end;
-}
-
-.filter-item {
+.filter-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1054,22 +951,6 @@ const handleDelete = async () => {
   letter-spacing: 0.05em;
 }
 
-.reset-btn {
-  text-transform: none;
-  font-weight: 600;
-  letter-spacing: 0.025em;
-  border-radius: 8px;
-  height: 36px;
-  padding: 0 16px;
-  border: 1.5px solid #e2e8f0;
-  color: #64748b;
-}
-
-.reset-btn:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-}
-
 /* Modern Table Styles */
 .modern-table-wrapper {
   position: relative;
@@ -1080,139 +961,148 @@ const handleDelete = async () => {
   width: 100%;
 }
 
+.modern-header-row {
+  background: #f9fafb;
+}
+
 .modern-header-cell {
-  padding: 14px 12px;
-  border: none;
-  position: relative;
-  text-align: left !important;
-}
-
-.modern-header-cell.center-align {
-  text-align: left !important;
-}
-
-.modern-header-cell.id-column {
-  width: 80px;
-  text-align: left !important;
+  padding: 20px 16px !important;
+  font-weight: 600 !important;
+  color: #45474b !important;
+  text-transform: uppercase !important;
+  font-size: 13px !important;
+  letter-spacing: 0.05em !important;
+  border: none !important;
+  border-bottom: 1px solid #f1f5f9 !important;
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  color: #45474b !important;
-  font-weight: 600;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  justify-content: center;
+  gap: 8px;
+  margin-left: 4px;
 }
 
 .modern-table-row {
-  transition: background-color 0.2s ease;
-  border-bottom: 1px solid #f0f0f0;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .modern-table-row:hover {
-  background: #fafafa;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  transform: scale(1.001);
 }
 
 .modern-table-cell {
-  padding: 12px;
-  border: none;
+  padding: 16px !important;
+  color: #1e293b;
+  font-size: 14px;
+  border: none !important;
   vertical-align: middle;
-  text-align: left !important;
 }
 
-.modern-table-cell.center-align {
-  text-align: left !important;
-}
-
-.modern-table-cell.id-column {
+.id-column {
   width: 80px;
-  text-align: left !important;
+}
+
+.center-align {
+  text-align: center !important;
 }
 
 .id-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
   color: #3730a3;
   font-weight: 600;
   font-size: 12px;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
-.group-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.group-avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-  color: #1d4ed8;
-  border-radius: 10px;
-}
-
-.group-details {
-  flex: 1;
-}
-
-.group-name {
-  font-weight: 500;
-  color: #1e293b;
-  font-size: 14px;
-  line-height: 1.2;
-}
-
-.group-meta {
-  font-size: 12px;
-  color: #64748b;
-  margin-top: 2px;
-}
-
-.global-id-badge {
+.code-badge {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
+  padding: 6px 12px;
   background: #f1f5f9;
   color: #1e293b;
   font-weight: 600;
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-radius: 6px;
+  border-radius: 8px;
+}
+
+.subject-code {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 14px;
+  font-family: monospace;
+}
+
+.subject-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.subject-details {
+  flex: 1;
+}
+
+.subject-name {
+  font-weight: 500;
+  color: #1e293b;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.credit-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 8px;
+}
+
+.dept-chip {
+  font-weight: 500 !important;
+  text-transform: none !important;
 }
 
 .action-group {
   display: flex;
-  gap: 4px;
-  justify-content: flex-start;
+  gap: 8px;
+  justify-content: center;
 }
 
 .action-btn {
   width: 32px;
   height: 32px;
-  border-radius: 6px;
+  border-radius: 8px;
   transition: all 0.2s ease;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .action-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: scale(1.15);
+  background: rgba(0, 0, 0, 0.04) !important;
 }
 
 /* Empty State */
 .empty-state {
   text-align: center;
-  padding: 48px 24px;
+  padding: 64px 32px;
   color: #64748b;
 }
 
@@ -1229,6 +1119,37 @@ const handleDelete = async () => {
   line-height: 1.5;
 }
 
+/* Pagination */
+.pagination-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-top: 1px solid #f1f5f9;
+  margin-top: 0;
+}
+
+.pagination-btn {
+  min-width: 100px;
+  height: 40px;
+  border-radius: 8px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.pagination-info {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination-text {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
 /* Modern Dialog Styles */
 .modern-dialog {
   border-radius: 16px !important;
@@ -1239,14 +1160,14 @@ const handleDelete = async () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 20px 24px;
   background: linear-gradient(135deg, #f8f9fc 0%, #f1f3f8 100%);
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   flex: 1;
 }
 
@@ -1254,11 +1175,11 @@ const handleDelete = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+  width: 48px;
+  height: 48px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .header-text {
@@ -1291,81 +1212,42 @@ const handleDelete = async () => {
 }
 
 .dialog-content {
-  padding: 20px !important;
+  padding: 24px !important;
 }
 
-.form-group {
-  margin-bottom: 16px;
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
 
-.form-group:last-child {
-  margin-bottom: 0;
-}
-
-.form-label {
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 8px;
-}
-
-.form-field {
-  margin-bottom: 0 !important;
-}
-
-.form-field :deep(.v-field) {
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
-}
-
-.form-field :deep(.v-field:hover) {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-}
-
-.form-field :deep(.v-field--focused) {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.switch-container {
+.detail-item {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.switch-info {
-  flex: 1;
+.detail-item.full-width {
+  grid-column: 1 / -1;
 }
 
-.switch-description {
-  font-size: 13px;
+.detail-label {
+  font-size: 12px;
+  font-weight: 600;
   color: #64748b;
-  display: block;
-  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-value {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1e293b;
 }
 
 .dialog-actions {
-  padding: 16px 20px 20px !important;
-  gap: 10px;
-}
-
-.cancel-btn {
-  min-width: 100px;
-}
-
-.submit-btn {
-  min-width: 140px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.submit-btn:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transform: translateY(-1px);
+  padding: 20px 24px 24px !important;
+  gap: 12px;
 }
 
 /* Delete Dialog Styles */
@@ -1406,16 +1288,16 @@ const handleDelete = async () => {
 }
 
 .delete-content {
-  padding: 20px !important;
+  padding: 24px !important;
 }
 
 .warning-box {
   display: flex;
   gap: 12px;
-  padding: 12px;
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  padding: 16px;
   border: 1px solid #fde047;
-  border-radius: 10px;
+  border-radius: 12px;
+  background: #f9fafb;
 }
 
 .warning-icon {
@@ -1430,20 +1312,18 @@ const handleDelete = async () => {
 .warning-message {
   font-size: 14px;
   color: #92400e;
-  margin: 0 0 4px 0;
-  line-height: 1.4;
-}
-
-.warning-details {
-  font-size: 13px;
-  color: #a16207;
   margin: 0;
   line-height: 1.4;
 }
 
+.subject-name {
+  color: black;
+  font-weight: 600;
+}
+
 .delete-actions {
-  padding: 16px 20px 20px !important;
-  gap: 10px;
+  padding: 20px 24px 24px !important;
+  gap: 12px;
   display: flex;
   justify-content: flex-end;
 }
@@ -1461,47 +1341,10 @@ const handleDelete = async () => {
 /* Status Chip Styles */
 .status-chip {
   font-weight: 500 !important;
-  text-transform: lowercase !important;
+  text-transform: none !important;
   border-radius: 16px !important;
   padding: 0 12px !important;
   height: 28px !important;
-}
-
-/* Animation for dialogs */
-.pagination-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  gap: 12px;
-  border-top: 1px solid #e0e0e0;
-}
-
-.pagination-btn {
-  min-width: 90px;
-  height: 36px;
-  text-transform: none;
-  font-weight: 500;
-  font-size: 14px;
-  color: #666;
-  letter-spacing: 0;
-  border-radius: 6px;
-  border: 1px solid #e0e0e0;
-}
-
-.pagination-btn:disabled {
-  opacity: 0.3;
-  background: #fafafa;
-}
-
-.pagination-info {
-  padding: 0 20px;
-}
-
-.pagination-text {
-  font-size: 14px;
-  color: #666;
-  font-weight: 500;
 }
 
 /* Animation for dialogs */
@@ -1533,10 +1376,14 @@ const handleDelete = async () => {
   .action-section {
     justify-content: center;
   }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
-  .header-container {
+  .modern-header {
     padding: 16px 20px;
   }
 
@@ -1575,11 +1422,7 @@ const handleDelete = async () => {
   }
 
   .modern-table {
-    min-width: 800px;
-  }
-
-  .filters-grid {
-    grid-template-columns: 1fr;
+    min-width: 900px;
   }
 }
 </style>
