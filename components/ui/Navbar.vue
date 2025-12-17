@@ -154,6 +154,22 @@
             <VListItemTitle v-if="!isRail" class="uas-item-title">Professors</VListItemTitle>
           </VListItem> -->
 
+          <!-- Subjects -->
+          <VListItem :to="'/admin/subjects'" nav :active="isActivePath('/admin/subjects')"
+            :class="['uas-item', isActivePath('/admin/subjects') && 'uas-item--active']" @click="onClickItem">
+            <template #prepend>
+              <div class="uas-item-icon-wrapper">
+                <VTooltip v-if="isRail" text="Subjects" location="right" offset="8">
+                  <template #activator="{ props }">
+                    <VIcon v-bind="props" icon="mdi-door" class="uas-item-icon" />
+                  </template>
+                </VTooltip>
+                <VIcon v-else icon="mdi-door" class="uas-item-icon" />
+              </div>
+            </template>
+            <VListItemTitle v-if="!isRail" class="uas-item-title">Subjects</VListItemTitle>
+          </VListItem>
+
           <!-- Rooms -->
           <VListItem :to="'/admin/rooms'" nav :active="isActivePath('/admin/rooms')"
             :class="['uas-item', isActivePath('/admin/rooms') && 'uas-item--active']" @click="onClickItem">

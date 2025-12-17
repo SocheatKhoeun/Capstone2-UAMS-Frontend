@@ -17,6 +17,8 @@ export const useSubjectStore = defineStore('subjects', {
         subject_name: subject.name ?? subject.subject_name ?? subject.subjectName ?? '',
         description: subject.description ?? '',
         credit_hours: subject.credits ?? subject.credit_hours ?? subject.creditHours ?? 3,
+        lecture_hours: subject.lecture_hours ?? subject.lectureHours ?? 0,
+        lab_hours: subject.lab_hours ?? subject.labHours ?? 0,
         department_id: subject.specialization_id ?? subject.department_id ?? subject.departmentId ?? null,
         is_active: subject.active === 1 || subject.active === true || subject.is_active === 1 || subject.is_active === true || subject.is_active === '1' ? true : false,
         created_at: subject.created_at ?? subject.createdAt ?? null,
@@ -56,12 +58,13 @@ export const useSubjectStore = defineStore('subjects', {
       try {
         const { client, base } = this._client()
         const body = { 
-          global_id: payload.global_id,
           code: payload.subject_code,
+          specialization_id: payload.department_id,
           name: payload.subject_name,
           description: payload.description || '',
           credits: payload.credit_hours,
-          specialization_id: payload.department_id,
+          lecture_hours: payload.lecture_hours || 0,
+          lab_hours: payload.lab_hours || 0,
           active: payload.is_active ? true : false 
         }
         const res = await client.post(`${base}/subjects/`, body)
@@ -87,6 +90,8 @@ export const useSubjectStore = defineStore('subjects', {
           name: payload.subject_name,
           description: payload.description || '',
           credits: payload.credit_hours,
+          lecture_hours: payload.lecture_hours || 0,
+          lab_hours: payload.lab_hours || 0,
           specialization_id: payload.department_id,
           active: payload.is_active ? true : false 
         }

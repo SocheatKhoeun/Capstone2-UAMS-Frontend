@@ -20,29 +20,27 @@
           <div class="stats-cards">
             <div class="stat-card">
               <div class="stat-number">{{ subjects.length }}</div>
-              <div class="stat-label">Total Subjects</div>
+              <div class="stat-label">Total</div>
             </div>
             <div class="stat-card">
               <div class="stat-number">
-                {{ subjects.filter((s: any) => s.is_active).length }}
+                {{ subjects.filter((s) => s.is_active).length }}
               </div>
               <div class="stat-label">Active</div>
             </div>
             <div class="stat-card">
               <div class="stat-number">
-                {{ subjects.filter((s: any) => !s.is_active).length }}
+                {{ subjects.filter((s) => !s.is_active).length }}
               </div>
               <div class="stat-label">Inactive</div>
             </div>
           </div>
         </div>
         <div class="action-section">
-          <!-- Export Button Component -->
           <ExportButtons :data="filteredSubjects" :columns="exportColumns" filename="Subjects_Export"
             @export-start="handleExportStart" @export-complete="handleExportComplete"
             @export-error="handleExportError" />
 
-          <!-- Import Button Component -->
           <ImportCsv :columns="importColumns" :validate-row="validateImportRow" :transform-row="transformImportRow"
             @import-start="handleImportStart" @import-complete="handleImportComplete"
             @import-error="handleImportError" />
@@ -82,7 +80,7 @@
 
               <v-card elevation="4" class="pa-2">
                 <v-card-text class="py-2 px-3">
-                  <div class="filters-content" style="min-width:220px;">
+                  <div class="filters-content">
                     <div class="filter-group">
                       <label class="filter-label">Status</label>
                       <v-chip-group v-model="statusFilter" selected-class="text-primary" column>
@@ -98,79 +96,55 @@
           </div>
         </div>
 
-        <!-- Table -->
-        <div class="modern-table-wrapper">
+        <!-- Table Wrapper with Horizontal Scroll -->
+        <div class="table-scroll-wrapper">
           <v-table class="modern-table">
             <thead>
               <tr class="modern-header-row">
-                <th class="modern-header-cell id-column">
-                  <div class="header-content">#</div>
-                </th>
-                <th class="modern-header-cell center-align">
-                  <div class="header-content">Global ID</div>
-                </th>
-                <th class="modern-header-cell center-align">
-                  <div class="header-content">Code</div>
-                </th>
-                <th class="modern-header-cell center-align">
-                  <div class="header-content">Name</div>
-                </th>
-                <th class="modern-header-cell center-align">
-                  <div class="header-content">Credits</div>
-                </th>
-                <th class="modern-header-cell center-align">
-                  <div class="header-content">Department</div>
-                </th>
-                <th class="modern-header-cell center-align">
-                  <div class="header-content">Status</div>
-                </th>
-                <th class="modern-header-cell center-align">
-                  <div class="header-content">Actions</div>
-                </th>
+                <th class="modern-header-cell">#</th>
+                <th class="modern-header-cell">Code</th>
+                <th class="modern-header-cell">Name</th>
+                <th class="modern-header-cell">Credits</th>
+                <th class="modern-header-cell">Department</th>
+                <th class="modern-header-cell">Status</th>
+                <th class="modern-header-cell">Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(subject, index) in paginatedSubjects" :key="subject.global_id" class="modern-table-row">
-                <td class="modern-table-cell id-column">
+                <td class="modern-table-cell">
                   <div class="id-badge">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</div>
                 </td>
-                <td class="modern-table-cell center-align">
-                  <div class="code-badge">{{ subject.global_id }}</div>
-                </td>
-                <td class="modern-table-cell center-align">
+                <td class="modern-table-cell">
                   <div class="subject-code">{{ subject.subject_code }}</div>
                 </td>
-                <td class="modern-table-cell center-align">
-                  <div class="subject-info">
-                    <div class="subject-details">
-                      <div class="subject-name">{{ subject.subject_name }}</div>
-                    </div>
-                  </div>
+                <td class="modern-table-cell">
+                  <div class="subject-name">{{ subject.subject_name }}</div>
                 </td>
-                <td class="modern-table-cell center-align">
+                <td class="modern-table-cell">
                   <div class="credit-badge">{{ subject.credit_hours }}</div>
                 </td>
-                <td class="modern-table-cell center-align">
+                <td class="modern-table-cell">
                   <v-chip color="primary" variant="tonal" size="small" class="dept-chip">
                     {{ getDepartmentName(subject.department_id) }}
                   </v-chip>
                 </td>
-                <td class="modern-table-cell center-align">
+                <td class="modern-table-cell">
                   <v-chip :color="subject.is_active ? 'success' : 'error'" size="small" class="status-chip">
                     <v-icon start size="16">{{ subject.is_active ? 'mdi-check-circle' : 'mdi-close-circle' }}</v-icon>
                     {{ subject.is_active ? "Active" : "Inactive" }}
                   </v-chip>
                 </td>
-                <td class="modern-table-cell center-align">
+                <td class="modern-table-cell">
                   <div class="action-group">
-                    <v-btn icon class="action-btn" @click="openViewDialog(subject)">
-                      <v-icon color="#3b82f6">mdi-eye</v-icon>
+                    <v-btn icon size="small" class="action-btn" @click="openViewDialog(subject)">
+                      <v-icon size="18" color="#3b82f6">mdi-eye</v-icon>
                     </v-btn>
-                    <v-btn icon class="action-btn" @click="openEditDialog(subject)">
-                      <v-icon color="#fde047">mdi-pencil</v-icon>
+                    <v-btn icon size="small" class="action-btn" @click="openEditDialog(subject)">
+                      <v-icon size="18" color="#f59e0b">mdi-pencil</v-icon>
                     </v-btn>
-                    <v-btn icon class="action-btn" @click="confirmDelete(subject)">
-                      <v-icon color="#dc2626">mdi-delete</v-icon>
+                    <v-btn icon size="small" class="action-btn" @click="confirmDelete(subject)">
+                      <v-icon size="18" color="#dc2626">mdi-delete</v-icon>
                     </v-btn>
                   </div>
                 </td>
@@ -272,10 +246,6 @@
         <v-card-text v-if="viewData" class="dialog-content">
           <div class="detail-grid">
             <div class="detail-item">
-              <label class="detail-label">Global ID</label>
-              <div class="detail-value">{{ viewData.global_id }}</div>
-            </div>
-            <div class="detail-item">
               <label class="detail-label">Subject Code</label>
               <div class="detail-value">{{ viewData.subject_code }}</div>
             </div>
@@ -284,8 +254,16 @@
               <div class="detail-value">{{ viewData.subject_name }}</div>
             </div>
             <div class="detail-item">
-              <label class="detail-label">Credit Hours</label>
+              <label class="detail-label">Credit</label>
               <div class="detail-value">{{ viewData.credit_hours }}</div>
+            </div>
+            <div class="detail-item">
+              <label class="detail-label">Theory Hours</label>
+              <div class="detail-value">{{ viewData.lecture_hours || 0 }}</div>
+            </div>
+            <div class="detail-item">
+              <label class="detail-label">Lab Hours</label>
+              <div class="detail-value">{{ viewData.lab_hours || 0 }}</div>
             </div>
             <div class="detail-item">
               <label class="detail-label">Department</label>
@@ -381,7 +359,9 @@ const formData = ref({
   global_id: '',
   subject_code: '',
   subject_name: '',
-  credit_hours: 3,
+  credit_hours: '',
+  lecture_hours: '',
+  lab_hours: '',
   department_id: null,
   description: '',
   is_active: true
@@ -400,7 +380,6 @@ const departmentItems = computed(() => {
 const filteredSubjects = computed(() => {
   let filtered = subjects.value
 
-  // Search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter((subject: any) =>
@@ -410,7 +389,6 @@ const filteredSubjects = computed(() => {
     )
   }
 
-  // Status filter
   if (statusFilter.value !== 'All') {
     const isActive = statusFilter.value === '1'
     filtered = filtered.filter((subject: any) => subject.is_active === isActive)
@@ -427,12 +405,13 @@ const paginatedSubjects = computed(() => {
   return filteredSubjects.value.slice(start, end)
 })
 
-// Export/Import Configuration
 const exportColumns = [
   { key: 'global_id', header: 'Global ID', width: 15 },
   { key: 'subject_code', header: 'Subject Code', width: 15 },
   { key: 'subject_name', header: 'Subject Name', width: 30 },
   { key: 'credit_hours', header: 'Credit Hours', width: 12 },
+  { key: 'lecture_hours', header: 'Lecture Hours', width: 15 },
+  { key: 'lab_hours', header: 'Lab Hours', width: 12 },
   { key: 'department_id', header: 'Department ID', width: 15 },
   { key: 'description', header: 'Description', width: 40 },
   { key: 'is_active', header: 'Status', width: 12, format: 'status' },
@@ -441,16 +420,16 @@ const exportColumns = [
 ]
 
 const importColumns = [
-  { key: 'global_id', header: 'Global ID' },
   { key: 'subject_code', header: 'Subject Code' },
   { key: 'subject_name', header: 'Subject Name' },
   { key: 'credit_hours', header: 'Credit Hours' },
+  { key: 'lecture_hours', header: 'Lecture Hours' },
+  { key: 'lab_hours', header: 'Lab Hours' },
   { key: 'department_id', header: 'Department ID' },
   { key: 'description', header: 'Description' },
   { key: 'is_active', header: 'Status', format: 'status' }
 ]
 
-// Export Handlers
 const handleExportStart = (type: string) => {
   console.log(`Starting ${type} export...`)
 }
@@ -468,7 +447,6 @@ const handleExportError = ({ type, error }: { type: string, error: any }) => {
   })
 }
 
-// Import Handlers
 const validateImportRow = (row: any) => {
   const errors = []
   if (!row.global_id) errors.push('Global ID is required')
@@ -484,6 +462,8 @@ const transformImportRow = (row: any) => {
     subject_code: row.subject_code,
     subject_name: row.subject_name,
     credit_hours: parseInt(row.credit_hours) || 3,
+    lecture_hours: parseInt(row.lecture_hours) || 15,
+    lab_hours: parseInt(row.lab_hours) || 30,
     department_id: row.department_id ? parseInt(row.department_id) : null,
     description: row.description || '',
     is_active: row.is_active === '1' || row.is_active === 'true' || row.is_active === true
@@ -542,7 +522,9 @@ const openCreateDialog = () => {
     global_id: generateNextGlobalId(),
     subject_code: '',
     subject_name: '',
-    credit_hours: 3,
+    credit_hours: '',
+    lecture_hours: '',
+    lab_hours: '',
     department_id: null,
     description: '',
     is_active: true
@@ -573,6 +555,8 @@ const openEditDialog = (subject: any) => {
     subject_code: subject.subject_code,
     subject_name: subject.subject_name,
     credit_hours: subject.credit_hours,
+    lecture_hours: subject.lecture_hours || 0,
+    lab_hours: subject.lab_hours || 0,
     department_id: subject.department_id,
     description: subject.description || '',
     is_active: subject.is_active
@@ -596,7 +580,9 @@ const closeDialog = () => {
     global_id: '',
     subject_code: '',
     subject_name: '',
-    credit_hours: 3,
+    credit_hours: '',
+    lecture_hours: '',
+    lab_hours: '',
     department_id: null,
     description: '',
     is_active: true
@@ -670,135 +656,146 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+* {
+  box-sizing: border-box;
+}
+
 .subjects-page {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    min-height: 100vh;
-    padding: 0;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  min-height: 100vh;
+  padding: 0;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* Modern Header Styles */
 .modern-header {
-    background: white;
-    border-bottom: 1px solid #e2e8f0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 100%;
 }
 
 .header-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 24px 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 32px;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
 }
 
 .title-section {
-    flex: 1;
+  flex: 1;
+  min-width: 0;
 }
 
 .title-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .title-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  flex-shrink: 0;
 }
 
 .title-content {
-    flex: 1;
+  flex: 1;
+  min-width: 0;
 }
 
 .page-title {
-    font-size: 28px;
-    font-weight: 700;
-    color: #1e293b;
-    margin: 0 0 4px 0;
-    letter-spacing: -0.025em;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.025em;
 }
 
 .breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
 }
 
 .breadcrumb-item {
-    font-size: 14px;
-    color: #64748b;
-    font-weight: 500;
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
 }
 
 .breadcrumb-item.active {
-    color: #3b82f6;
-}
-
-.breadcrumb-separator {
-    opacity: 0.5;
+  color: #3b82f6;
 }
 
 .stats-cards {
-    display: flex;
-    gap: 16px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .stat-card {
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 16px 20px;
-    min-width: 100px;
-    text-align: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  min-width: 80px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
 }
 
 .stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .stat-number {
-    font-size: 24px;
-    font-weight: 700;
-    color: #1e293b;
-    line-height: 1;
-    margin-bottom: 4px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1;
+  margin-bottom: 4px;
 }
 
 .stat-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .action-section {
-    display: flex;
-    gap: 12px;
-    align-items: center;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .modern-btn {
-    height: 44px;
-    border-radius: 12px;
-    text-transform: none;
-    font-weight: 500;
-    font-size: 14px;
-    padding: 0 20px;
-    transition: all 0.2s ease;
-    border: 1px solid #e2e8f0;
+  height: 40px;
+  border-radius: 10px;
+  text-transform: none;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 0 18px;
+  transition: all 0.2s ease;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
 }
 
 .modern-btn:hover {
