@@ -1,3 +1,4 @@
+<!-- filepath: e:\CADT Year4\Capstone II\Full-Stack\Capstone2-UAMS-Frontend\pages\admin\request-leave\index.vue -->
 <template>
     <div class="request-leave-page">
         <!-- Modern Header Section -->
@@ -23,48 +24,33 @@
                             <div class="stat-label">Total Requests</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">{{ leaveRequests?.filter(r => r.status === 'Pending').length || 0 }}</div>
+                            <div class="stat-number">{{leaveRequests?.filter(r => r.status === 'Pending').length || 0
+                            }}</div>
                             <div class="stat-label">Pending</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">{{ leaveRequests?.filter(r => r.status === 'Approved').length || 0 }}</div>
+                            <div class="stat-number">{{leaveRequests?.filter(r => r.status === 'Approved').length || 0
+                            }}</div>
                             <div class="stat-label">Approved</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">{{ leaveRequests?.filter(r => r.status === 'Rejected').length || 0 }}</div>
+                            <div class="stat-number">{{leaveRequests?.filter(r => r.status === 'Rejected').length || 0
+                            }}</div>
                             <div class="stat-label">Rejected</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="action-section">
-                    <v-btn class="modern-btn primary-btn" prepend-icon="mdi-plus" color="primary" 
-                        variant="flat" @click="openNewRequestForm" elevation="0">
-                        New Request
-                    </v-btn>
-                    
-                    <v-menu offset-y>
-                        <template v-slot:activator="{ props }">
-                            <v-btn class="modern-btn export-btn" prepend-icon="mdi-download" variant="outlined" 
-                                color="primary" v-bind="props" elevation="0">
-                                Export
-                                <v-icon icon="mdi-chevron-down" end />
-                            </v-btn>
-                        </template>
-                        <v-list class="modern-menu">
-                            <v-list-item @click="handleExportExcel" class="menu-item">
-                                <v-icon icon="mdi-microsoft-excel" start />
-                                Export to Excel
-                            </v-list-item>
-                            <v-list-item @click="handleExportPDF" class="menu-item">
-                                <v-icon icon="mdi-file-pdf-box" start />
-                                Export to PDF
-                            </v-list-item>
-                        </v-list>
-                    </v-menu>
+                    <!-- Export Button Component -->
+                    <ExportButtons :data="filteredGroups" :columns="exportColumns" filename="Groups_Export"
+                        @export-start="handleExportStart" @export-complete="handleExportComplete"
+                        @export-error="handleExportError" />
 
-                    <v-btn class="modern-btn refresh-btn" icon="mdi-refresh" variant="outlined" 
-                        color="grey-darken-1" @click="refreshData" elevation="0" />
+                    <!-- Import Button Component -->
+                    <ImportCsv :columns="importColumns" :validate-row="validateImportRow"
+                        :transform-row="transformImportRow" @import-start="handleImportStart"
+                        @import-complete="handleImportComplete" @import-error="handleImportError" />
                 </div>
             </div>
         </div>
@@ -82,7 +68,7 @@
                 <div class="table-toolbar">
                     <div class="toolbar-left">
                         <h2 class="table-title">
-                            <v-icon icon="mdi-format-list-bulleted"  size="20" class="mr-2"  />
+                            <v-icon icon="mdi-format-list-bulleted" size="20" class="mr-2" />
                             Leave Requests
                         </h2>
                         <div class="table-subtitle">View and monitor all leave requests</div>
@@ -90,21 +76,21 @@
 
                     <div class="toolbar-right">
                         <div class="search-container">
-                            <v-text-field v-model="searchQuery" placeholder="Search by student name, ID, or reason..." 
-                                prepend-inner-icon="mdi-magnify" variant="outlined" density="comfortable" 
+                            <v-text-field v-model="searchQuery" placeholder="Search by student name, ID, or reason..."
+                                prepend-inner-icon="mdi-magnify" variant="outlined" density="comfortable"
                                 class="search-input" clearable />
                         </div>
 
-                        <v-select v-model="statusFilter" :items="statusOptions" label="Status" variant="outlined" 
+                        <v-select v-model="statusFilter" :items="statusOptions" label="Status" variant="outlined"
                             density="comfortable" class="filter-select" />
 
-                        <v-select v-model="leaveTypeFilter" :items="leaveTypeOptions" label="Leave Type" variant="outlined" 
-                            density="comfortable" class="filter-select" />
+                        <v-select v-model="leaveTypeFilter" :items="leaveTypeOptions" label="Leave Type"
+                            variant="outlined" density="comfortable" class="filter-select" />
 
-                        <v-select v-model="tableSortOrder" :items="tableSortOptions" label="Sort by" variant="outlined" 
+                        <v-select v-model="tableSortOrder" :items="tableSortOptions" label="Sort by" variant="outlined"
                             density="comfortable" class="sort-select" />
 
-                        <v-btn icon="mdi-filter-variant" variant="outlined" class="filter-btn" 
+                        <v-btn icon="mdi-filter-variant" variant="outlined" class="filter-btn"
                             @click="showFilters = !showFilters" :color="showFilters ? 'primary' : 'grey'" />
                     </div>
                 </div>
@@ -115,17 +101,17 @@
                         <div class="filters-content">
                             <div class="filter-group">
                                 <div class="filter-label">Duration</div>
-                                <v-select v-model="durationFilter" :items="durationOptions" variant="outlined" 
+                                <v-select v-model="durationFilter" :items="durationOptions" variant="outlined"
                                     density="comfortable" class="filter-input" />
                             </div>
                             <div class="filter-group">
                                 <div class="filter-label">Date Range</div>
-                                <v-text-field v-model="dateRangeFilter" type="date" variant="outlined" 
+                                <v-text-field v-model="dateRangeFilter" type="date" variant="outlined"
                                     density="comfortable" class="filter-input" />
                             </div>
                             <div class="filter-group">
                                 <div class="filter-label">Generation</div>
-                                <v-select v-model="generationFilter" :items="generationOptions" variant="outlined" 
+                                <v-select v-model="generationFilter" :items="generationOptions" variant="outlined"
                                     density="comfortable" class="filter-input" />
                             </div>
                         </div>
@@ -161,7 +147,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="request in paginatedLeaveRequests" :key="request.leave_id" class="modern-table-row">
+                            <tr v-for="request in paginatedLeaveRequests" :key="request.leave_id"
+                                class="modern-table-row">
                                 <td class="modern-table-cell id-column">
                                     <div class="id-badge">{{ request.leave_id }}</div>
                                 </td>
@@ -172,24 +159,31 @@
                                         </div>
                                         <div class="student-details">
                                             <div class="student-name">{{ request.student_name }}</div>
-                                            <div class="student-meta">ID: {{ request.student_id }} • Gen {{ request.generation }}</div>
+                                            <div class="student-meta">ID: {{ request.student_id }} • Gen {{
+                                                request.generation
+                                            }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="modern-table-cell">
-                                    <v-chip :color="getLeaveTypeColor(request.leave_type)" variant="flat" size="small" class="leave-type-chip">
+                                    <v-chip :color="getLeaveTypeColor(request.leave_type)" variant="flat" size="small"
+                                        class="leave-type-chip">
                                         <v-icon :icon="getLeaveTypeIcon(request.leave_type)" start size="16" />
                                         {{ request.leave_type }}
                                     </v-chip>
                                 </td>
                                 <td class="modern-table-cell">
                                     <div class="duration-info">
-                                        <div class="duration-primary">{{ request.duration_days }} {{ request.duration_days === 1 ? 'day' : 'days' }}</div>
-                                        <div class="duration-secondary">{{ formatDate(request.start_date) }} - {{ formatDate(request.end_date) }}</div>
+                                        <div class="duration-primary">{{ request.duration_days }} {{
+                                            request.duration_days === 1
+                                                ? 'day' : 'days' }}</div>
+                                        <div class="duration-secondary">{{ formatDate(request.start_date) }} - {{
+                                            formatDate(request.end_date) }}</div>
                                     </div>
                                 </td>
                                 <td class="modern-table-cell">
-                                    <v-chip :color="getStatusColor(request.status)" variant="tonal" size="small" class="status-chip">
+                                    <v-chip :color="getStatusColor(request.status)" variant="tonal" size="small"
+                                        class="status-chip">
                                         <v-icon :icon="getStatusIcon(request.status)" start size="16" />
                                         {{ request.status }}
                                     </v-chip>
@@ -205,9 +199,6 @@
                                         <v-btn icon class="action-btn" @click="viewRequest(request)" size="small">
                                             <v-icon color="#3b82f6">mdi-eye</v-icon>
                                         </v-btn>
-                                        <v-btn icon class="action-btn" @click="openEditForm(request)" size="small">
-                                            <v-icon color="#10b981">mdi-pencil</v-icon>
-                                        </v-btn>
                                     </div>
                                 </td>
                             </tr>
@@ -222,28 +213,20 @@
                             {{ searchQuery ? 'Try adjusting your search criteria or filters.' : 'No leave requests have been submitted yet.' }}
                         </p>
                     </div>
-                    
+
                     <!-- Pagination Footer -->
                     <div v-if="filteredLeaveRequests.length > 0" class="pagination-section">
-                        <v-btn 
-                            variant="outlined" 
-                            :disabled="currentPage === 1"
-                            @click="goToPrevPage"
-                            class="pagination-btn"
-                        >
+                        <v-btn variant="outlined" :disabled="currentPage === 1" @click="goToPrevPage"
+                            class="pagination-btn">
                             Previous
                         </v-btn>
-                        
+
                         <div class="pagination-info">
                             <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
                         </div>
-                        
-                        <v-btn 
-                            variant="outlined" 
-                            :disabled="currentPage >= totalPages"
-                            @click="goToNextPage"
-                            class="pagination-btn"
-                        >
+
+                        <v-btn variant="outlined" :disabled="currentPage >= totalPages" @click="goToNextPage"
+                            class="pagination-btn">
                             Next
                         </v-btn>
                     </div>
@@ -309,8 +292,10 @@
                                 <div class="detail-item">
                                     <div class="detail-label">Leave Type</div>
                                     <div class="detail-value">
-                                        <v-chip :color="getLeaveTypeColor(selectedRequest.leave_type)" variant="flat" size="small">
-                                            <v-icon :icon="getLeaveTypeIcon(selectedRequest.leave_type)" start size="16" />
+                                        <v-chip :color="getLeaveTypeColor(selectedRequest.leave_type)" variant="flat"
+                                            size="small">
+                                            <v-icon :icon="getLeaveTypeIcon(selectedRequest.leave_type)" start
+                                                size="16" />
                                             {{ selectedRequest.leave_type }}
                                         </v-chip>
                                     </div>
@@ -318,7 +303,8 @@
                                 <div class="detail-item">
                                     <div class="detail-label">Status</div>
                                     <div class="detail-value">
-                                        <v-chip :color="getStatusColor(selectedRequest.status)" variant="flat" size="small">
+                                        <v-chip :color="getStatusColor(selectedRequest.status)" variant="flat"
+                                            size="small">
                                             <v-icon :icon="getStatusIcon(selectedRequest.status)" start size="16" />
                                             {{ selectedRequest.status }}
                                         </v-chip>
@@ -334,7 +320,8 @@
                                 </div>
                                 <div class="detail-item">
                                     <div class="detail-label">Duration</div>
-                                    <div class="detail-value">{{ selectedRequest.duration_days }} {{ selectedRequest.duration_days === 1 ? 'day' : 'days' }}</div>
+                                    <div class="detail-value">{{ selectedRequest.duration_days }} {{
+                                        selectedRequest.duration_days === 1 ? 'day' : 'days' }}</div>
                                 </div>
                                 <div class="detail-item">
                                     <div class="detail-label">Requested On</div>
@@ -348,13 +335,16 @@
                                     <div class="detail-label">Additional Notes</div>
                                     <div class="detail-value">{{ selectedRequest.notes }}</div>
                                 </div>
-                                <div class="detail-item full-width" v-if="selectedRequest.status === 'Approved' && selectedRequest.approved_by">
+                                <div class="detail-item full-width"
+                                    v-if="selectedRequest.status === 'Approved' && selectedRequest.approved_by">
                                     <div class="detail-label">Approved By</div>
                                     <div class="detail-value">{{ selectedRequest.approved_by }}</div>
                                 </div>
-                                <div class="detail-item full-width" v-if="selectedRequest.status === 'Rejected' && selectedRequest.rejection_reason">
+                                <div class="detail-item full-width"
+                                    v-if="selectedRequest.status === 'Rejected' && selectedRequest.rejection_reason">
                                     <div class="detail-label">Rejection Reason</div>
-                                    <div class="detail-value rejected-reason">{{ selectedRequest.rejection_reason }}</div>
+                                    <div class="detail-value rejected-reason">{{ selectedRequest.rejection_reason }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -365,6 +355,7 @@
 
                 <!-- Dialog Actions -->
                 <v-card-actions class="dialog-actions">
+                    <v-spacer />
                     <v-btn variant="outlined" color="grey-darken-1" @click="closeViewDialog" class="action-btn">
                         <v-icon start>mdi-close</v-icon>
                         Close
@@ -377,29 +368,19 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-
-        <!-- Request Leave Form Dialog -->
-        <RequestLeaveForm 
-            v-model="formDialog" 
-            :edit-data="editData" 
-            @success="handleFormSuccess"
-            @deleted="handleFormDeleted"
-        />
     </div>
 </template>
 
 <script setup>
 definePageMeta({
     layout: 'admin',
-    // middleware: ['auth', 'role-admin'] // Commented out for testing
+    // middleware: ['auth', 'role-admin'] // Uncomment if you want to enable middleware
 })
 
 import { ref, computed, watch, onMounted } from 'vue'
-import Navbar from '@/components/ui/Navbar.vue'
-import RequestLeaveForm 
-from '@/components/admin/RequestLeaveForm.vue'
 import { useRequestLeaveStore } from '@/store/useRequestLeaveStore'
 import { storeToRefs } from 'pinia'
+import ExportButtons from '@/components/ui/ExportButtons.vue'
 
 // Import composables
 const { exportToExcel, exportToPDF } = useExport()
@@ -421,8 +402,6 @@ const selectedRequest = ref(null)
 const showFilters = ref(false)
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
-const formDialog = ref(false)
-const editData = ref(null)
 
 // Filter options
 const statusOptions = [
@@ -430,6 +409,23 @@ const statusOptions = [
     { title: 'Pending', value: 'Pending' },
     { title: 'Approved', value: 'Approved' },
     { title: 'Rejected', value: 'Rejected' }
+]
+
+const exportColumns = [
+  { key: 'leave_id', header: 'Leave ID' },
+  { key: 'student_name', header: 'Student Name' },
+  { key: 'student_id', header: 'Student ID' },
+  { key: 'generation', header: 'Generation' },
+  { key: 'specialize', header: 'Specialization' },
+  { key: 'leave_type', header: 'Leave Type' },
+  { key: 'reason', header: 'Reason' },
+  { key: 'start_date', header: 'Start Date', format: 'date' },
+  { key: 'end_date', header: 'End Date', format: 'date' },
+  { key: 'duration_days', header: 'Duration' },
+  { key: 'status', header: 'Status' },
+  { key: 'created_on', header: 'Requested On', format: 'date' },
+  { key: 'approved_by', header: 'Approved By' },
+  { key: 'notes', header: 'Notes' }
 ]
 
 const leaveTypeOptions = [
@@ -632,29 +628,6 @@ onMounted(async () => {
 const downloadRequest = (request) => {
     // Implement download functionality
     console.log('Downloading request:', request.leave_id)
-}
-
-// Form dialog handlers
-const openNewRequestForm = () => {
-    editData.value = null
-    formDialog.value = true
-}
-
-const openEditForm = (request) => {
-    editData.value = { ...request }
-    formDialog.value = true
-}
-
-const handleFormSuccess = async (data) => {
-    formDialog.value = false
-    editData.value = null
-    await refreshData()
-}
-
-const handleFormDeleted = async (id) => {
-    formDialog.value = false
-    editData.value = null
-    await refreshData()
 }
 
 // Export functions
@@ -1014,7 +987,7 @@ watch([searchQuery, statusFilter, leaveTypeFilter, durationFilter, generationFil
 .header-content {
     display: flex;
     align-items: center;
-    color: #45474b  !important;
+    color: #45474b !important;
     font-weight: 600;
     font-size: 13px;
     text-transform: uppercase;

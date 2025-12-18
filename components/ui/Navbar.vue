@@ -266,9 +266,9 @@
           </VListItem>
 
           <!-- Operations Section -->
-          <div v-if="!isRail" class="uas-section-divider">
+          <!-- <div v-if="!isRail" class="uas-section-divider">
             <span class="uas-section-title">Operations</span>
-          </div>
+          </div> -->
 
           <!-- Leave Requests -->
           <VListItem :to="'/admin/request-leave'" nav :active="isActivePath('/admin/request-leave')"

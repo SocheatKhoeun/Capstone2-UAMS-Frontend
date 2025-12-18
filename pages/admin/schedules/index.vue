@@ -232,17 +232,37 @@
               <v-col cols="12" md="6">
                 <div class="form-group">
                   <label class="form-label">Subject *</label>
-                  <v-select v-model="formData.subject_id" :items="subjectOptions" :rules="requiredRules"
-                    variant="outlined" density="comfortable" hide-details="auto" class="form-field"
-                    :loading="loadingOptions" placeholder="Select a subject" />
+                  <v-select 
+                    v-model="formData.subject_id" 
+                    :items="subjectOptions" 
+                    item-title="title"
+                    item-value="value"
+                    :rules="requiredRules"
+                    variant="outlined" 
+                    density="comfortable" 
+                    hide-details="auto" 
+                    class="form-field"
+                    :loading="loadingOptions" 
+                    placeholder="Select a subject"
+                    @update:model-value="(val) => console.log('Subject v-select updated:', val)" />
                 </div>
               </v-col>
               <v-col cols="12" md="6">
                 <div class="form-group">
                   <label class="form-label">Term *</label>
-                  <v-select v-model="formData.term_id" :items="termOptions" variant="outlined" density="comfortable"
-                    hide-details="auto" :rules="requiredRules" class="form-field" :loading="loadingOptions"
-                    placeholder="Select a term" />
+                  <v-select 
+                    v-model="formData.term_id" 
+                    :items="termOptions" 
+                    item-title="title"
+                    item-value="value"
+                    variant="outlined" 
+                    density="comfortable"
+                    hide-details="auto" 
+                    :rules="requiredRules" 
+                    class="form-field" 
+                    :loading="loadingOptions"
+                    placeholder="Select a term"
+                    @update:model-value="(val) => console.log('Term v-select updated:', val)" />
                 </div>
               </v-col>
               <v-col cols="12" md="6">
@@ -331,32 +351,183 @@
     </v-dialog>
 
     <!-- Schedule Detail View Dialog -->
-    <v-dialog v-model="scheduleDetailDialog" max-width="1200" persistent>
-      <v-card v-if="selectedSchedule" class="schedule-detail-card">
-        <div class="detail-header">
-          <div class="header-info">
-            <h2 class="schedule-title">{{ selectedSchedule.group_name }}</h2>
-            <div class="schedule-meta">
-              <v-chip color="primary" variant="flat" class="mr-2">{{ selectedSchedule.group_id }}</v-chip>
-              <v-chip :color="selectedSchedule.active ? 'success' : 'error'" variant="flat">
-                {{ selectedSchedule.active ? 'Active' : 'Inactive' }}
-              </v-chip>
+    <v-dialog v-model="scheduleDetailDialog" max-width="900" persistent>
+      <v-card v-if="selectedSchedule" class="detail-dialog-card" elevation="24">
+        <!-- Dialog Header -->
+        <div class="detail-dialog-header">
+          <div class="header-content">
+            <div class="header-icon-wrapper">
+              <v-icon icon="mdi-calendar-clock" color="white" size="28" />
+            </div>
+            <div class="header-text">
+              <h2 class="detail-dialog-title">Schedule Details</h2>
+              <p class="detail-dialog-subtitle">Complete schedule information overview</p>
             </div>
           </div>
-          <div class="header-actions">
-            <v-btn icon="mdi-pencil" variant="outlined" @click="editScheduleFromDetail" class="mr-2" />
-            <v-btn icon="mdi-close" variant="text" @click="scheduleDetailDialog = false" />
-          </div>
+          <v-btn icon="mdi-close" variant="text" size="small" @click="scheduleDetailDialog = false" class="close-btn" />
         </div>
 
         <v-divider />
 
-        <div class="schedule-content">
-          <!-- Schedule details content here -->
-          <div class="pa-6">
-            <p class="text-grey">Schedule detail view component goes here</p>
+        <!-- Dialog Content -->
+        <v-card-text class="detail-dialog-content">
+          <div class="detail-info-grid">
+            <!-- Group -->
+            <div class="info-card">
+              <div class="info-icon-wrapper group">
+                <v-icon icon="mdi-account-group" color="white" size="20" />
+              </div>
+              <div class="info-content">
+                <div class="info-label">Group</div>
+                <div class="info-value">{{ getGroupName(selectedSchedule.group_id) }}</div>
+              </div>
+            </div>
+
+            <!-- Subject -->
+            <div class="info-card">
+              <div class="info-icon-wrapper subject">
+                <v-icon icon="mdi-book-open-variant" color="white" size="20" />
+              </div>
+              <div class="info-content">
+                <div class="info-label">Subject</div>
+                <div class="info-value">{{ getSubjectName(selectedSchedule.subject_id) }}</div>
+              </div>
+            </div>
+
+            <!-- Term -->
+            <div class="info-card">
+              <div class="info-icon-wrapper term">
+                <v-icon icon="mdi-calendar-range" color="white" size="20" />
+              </div>
+              <div class="info-content">
+                <div class="info-label">Term</div>
+                <div class="info-value">{{ getTermName(selectedSchedule.term_id) }}</div>
+              </div>
+            </div>
+
+            <!-- Generation -->
+            <div class="info-card">
+              <div class="info-icon-wrapper generation">
+                <v-icon icon="mdi-account-school" color="white" size="20" />
+              </div>
+              <div class="info-content">
+                <div class="info-label">Generation</div>
+                <div class="info-value">{{ getGenerationName(selectedSchedule.generation_id) }}</div>
+              </div>
+            </div>
+
+            <!-- Instructor -->
+            <div class="info-card">
+              <div class="info-icon-wrapper instructor">
+                <v-icon icon="mdi-account-tie" color="white" size="20" />
+              </div>
+              <div class="info-content">
+                <div class="info-label">Instructor</div>
+                <div class="info-value">{{ getInstructorName(selectedSchedule.instructor_id) }}</div>
+              </div>
+            </div>
+
+            <!-- Assistant -->
+            <div class="info-card">
+              <div class="info-icon-wrapper assistant">
+                <v-icon icon="mdi-account-supervisor" color="white" size="20" />
+              </div>
+              <div class="info-content">
+                <div class="info-label">Assistant</div>
+                <div class="info-value">{{ getInstructorName(selectedSchedule.assistant_id) || 'N/A' }}</div>
+              </div>
+            </div>
+
+            <!-- Room -->
+            <div class="info-card">
+              <div class="info-icon-wrapper room">
+                <v-icon icon="mdi-door" color="white" size="20" />
+              </div>
+              <div class="info-content">
+                <div class="info-label">Room</div>
+                <div class="info-value">{{ getRoomName(selectedSchedule.room_id) }}</div>
+              </div>
+            </div>
+
+            <!-- Status -->
+            <div class="info-card">
+              <div class="info-icon-wrapper status">
+                <v-icon icon="mdi-information" color="white" size="20" />
+              </div>
+              <div class="info-content">
+                <div class="info-label">Status</div>
+                <div class="info-value">
+                  <v-chip :color="getStatusColor(selectedSchedule.status)" size="small" variant="flat" class="status-chip">
+                    {{ getStatusLabel(selectedSchedule.status) }}
+                  </v-chip>
+                </div>
+              </div>
+            </div>
+
+            <!-- Active -->
+            <div class="info-card">
+              <div class="info-icon-wrapper active">
+                <v-icon icon="mdi-toggle-switch" color="white" size="20" />
+              </div>
+              <div class="info-content">
+                <div class="info-label">Active</div>
+                <div class="info-value">
+                  <v-chip :color="selectedSchedule.active ? 'success' : 'error'" size="small" variant="flat" class="status-chip">
+                    {{ selectedSchedule.active ? 'Active' : 'Inactive' }}
+                  </v-chip>
+                </div>
+              </div>
+            </div>
+
+            <!-- Start Time -->
+            <div class="info-card">
+              <div class="info-icon-wrapper time">
+                <v-icon icon="mdi-calendar-clock" color="white" size="20" />
+              </div>
+              <div class="info-content">
+                <div class="info-label">Start Time</div>
+                <div class="info-value">{{ formatDateTime(selectedSchedule.start_time) }}</div>
+              </div>
+            </div>
+
+            <!-- End Time -->
+            <div class="info-card">
+              <div class="info-icon-wrapper time">
+                <v-icon icon="mdi-calendar-clock" color="white" size="20" />
+              </div>
+              <div class="info-content">
+                <div class="info-label">End Time</div>
+                <div class="info-value">{{ formatDateTime(selectedSchedule.end_time) }}</div>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="info-card full-width" v-if="selectedSchedule.description">
+              <div class="info-icon-wrapper description">
+                <v-icon icon="mdi-text" color="white" size="20" />
+              </div>
+              <div class="info-content">
+                <div class="info-label">Description</div>
+                <div class="info-value description-text">{{ selectedSchedule.description || 'N/A' }}</div>
+              </div>
+            </div>
           </div>
-        </div>
+        </v-card-text>
+
+        <v-divider />
+
+        <!-- Dialog Actions -->
+        <v-card-actions class="detail-dialog-actions">
+          <v-btn variant="outlined" color="grey-darken-1" @click="scheduleDetailDialog = false" class="action-btn cancel-btn">
+            <v-icon start>mdi-close</v-icon>
+            Close
+          </v-btn>
+          <v-spacer />
+          <!-- <v-btn color="primary" variant="flat" @click="editScheduleFromDetail" class="action-btn submit-btn">
+            <v-icon start>mdi-pencil</v-icon>
+            Edit Schedule
+          </v-btn> -->
+        </v-card-actions>
       </v-card>
     </v-dialog>
 
@@ -621,9 +792,27 @@ const paginatedSchedules = computed(() => {
 })
 
 // Computed options for dropdowns
-const groupOptions = computed(() => groups.value.map(g => ({ title: g.group_name || g.id, value: g.id })))
-const subjectOptions = computed(() => subjects.value.map(s => ({ title: `${s.code} - ${s.name}`, value: s.id })))
-const termOptions = computed(() => terms.value.map(t => ({ title: t.term, value: t.id })))
+const groupOptions = computed(() => {
+  const options = groups.value.map(g => ({ title: g.group_name || g.id, value: g.id }))
+  console.log('groupOptions sample:', options[0])
+  return options
+})
+
+const subjectOptions = computed(() => {
+  const options = subjects.value.map(s => {
+    return { title: `${s.code} - ${s.name}`, value: s.id }
+  })
+  console.log('subjectOptions:', options.length, 'items, sample:', options[0])
+  return options
+})
+
+const termOptions = computed(() => {
+  const options = terms.value.map(t => {
+    return { title: t.term, value: t.id }
+  })
+  console.log('termOptions:', options.length, 'items, sample:', options[0])
+  return options
+})
 const instructorOptions = computed(() => instructors.value.map(i => ({ title: `${i.first_name} ${i.last_name}`, value: i.id })))
 const roomOptions = computed(() => rooms.value.map(r => ({ title: r.room, value: r.id })))
 const generationOptions = computed(() => generations.value.map(g => ({ title: g.generation, value: g.id })))
@@ -643,6 +832,11 @@ const openCreateDialog = () => {
   resetForm()
   isEdit.value = false
   scheduleDialog.value = true
+  
+  // Debug: Log options available
+  console.log('Dialog opened - SubjectOptions:', subjectOptions.value.length, 'items')
+  console.log('Dialog opened - TermOptions:', termOptions.value.length, 'items')
+  console.log('FormData initial:', { ...formData })
 }
 
 const editSchedule = (schedule) => {
@@ -698,7 +892,12 @@ const resetForm = () => {
 }
 
 const submitForm = async () => {
-  if (!formValid.value) return
+  // First validate the form
+  const { valid } = await formRef.value.validate()
+  if (!valid) {
+    alert('Please fill in all required fields')
+    return
+  }
 
   try {
     // Helper function to ensure ID is valid (number or numeric string)
@@ -723,9 +922,9 @@ const submitForm = async () => {
       instructor_id: sanitizeId(formData.instructor_id),
       assistant_id: sanitizeId(formData.assistant_id),
       generation_id: sanitizeId(formData.generation_id),
-      description: formData.description || null,
-      status: formData.status,
-      active: formData.active,
+      description: formData.description || '',
+      status: formData.status || 1,
+      active: formData.active !== undefined ? formData.active : true,
       start_time: formData.start_time ? new Date(formData.start_time).toISOString() : null,
       end_time: formData.end_time ? new Date(formData.end_time).toISOString() : null
     }
@@ -734,6 +933,7 @@ const submitForm = async () => {
     if (!payload.group_id || !payload.subject_id || !payload.term_id ||
       !payload.instructor_id || !payload.assistant_id || !payload.generation_id) {
       alert('Please fill in all required fields with valid values')
+      console.log('Validation failed - payload:', payload)
       return
     }
 
@@ -856,13 +1056,14 @@ const getStatusLabel = (status) => {
   return statusMap[status] || 'Unknown'
 }
 
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-  try {
-    return new Date(dateString).toLocaleDateString()
-  } catch {
-    return 'N/A'
+const getStatusColor = (status) => {
+  const colorMap = {
+    1: 'info',      // Planned
+    2: 'success',   // Active
+    3: 'primary',    // Completed
+    4: 'error'       // Canceled
   }
+  return colorMap[status] || 'grey'
 }
 
 const formatDateRange = (start, end) => {
@@ -873,6 +1074,36 @@ const formatDateRange = (start, end) => {
     return `${startDate} - ${endDate}`
   } catch {
     return 'Invalid date range'
+  }
+}
+
+const formatDateTime = (datetime) => {
+  if (!datetime) return 'Not set'
+  try {
+    const date = new Date(datetime)
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  } catch {
+    return 'Invalid date'
+  }
+}
+
+const formatDate = (date) => {
+  if (!date) return 'Not set'
+  try {
+    const d = new Date(date)
+    const day = String(d.getDate()).padStart(2, '0')
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    const month = months[d.getMonth()]
+    const year = d.getFullYear()
+    return `${day}th ${month}, ${year}`
+  } catch {
+    return 'Invalid date'
   }
 }
 
@@ -888,6 +1119,15 @@ const goToNextPage = () => {
 // Watch for filter changes and reset pagination
 watch([searchQuery, generationFilter, yearFilter, statusFilter], () => {
   currentPage.value = 1
+})
+
+// Debug: Watch formData changes for subject_id and term_id
+watch(() => formData.subject_id, (newVal, oldVal) => {
+  console.log('subject_id changed:', oldVal, '->', newVal)
+})
+
+watch(() => formData.term_id, (newVal, oldVal) => {
+  console.log('term_id changed:', oldVal, '->', newVal)
 })
 
 // Lifecycle
@@ -928,6 +1168,12 @@ const fetchReferenceData = async () => {
       rooms: rooms.value.length,
       generations: generations.value.length
     })
+    
+    // Debug: Check actual data structure
+    console.log('First subject:', subjects.value[0])
+    console.log('First term:', terms.value[0])
+    console.log('SubjectOptions computed:', subjectOptions.value.slice(0, 3))
+    console.log('TermOptions computed:', termOptions.value.slice(0, 3))
   } catch (error) {
     console.error('Failed to fetch reference data:', error)
   } finally {
@@ -1533,6 +1779,224 @@ const fetchReferenceData = async () => {
   overflow-y: auto;
 }
 
+/* Detail Dialog Styles */
+.detail-dialog-card {
+  border-radius: 20px !important;
+  overflow: hidden;
+  background: white;
+}
+
+.detail-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 32px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.header-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.detail-dialog-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.detail-dialog-subtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+.close-btn {
+  color: white !important;
+  opacity: 0.9;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.detail-dialog-content {
+  padding: 32px !important;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.detail-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--card-color, #3b82f6), var(--card-color-dark, #2563eb));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: #cbd5e1;
+}
+
+.info-card:hover::before {
+  opacity: 1;
+}
+
+.info-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.info-card:hover .info-icon-wrapper {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.info-icon-wrapper.group {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.info-icon-wrapper.subject {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.info-icon-wrapper.term {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.info-icon-wrapper.generation {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.info-icon-wrapper.instructor {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.info-icon-wrapper.assistant {
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+}
+
+.info-icon-wrapper.room {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+}
+
+.info-icon-wrapper.status {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.info-icon-wrapper.active {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.info-icon-wrapper.time {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+
+.info-icon-wrapper.description {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+}
+
+.info-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.info-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.info-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  word-break: break-word;
+  line-height: 1.5;
+}
+
+.description-text {
+  line-height: 1.6;
+  color: #475569;
+  font-weight: 400;
+  font-size: 15px;
+}
+
+.status-chip {
+  font-weight: 600 !important;
+  letter-spacing: 0.3px;
+}
+
+.detail-dialog-actions {
+  padding: 24px 32px !important;
+  gap: 12px;
+  background: white;
+  border-top: 1px solid #e2e8f0;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .header-container {
@@ -1571,6 +2035,40 @@ const fetchReferenceData = async () => {
 
   .cards-grid {
     grid-template-columns: 1fr;
+  }
+
+  .detail-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-dialog-header {
+    padding: 20px 24px;
+  }
+
+  .header-icon-wrapper {
+    width: 48px;
+    height: 48px;
+  }
+
+  .detail-dialog-title {
+    font-size: 20px;
+  }
+
+  .detail-dialog-content {
+    padding: 24px !important;
+  }
+
+  .info-card {
+    padding: 16px;
+  }
+
+  .info-icon-wrapper {
+    width: 40px;
+    height: 40px;
+  }
+
+  .info-value {
+    font-size: 14px;
   }
 }
 

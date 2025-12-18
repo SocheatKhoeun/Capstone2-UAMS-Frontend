@@ -308,20 +308,7 @@ const calculateDuration = () => {
   }
 }
 
-// Watch for edit data changes
-watch(() => props.editData, (newData) => {
-  if (newData) {
-    formData.value = {
-      ...newData,
-      start_date: newData.start_date ? newData.start_date.split('T')[0] : '',
-      end_date: newData.end_date ? newData.end_date.split('T')[0] : ''
-    }
-  } else {
-    resetForm()
-  }
-}, { immediate: true })
-
-// Reset form
+// Reset form - MOVED BEFORE WATCH TO AVOID INITIALIZATION ERROR
 const resetForm = () => {
   formData.value = {
     student_id: '',
@@ -340,6 +327,19 @@ const resetForm = () => {
   }
   formRef.value?.resetValidation()
 }
+
+// Watch for edit data changes
+watch(() => props.editData, (newData) => {
+  if (newData) {
+    formData.value = {
+      ...newData,
+      start_date: newData.start_date ? newData.start_date.split('T')[0] : '',
+      end_date: newData.end_date ? newData.end_date.split('T')[0] : ''
+    }
+  } else {
+    resetForm()
+  }
+}, { immediate: true })
 
 // Close form
 const closeForm = () => {
