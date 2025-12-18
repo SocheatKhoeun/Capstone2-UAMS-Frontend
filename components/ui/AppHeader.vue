@@ -75,17 +75,58 @@ const router = useRouter()
 const adminStore = adminAuth()
 const studentStore = userAuth()
 
+function safeJSONParse(str: string | null) {
+  if (!str || str === 'undefined' || str === 'null') return null
+  try {
+    return JSON.parse(str)
+  } catch (e) {
+    return null
+  }
+}
+
+function decodeJwtPayload(token?: string | null) {
+  if (!token) return null
+  try {
+    const parts = token.split('.')
+    if (parts.length !== 3 || !parts[1]) return null
+    let decoded = null
+    try {
+      decoded = atob(parts[1])
+    } catch (e) {
+      if (typeof Buffer !== 'undefined') {
+        decoded = Buffer.from(parts[1], 'base64').toString('utf8')
+      }
+    }
+    if (!decoded || decoded === 'undefined' || decoded === 'null') return null
+    return safeJSONParse(decoded)
+  } catch (e) {
+    return null
+  }
+}
+
 // Computed properties for user info
 const currentUser = computed(() => {
-  const admin = adminStore.getAdmin?.() || adminStore.admin
-  const student = studentStore.getUser?.() || studentStore.user
-  return admin || student || null
+  const admin = (typeof adminStore.getAdmin === 'function' ? adminStore.getAdmin() : adminStore.admin) || adminStore.admin
+  const student = (typeof studentStore.getUser === 'function' ? studentStore.getUser() : studentStore.user) || studentStore.user
+  if (admin) return admin
+  if (student) return student
+
+  const token = (typeof adminStore.getToken === 'function' ? adminStore.getToken() : null) || (typeof studentStore.getToken === 'function' ? studentStore.getToken() : null)
+  const payload = decodeJwtPayload(token)
+  if (payload) {
+    return {
+      first_name: payload.first_name || payload.firstName || payload.name || payload.fullname || '',
+      last_name: payload.last_name || payload.lastName || '',
+      email: payload.email || payload.sub || ''
+    }
+  }
+  return null
 })
 
 const userName = computed(() => {
   if (!currentUser.value) return 'User'
-  const user = currentUser.value as any
-  const first = user.first_name || user.firstName || ''
+  const user: any = currentUser.value
+  const first = user.first_name || user.firstName || user.name || ''
   const last = user.last_name || user.lastName || ''
   const full = `${first} ${last}`.trim()
   return full || user.email || user.student_code || 'User'
@@ -101,10 +142,8 @@ const userInitial = computed(() => {
   return name.charAt(0).toUpperCase()
 })
 
-// Use a wrapper function to ensure reactivity
 const onSignOut = async () => {
   try {
-    // Try both logout methods
     if (typeof adminStore.logout === 'function') {
       await adminStore.logout()
     }
@@ -114,12 +153,10 @@ const onSignOut = async () => {
   } catch (err) {
     console.error('Sign out error:', err)
   } finally {
-    // navigate to login page
     router.push('/auth/login')
   }
 }
 
-// Initialize user data on mount
 onMounted(() => {
   if (typeof adminStore.init === 'function') {
     adminStore.init()
@@ -129,7 +166,6 @@ onMounted(() => {
   }
 })
 </script>
-
 
 <style scoped>
 /* Modern admin-style header */
@@ -285,4 +321,3 @@ onMounted(() => {
   margin-inline-end: 12px !important;
 }
 </style>
-
