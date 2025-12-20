@@ -268,17 +268,15 @@
         </div>
 
         <!-- Create/Edit Dialog -->
-        <v-dialog v-model="dialogOpen" max-width="700" persistent>
-            <v-card class="modern-dialog" elevation="24">
-                <!-- Dialog Header -->
+        <v-dialog v-model="dialogOpen" max-width="900" persistent scrollable>
+            <v-card class="dialog-card">
                 <div class="dialog-header">
-                    <div class="header-content">
-                        <div class="header-icon">
-                            <v-icon :icon="isEdit ? 'mdi-pencil' : 'mdi-plus'" :color="isEdit ? 'warning' : 'primary'"
-                                size="28" />
+                    <div class="header-left">
+                        <div class="header-icon-wrapper">
+                            <v-icon :icon="isEdit ? 'mdi-pencil' : 'mdi-plus'" size="24" color="white" />
                         </div>
-                        <div class="header-text">
-                            <h2 class="dialog-title">{{ isEdit ? 'Edit Student' : 'Add New Student' }}</h2>
+                        <div>
+                            <h2 class="dialog-title">{{ isEdit ? 'Edit Student' : 'Create New Student' }}</h2>
                             <p class="dialog-subtitle">
                                 {{ isEdit ? 'Update student information' : 'Fill in the student details below' }}
                             </p>
@@ -286,176 +284,109 @@
                     </div>
                     <v-btn icon="mdi-close" variant="text" size="small" @click="closeDialog" class="close-btn" />
                 </div>
-
                 <v-divider />
 
-                <v-card-text class="dialog-content">
-                    <v-form ref="formRef" v-model="formValid">
-                        <!-- Student ID and Password -->
-                        <v-row>
-                            <v-col cols="6">
-                                <div class="form-group">
-                                    <label class="form-label">Student ID * <small>(e.g., STU-2025001)</small></label>
-                                    <v-text-field v-model="formData.studentId" :rules="studentIdRules"
-                                        variant="outlined" density="comfortable" placeholder="STU-2025001"
-                                        class="form-field" />
-                                </div>
-                            </v-col>
-                            <v-col cols="6">
-                                <div class="form-group">
-                                    <label class="form-label">Password {{ isEdit ? '' : '*' }} <small>({{ isEdit ?
-                                        'leave blank to keep current' : 'min 8 chars' }})</small></label>
-                                    <v-text-field v-model="formData.password" :rules="isEdit ? [] : passwordRules"
-                                        variant="outlined" density="comfortable" type="password"
-                                        :placeholder="isEdit ? 'Leave blank to keep current' : '••••••••'"
-                                        class="form-field" />
-                                </div>
-                            </v-col>
-                        </v-row>
+                <v-card-text class="dialog-body">
+                    <v-form ref="formRef" v-model="formValid" @submit.prevent="submitForm">
+                        <div class="form-section">
+                            <h3 class="section-title">Basic Information</h3>
+                            <v-row dense>
+                                <v-col cols="12" md="6">
+                                    <v-text-field v-model="formData.student_code" label="Student Code *" variant="outlined"
+                                        :rules="studentIdRules" placeholder="e.g., 2025CS002" />
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    <v-text-field v-model="formData.password" label="Password" type="password"
+                                        :rules="isEdit ? [] : passwordRules"
+                                        placeholder="Min 8 characters (required on create)" />
+                                </v-col>
 
-                        <!-- Name Fields (Optional) -->
-                        <v-row>
-                            <v-col cols="6">
-                                <div class="form-group">
-                                    <label class="form-label">First Name</label>
-                                    <v-text-field v-model="formData.firstName" :rules="nameRules" variant="outlined"
-                                        density="comfortable" placeholder="Enter first name" class="form-field" />
-                                </div>
-                            </v-col>
-                            <v-col cols="6">
-                                <div class="form-group">
-                                    <label class="form-label">Last Name</label>
-                                    <v-text-field v-model="formData.lastName" :rules="nameRules" variant="outlined"
-                                        density="comfortable" placeholder="Enter last name" class="form-field" />
-                                </div>
-                            </v-col>
-                        </v-row>
+                                <v-col cols="12" md="6">
+                                    <v-text-field v-model="formData.first_name" label="First Name *" variant="outlined"
+                                        :rules="requiredRules" />
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    <v-text-field v-model="formData.last_name" label="Last Name *" variant="outlined"
+                                        :rules="requiredRules" />
+                                </v-col>
 
-                        <!-- Email and Phone -->
-                        <v-row>
-                            <v-col cols="6">
-                                <div class="form-group">
-                                    <label class="form-label">Email *</label>
-                                    <v-text-field v-model="formData.email" :rules="emailRules" variant="outlined"
-                                        density="comfortable" placeholder="student@example.com" class="form-field" />
-                                </div>
-                            </v-col>
-                            <v-col cols="6">
-                                <div class="form-group">
-                                    <label class="form-label">Phone</label>
-                                    <v-text-field v-model="formData.phone" variant="outlined" density="comfortable"
-                                        placeholder="+855 12 345 678" class="form-field" />
-                                </div>
-                            </v-col>
-                        </v-row>
+                                <v-col cols="12" md="4">
+                                    <v-select v-model="formData.gender" :items="['male','female','other']" label="Gender"
+                                        variant="outlined" />
+                                </v-col>
+                                <v-col cols="12" md="4">
+                                    <v-text-field v-model="formData.dob" label="Date of Birth" type="date" variant="outlined" />
+                                </v-col>
+                                <v-col cols="12" md="4">
+                                    <v-text-field v-model="formData.phone_number" label="Phone Number" variant="outlined" />
+                                </v-col>
 
-                        <!-- Generation and Group (Required) -->
-                        <v-row>
-                            <v-col cols="6">
-                                <div class="form-group">
-                                    <label class="form-label">Generation *</label>
-                                    <v-select v-model="formData.generationId" :items="generationsList"
-                                        :rules="generationRules" variant="outlined" density="comfortable"
-                                        class="form-field" item-title="title" item-value="value" />
-                                </div>
-                            </v-col>
-                            <v-col cols="6">
-                                <div class="form-group">
-                                    <label class="form-label">Specialization *</label>
-                                    <v-select v-model="formData.specializationId" :items="specializationsList"
-                                        :rules="specializationRules" variant="outlined" density="comfortable"
-                                        class="form-field" item-title="title" item-value="value" />
-                                </div>
-                            </v-col>
-                            <v-col cols="6">
-                                <div class="form-group">
-                                    <label class="form-label">Group *</label>
-                                    <v-select v-model="formData.groupId" :items="groupsList" :rules="groupRules"
-                                        variant="outlined" density="comfortable" class="form-field" item-title="title"
-                                        item-value="value" />
-                                </div>
-                            </v-col>
-                        </v-row>
+                                <v-col cols="12">
+                                    <v-text-field v-model="formData.email" label="Email *" :rules="emailRules" variant="outlined" />
+                                </v-col>
 
-                        <!-- Gender and DOB (Optional) -->
-                        <v-row>
-                            <v-col cols="6">
-                                <div class="form-group">
-                                    <label class="form-label">Gender</label>
-                                    <v-select v-model="formData.gender" :items="genderOptions" variant="outlined"
-                                        density="comfortable" class="form-field" />
-                                </div>
-                            </v-col>
-                            <v-col cols="6">
-                                <div class="form-group">
-                                    <label class="form-label">Date of Birth <small>(optional,
-                                            YYYY-MM-DD)</small></label>
-                                    <v-text-field v-model="formData.dob" variant="outlined" density="comfortable"
-                                        type="date" class="form-field" />
-                                </div>
-                            </v-col>
-                        </v-row>
-
-                        <!-- Address (Optional) -->
-                        <div class="form-group">
-                            <label class="form-label">Address </label>
-                            <v-textarea v-model="formData.address" variant="outlined" density="comfortable"
-                                placeholder="Full address" rows="2" class="form-field" />
+                                <v-col cols="12">
+                                    <v-textarea v-model="formData.address" label="Address" rows="2" variant="outlined" />
+                                </v-col>
+                            </v-row>
                         </div>
 
-                        <!-- Profile Image Upload (Only for Create) -->
-                        <div v-if="!isEdit" class="form-group">
-                            <label class="form-label">Profile Image <small>(optional, for face
-                                    recognition)</small></label>
-                            <p class="help-text">Max 5MB • JPG, PNG, GIF, WEBP</p>
+                        <v-divider class="my-6" />
 
-                            <div class="image-upload-container">
-                                <input ref="fileInputRef" type="file"
-                                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                                    @change="handleImageChange" style="display: none" />
-
-                                <div v-if="imagePreview" class="image-preview-box">
-                                    <img :src="imagePreview" alt="Preview" class="preview-image" />
-                                    <v-btn icon="mdi-close" size="small" color="error" class="remove-image-btn"
-                                        @click="clearImage" />
-                                </div>
-
-                                <div v-else class="upload-placeholder" @click="triggerFileInput">
-                                    <v-icon icon="mdi-camera-plus" size="48" color="grey-lighten-1" />
-                                    <p class="upload-text">Click to upload student photo</p>
-                                    <p class="upload-subtext">Recommended: Square image, 800x800px or higher</p>
-                                </div>
-                            </div>
+                        <div class="form-section">
+                            <h3 class="section-title">Academic</h3>
+                            <v-row dense>
+                                <v-col cols="12" md="4">
+                                    <v-select v-model="formData.generation_id" :items="generationsList" label="Generation *"
+                                        item-title="title" item-value="value" :rules="generationRules" variant="outlined" />
+                                </v-col>
+                                <v-col cols="12" md="4">
+                                    <v-select v-model="formData.group_id" :items="groupsList" label="Group *"
+                                        item-title="title" item-value="value" :rules="groupRules" variant="outlined" />
+                                </v-col>
+                                <v-col cols="12" md="4">
+                                    <v-select v-model="formData.specialization_id" :items="specializationsList" label="Specialization *"
+                                        item-title="title" item-value="value" :rules="specializationRules" variant="outlined" />
+                                </v-col>
+                            </v-row>
                         </div>
 
-                        <div class="form-group">
-                            <div class="switch-container">
-                                <v-switch v-model="formData.active" color="primary" hide-details>
-                                    <template v-slot:label>
-                                        <div class="switch-info">
-                                            <span class="form-label">Active Status</span>
-                                            <span class="switch-description">Student is currently active</span>
+                        <v-divider class="my-6" />
+
+                        <div class="form-section">
+                            <h3 class="section-title">Profile Image & Status</h3>
+                            <v-row dense>
+                                <v-col cols="12" md="8">
+                                    <div class="form-group">
+                                        <label class="form-label">Profile Image <small>(optional)</small></label>
+                                        <input ref="fileInputRef" type="file"
+                                            accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                            @change="handleImageChange" style="display: none" />
+                                        <div v-if="imagePreview" class="image-preview-box">
+                                            <img :src="imagePreview" alt="Preview" class="preview-image" />
+                                            <v-btn icon="mdi-close" size="small" color="error" @click="clearImage" />
                                         </div>
-                                    </template>
-                                </v-switch>
-                            </div>
+                                        <div v-else class="upload-placeholder" @click="triggerFileInput">
+                                            <v-icon icon="mdi-camera-plus" size="48" color="grey-lighten-1" />
+                                            <p class="upload-text">Click to upload student photo</p>
+                                        </div>
+                                    </div>
+                                </v-col>
+
+                                <v-col cols="12" md="4" class="d-flex align-center">
+                                    <v-switch v-model="formData.active" label="Active" color="success" inset />
+                                </v-col>
+                            </v-row>
                         </div>
                     </v-form>
                 </v-card-text>
 
                 <v-divider />
-
-                <!-- Dialog Actions -->
                 <v-card-actions class="dialog-actions">
-                    <v-btn variant="outlined" color="grey-darken-1" @click="closeDialog" class="action-btn cancel-btn"
-                        :disabled="formLoading">
-                        <v-icon start>mdi-close</v-icon>
-                        Cancel
-                    </v-btn>
-
+                    <v-btn variant="outlined" @click="closeDialog" :disabled="formLoading">Cancel</v-btn>
                     <v-btn :color="isEdit ? 'warning' : 'primary'" variant="flat" @click="submitForm"
-                        :loading="formLoading" :disabled="!formValid" class="action-btn submit-btn">
-                        <v-icon start>mdi-content-save</v-icon>
+                        :disabled="!formValid || formLoading" :loading="formLoading">
+                        <v-icon start>{{ isEdit ? 'mdi-content-save' : 'mdi-plus' }}</v-icon>
                         {{ isEdit ? 'Save Changes' : 'Create Student' }}
                     </v-btn>
                 </v-card-actions>
@@ -553,15 +484,15 @@ const itemsPerPage = ref(10)
 
 // Form data - only fields supported by backend
 const formData = reactive({
-    studentId: '',      // Maps to student_code (required)
+    student_code: '',      // Maps to student_code (required)
     email: '',          // Required
     password: '',       // Required (8-32 chars)
-    firstName: '',      // Optional
-    lastName: '',       // Optional
-    generationId: null, // Required
-    specializationId: null, // Required
-    groupId: null,      // Required
-    phone: '',          // Optional
+    first_name: '',      // Optional
+    last_name: '',       // Optional
+    generation_id: null, // Required
+    specialization_id: null, // Required
+    group_id: null,      // Required
+    phone_number: '',          // Optional
     gender: '',         // Optional
     dob: '',            // Optional (format: YYYY-MM-DD)
     address: '',        // Optional
@@ -579,9 +510,7 @@ const studentIdRules = [
     v => (v && v.length >= 5) || 'Student ID must be at least 5 characters'
 ]
 
-const nameRules = [
-    // Optional - no validation needed
-]
+const requiredRules = [(v) => !!v || 'This field is required']
 
 const emailRules = [
     v => !!v || 'Email is required',
@@ -648,13 +577,13 @@ const fetchGenerations = async () => {
         const { $AdminPrivateAxios } = useNuxtApp()
         const response = await $AdminPrivateAxios.get('/generations/')
 
-        // API wrapper returns { status, data, message, code }
         const payload = response.data?.data ?? response.data ?? []
         const generations = Array.isArray(payload) ? payload : payload.items ?? []
 
+        // Use global_id as the option value when available
         generationsList.value = generations.map(gen => ({
             title: gen.generation || gen.name || gen.generation_name || `Gen ${gen.start_year ?? ''}`.trim(),
-            value: gen.id ?? gen.global_id ?? gen.generation
+            value: gen.global_id ?? gen.id ?? gen.generation
         }))
     } catch (error) {
         console.error('Error fetching generations:', error)
@@ -668,9 +597,10 @@ const fetchGroups = async () => {
         const { $AdminPrivateAxios } = useNuxtApp()
         const response = await $AdminPrivateAxios.get('/groups/')
         const groups = response.data.data || response.data || []
+        // Use global_id when available
         groupsList.value = groups.map(grp => ({
             title: grp.group_name || grp.name,
-            value: grp.id
+            value: grp.global_id ?? grp.id
         }))
     } catch (error) {
         console.error('Error fetching groups:', error)
@@ -684,13 +614,13 @@ const fetchSpecializations = async () => {
         const { $AdminPrivateAxios } = useNuxtApp()
         const response = await $AdminPrivateAxios.get('/specializations/')
 
-        // API wrapper returns { status, data, message, code }
         const payload = response.data?.data ?? response.data ?? []
         const specializations = Array.isArray(payload) ? payload : payload.items ?? []
 
+        // Use global_id when available
         specializationsList.value = specializations.map(spec => ({
             title: spec.name,
-            value: spec.id ?? spec.global_id
+            value: spec.global_id ?? spec.id ?? spec.global_id
         }))
     } catch (error) {
         console.error('Error fetching specializations:', error)
@@ -856,18 +786,21 @@ const triggerFileInput = () => {
 const openCreateDialog = () => {
     selectedStudent.value = null
     isEdit.value = false
-    formData.studentId = ''
-    formData.firstName = ''
-    formData.lastName = ''
-    formData.email = ''
-    formData.password = ''
-    formData.phone = ''
-    formData.gender = ''
-    formData.dob = ''
-    formData.generation = ''
-    formData.group = ''
-    formData.specialize = ''
-    formData.active = true
+    Object.assign(formData, {
+        student_code: '',
+        first_name: '',
+        last_name: '',
+        gender: '',
+        dob: '',
+        email: '',
+        phone_number: '',
+        address: '',
+        generation_id: null,
+        group_id: null,
+        specialization_id: null,
+        active: true,
+        password: ''
+    })
     clearImage()
     dialogOpen.value = true
 }
@@ -875,17 +808,23 @@ const openCreateDialog = () => {
 const openEditDialog = (student) => {
     selectedStudent.value = student
     isEdit.value = true
-    formData.studentId = student.studentId
-    formData.firstName = student.firstName || ''
-    formData.lastName = student.lastName || ''
-    formData.email = student.email
-    formData.phone = student.phone || ''
-    formData.gender = student.gender || ''
-    formData.dob = student.dob || ''
-    formData.generation = student.generation || ''
-    formData.group = student.group || ''
-    formData.specialize = student.specialize || ''
-    formData.active = student.status === 'Active'
+    Object.assign(formData, {
+        student_code: student.student_code || student.studentId || '',
+        first_name: student.first_name || student.firstName || '',
+        last_name: student.last_name || student.lastName || '',
+        gender: student.gender || '',
+        dob: student.dob || '',
+        email: student.email || '',
+        phone_number: student.phone_number || student.phone || '',
+        address: student.address || '',
+        generation_id: student.generation_id || student.generation || null,
+        group_id: student.group_id || student.group || null,
+        specialization_id: student.specialization_id || student.specialize || null,
+        active: student.active === 1 || student.status === 'Active',
+        password: ''
+    })
+    // preview not set from backend image; user can upload new one
+    imagePreview.value = student.profile_image || null
     dialogOpen.value = true
 }
 
@@ -896,129 +835,50 @@ const closeDialog = () => {
     clearImage()
 }
 
-// Form submission
+// Submit form: build payload matching provided JSON
 const submitForm = async () => {
     if (!formValid.value) return
-
     formLoading.value = true
 
     try {
-        if (isEdit.value && selectedStudent.value) {
-            // Update existing student (without image for now)
-            const studentData = {
-                studentId: formData.studentId,
-                email: formData.email,
-                password: formData.password,
-                firstName: formData.firstName,
-                lastName: formData.lastName,
-                phone: formData.phone,
-                gender: formData.gender,
-                dob: formData.dob,
-                address: formData.address,
-                generationId: formData.generationId,
-                active: formData.active
+        // Build payload object
+        const payload = {
+            student_code: formData.student_code,
+            first_name: formData.first_name,
+            last_name: formData.last_name,
+            gender: formData.gender || null,
+            dob: formData.dob || null,
+            email: formData.email,
+            phone_number: formData.phone_number || null,
+            address: formData.address || null,
+            generation_id: formData.generation_id,
+            group_id: formData.group_id,
+            specialization_id: formData.specialization_id,
+            active: formData.active ? 1 : 0,
+            password: formData.password || (isEdit.value ? undefined : '')
+        }
+
+        if (profileImage.value) {
+            // Use FormData and include file under 'profile_image' (store will upload and map)
+            const fd = new FormData()
+            for (const key in payload) {
+                if (typeof payload[key] !== 'undefined' && payload[key] !== null) fd.append(key, payload[key])
             }
-
-            await studentStore.updateStudent(selectedStudent.value.studentId, studentData)
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: 'Student updated successfully!',
-                confirmButtonColor: '#3b82f6',
-                timer: 2000
-            })
+            fd.append('profile_image', profileImage.value)
+            await studentStore.createStudentWithImage(fd)
         } else {
-            // Create new student - use image endpoint if image exists
-            if (profileImage.value) {
-                // Create FormData for image upload
-                const formDataToSend = new FormData()
-
-                // Append all form fields
-                formDataToSend.append('student_code', formData.studentId)
-                formDataToSend.append('email', formData.email)
-                formDataToSend.append('password', formData.password)
-
-                if (formData.firstName) formDataToSend.append('first_name', formData.firstName)
-                if (formData.lastName) formDataToSend.append('last_name', formData.lastName)
-                if (formData.phone) formDataToSend.append('phone_number', formData.phone)
-                if (formData.gender) formDataToSend.append('gender', formData.gender)
-                if (formData.dob) formDataToSend.append('dob', formData.dob)
-                if (formData.address) formDataToSend.append('address', formData.address)
-
-                // Required fields
-                formDataToSend.append('generation_id', formData.generationId)
-                formDataToSend.append('group_id', formData.groupId)
-                formDataToSend.append('active', formData.active ? '1' : '0')
-
-                // Append the image file
-                formDataToSend.append('profile_image', profileImage.value)
-
-                await studentStore.createStudentWithImage(formDataToSend)
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'Student created with profile image successfully!',
-                    confirmButtonColor: '#3b82f6',
-                    timer: 2000
-                })
-            } else {
-                // Create student without image (use regular endpoint)
-                const studentData = {
-                    studentId: formData.studentId,
-                    email: formData.email,
-                    password: formData.password,
-                    firstName: formData.firstName,
-                    lastName: formData.lastName,
-                    phone: formData.phone,
-                    gender: formData.gender,
-                    dob: formData.dob,
-                    address: formData.address,
-                    generationId: formData.generationId,
-                    active: formData.active
-                }
-
-                await studentStore.createStudent(studentData)
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'Student created successfully!',
-                    confirmButtonColor: '#3b82f6',
-                    timer: 2000
-                })
-            }
+            // If editing and password empty, remove password key
+            if (isEdit.value && !payload.password) delete payload.password
+            await studentStore.createStudent(payload)
         }
 
+        await fetchStudents()
+        Swal.fire({ icon: 'success', title: 'Success', text: isEdit.value ? 'Student updated' : 'Student created', timer: 2000, showConfirmButton: false })
         closeDialog()
-    } catch (error) {
-        console.error('Error submitting form:', error)
-        console.error('Error response data:', error.response?.data)
-        console.error('Error response status:', error.response?.status)
-
-        // Get detailed error message
-        let errorMessage = 'Failed to save student. Please try again.'
-        if (error.response?.data) {
-            if (typeof error.response.data === 'string') {
-                errorMessage = error.response.data
-            } else if (error.response.data.detail) {
-                if (Array.isArray(error.response.data.detail)) {
-                    errorMessage = error.response.data.detail.map(e => `${e.loc?.join('.')}: ${e.msg}`).join('\n')
-                } else if (typeof error.response.data.detail === 'string') {
-                    errorMessage = error.response.data.detail
-                }
-            } else if (error.response.data.message) {
-                errorMessage = error.response.data.message
-            }
-        }
-
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: errorMessage,
-            confirmButtonColor: '#3b82f6'
-        })
+    } catch (err) {
+        console.error('Error submitting form:', err)
+        const msg = err.response?.data?.message || err.message || 'Failed to save student'
+        Swal.fire({ icon: 'error', title: 'Error', text: msg })
     } finally {
         formLoading.value = false
     }
