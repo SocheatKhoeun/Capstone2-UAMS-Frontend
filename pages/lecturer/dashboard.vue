@@ -188,7 +188,7 @@
 </template>
 
 <script setup>
-import { useLecturerClassesStore } from '~/store/useLecturerClassesStore'
+import { classesStore } from '~/store/lecturers/classesStore'
 import { userAuth } from '~/store/userAuth'
 
 definePageMeta({
@@ -196,7 +196,7 @@ definePageMeta({
   middleware: ['auth']
 })
 
-const store = useLecturerClassesStore()
+const store = classesStore()
 const userStore = userAuth()
 
 const loading = ref(true)
