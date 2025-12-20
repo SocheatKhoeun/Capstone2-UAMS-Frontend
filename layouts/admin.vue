@@ -57,13 +57,14 @@ onMounted(() => {
     const roleRaw = (payload?.role || userStore.getUser()?.role || adminStore.getAdmin()?.role || '') + '';
     const role = roleRaw.toLowerCase();
 
-    if (role.includes('lecturer') || role.includes('assistant')) {
-      return; // allowed
-    }
     // Redirect based on role if not student
-    if (role.includes('admin')) {
-      router.replace('/admin/dashboard');
+    if (role.includes('admin' || 'superadmin')) {
       return;
+    }
+
+    if (role.includes('lecturer') || role.includes('assistant')) {
+      router.replace('/lecturer/dashboard');
+      return; // allowed
     }
     if (role.includes('student')) {
       router.replace('/student/dashboard');

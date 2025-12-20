@@ -814,9 +814,12 @@ const submitForm = async () => {
       description: formData.description || '',
       status: formData.status || 1,
       active: formData.active !== undefined ? formData.active : true,
-      start_time: formData.start_time ? new Date(formData.start_time).toISOString() : null,
-      end_time: formData.end_time ? new Date(formData.end_time).toISOString() : null
+      start_time: formData.start_time,
+      end_time: formData.end_time
     }
+    console.log("===========================================")
+    console.log('Submitting form with payload:', payload)
+    console.log("===========================================")
 
     // Validate required fields
     if (!payload.group_id || !payload.subject_id || !payload.term_id ||

@@ -23,11 +23,11 @@
                             <div class="stat-label">TOTAL CLASSES</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">{{classes.filter(c => c.status === 'active').length}}</div>
+                            <div class="stat-number">{{ classes.filter(c => c.status === 'active').length }}</div>
                             <div class="stat-label">ACTIVE</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">{{classes.filter(c => c.status === 'inactive').length}}</div>
+                            <div class="stat-number">{{ classes.filter(c => c.status === 'inactive').length }}</div>
                             <div class="stat-label">INACTIVE</div>
                         </div>
                     </div>
@@ -36,8 +36,8 @@
                 <div class="action-section">
                     <v-menu offset-y>
                         <template v-slot:activator="{ props }">
-                            <v-btn class="modern-btn" prepend-icon="mdi-import" variant="outlined" color="grey"
-                                v-bind="props" elevation="0">
+                            <v-btn class="modern-btn" prepend-icon="mdi-import" variant="outlined" 
+                                color="grey" v-bind="props" elevation="0">
                                 Import
                                 <v-icon icon="mdi-chevron-down" end />
                             </v-btn>
@@ -52,8 +52,8 @@
 
                     <v-menu offset-y>
                         <template v-slot:activator="{ props }">
-                            <v-btn class="modern-btn" prepend-icon="mdi-export" variant="outlined" color="grey"
-                                v-bind="props" elevation="0">
+                            <v-btn class="modern-btn" prepend-icon="mdi-export" variant="outlined" 
+                                color="grey" v-bind="props" elevation="0">
                                 Export
                                 <v-icon icon="mdi-chevron-down" end />
                             </v-btn>
@@ -93,19 +93,18 @@
 
                     <div class="toolbar-right">
                         <div class="search-container">
-                            <v-text-field v-model="searchQuery" placeholder="Search classes..."
-                                prepend-inner-icon="mdi-magnify" variant="outlined" density="comfortable" hide-details
-                                class="search-input" />
+                            <v-text-field v-model="searchQuery" placeholder="Search classes..." 
+                                prepend-inner-icon="mdi-magnify" variant="outlined" density="comfortable" 
+                                hide-details class="search-input" />
                         </div>
 
-                        <v-select v-model="filterSemester" :items="semesters" label="Semester" variant="outlined"
+                        <v-select v-model="filterSemester" :items="semesters" label="Semester" variant="outlined" 
                             density="comfortable" class="filter-select" />
 
-                        <v-select v-model="filterStatus" :items="statusOptions" label="Status" variant="outlined"
+                        <v-select v-model="filterStatus" :items="statusOptions" label="Status" variant="outlined" 
                             density="comfortable" class="filter-select" />
 
-                        <v-btn-toggle v-model="viewMode" mandatory color="primary" variant="outlined" divided
-                            class="view-toggle">
+                        <v-btn-toggle v-model="viewMode" mandatory color="primary" variant="outlined" divided class="view-toggle">
                             <v-btn value="grid" icon="mdi-view-grid"></v-btn>
                             <v-btn value="list" icon="mdi-view-list"></v-btn>
                         </v-btn-toggle>
@@ -116,210 +115,200 @@
             <!-- Grid View -->
             <v-row v-if="viewMode === 'grid'" class="mt-4">
                 <v-col v-for="classItem in filteredClasses" :key="classItem.id" cols="12" md="6" lg="4">
-                    <v-card elevation="2" class="class-card" hover @click="viewClassDetails(classItem)">
-                        <div class="class-card-header pa-4" :style="{ background: classItem.color }">
-                            <div class="d-flex justify-space-between align-center">
-                                <div class="text-white">
-                                    <div class="text-overline">{{ classItem.code }}</div>
-                                    <div class="text-h6 font-weight-bold">{{ classItem.subject }}</div>
-                                </div>
-                                <v-menu>
-                                    <template v-slot:activator="{ props }">
-                                        <v-btn icon="mdi-dots-vertical" variant="text" color="white" size="small"
-                                            v-bind="props" @click.stop></v-btn>
-                                    </template>
-                                    <v-list>
-                                        <v-list-item @click="editClass(classItem)">
-                                            <template v-slot:prepend>
-                                                <v-icon>mdi-pencil</v-icon>
-                                            </template>
-                                            <v-list-item-title>Edit</v-list-item-title>
-                                        </v-list-item>
-                                        <v-list-item @click="duplicateClass(classItem)">
-                                            <template v-slot:prepend>
-                                                <v-icon>mdi-content-copy</v-icon>
-                                            </template>
-                                            <v-list-item-title>Duplicate</v-list-item-title>
-                                        </v-list-item>
-                                        <v-list-item @click="archiveClass(classItem)">
-                                            <template v-slot:prepend>
-                                                <v-icon>mdi-archive</v-icon>
-                                            </template>
-                                            <v-list-item-title>Archive</v-list-item-title>
-                                        </v-list-item>
-                                        <v-divider></v-divider>
-                                        <v-list-item @click="deleteClass(classItem)" class="text-error">
-                                            <template v-slot:prepend>
-                                                <v-icon color="error">mdi-delete</v-icon>
-                                            </template>
-                                            <v-list-item-title>Delete</v-list-item-title>
-                                        </v-list-item>
-                                    </v-list>
-                                </v-menu>
+                <v-card elevation="2" class="class-card" hover @click="viewClassDetails(classItem)">
+                    <div class="class-card-header pa-4" :style="{ background: classItem.color }">
+                        <div class="d-flex justify-space-between align-center">
+                            <div class="text-white">
+                                <div class="text-h6 font-weight-bold">{{ classItem.subject }}</div>
+                            </div>
+                            <v-menu>
+                                <template v-slot:activator="{ props }">
+                                    <v-btn icon="mdi-dots-vertical" variant="text" color="white" size="small"
+                                        v-bind="props" @click.stop></v-btn>
+                                </template>
+                                <v-list>
+                                    <v-list-item @click="editClass(classItem)">
+                                        <template v-slot:prepend>
+                                            <v-icon>mdi-pencil</v-icon>
+                                        </template>
+                                        <v-list-item-title>Edit</v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item @click="duplicateClass(classItem)">
+                                        <template v-slot:prepend>
+                                            <v-icon>mdi-content-copy</v-icon>
+                                        </template>
+                                        <v-list-item-title>Duplicate</v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item @click="archiveClass(classItem)">
+                                        <template v-slot:prepend>
+                                            <v-icon>mdi-archive</v-icon>
+                                        </template>
+                                        <v-list-item-title>Archive</v-list-item-title>
+                                    </v-list-item>
+                                    <v-divider></v-divider>
+                                    <v-list-item @click="deleteClass(classItem)" class="text-error">
+                                        <template v-slot:prepend>
+                                            <v-icon color="error">mdi-delete</v-icon>
+                                        </template>
+                                        <v-list-item-title>Delete</v-list-item-title>
+                                    </v-list-item>
+                                </v-list>
+                            </v-menu>
+                        </div>
+                    </div>
+
+                    <v-card-text class="pa-4">
+                        <!-- Class Info -->
+                        <div class="mb-3">
+                            <!-- start/end -->
+                            <div class="d-flex align-center mb-2">
+                              <v-icon size="small" class="mr-2">mdi-clock-outline</v-icon>
+                              <span class="text-body-2">
+                                <strong>Start:</strong> {{ classItem.start_formatted }}
+                              </span>
+                            </div>
+                            <div class="d-flex align-center mb-2">
+                              <v-icon size="small" class="mr-2">mdi-clock-outline</v-icon>
+                              <span class="text-body-2">
+                                <strong>End:</strong> {{ classItem.end_formatted }}
+                              </span>
+                            </div>
+
+                            <!-- offering / room id -->
+                            <div class="d-flex align-center mb-2">
+                              <v-icon size="small" class="mr-2">mdi-database</v-icon>
+                               <span class="text-body-2"> Room: {{ classItem.room }}</span>
                             </div>
                         </div>
 
-                        <v-card-text class="pa-4">
-                            <!-- Class Info -->
-                            <div class="mb-3">
-                                <div class="d-flex align-center mb-2">
-                                    <v-icon size="small" class="mr-2">mdi-account-group</v-icon>
-                                    <span class="text-body-2">{{ classItem.group }} • {{ classItem.students }}
-                                        students</span>
-                                </div>
-                                <div class="d-flex align-center mb-2">
-                                    <v-icon size="small" class="mr-2">mdi-calendar</v-icon>
-                                    <span class="text-body-2">{{ classItem.schedule }}</span>
-                                </div>
-                                <div class="d-flex align-center mb-2">
-                                    <v-icon size="small" class="mr-2">mdi-map-marker</v-icon>
-                                    <span class="text-body-2">{{ classItem.room }}</span>
-                                </div>
-                            </div>
-
-                            <!-- Progress Bar -->
-                            <div class="mb-3">
-                                <div class="d-flex justify-space-between mb-1">
-                                    <span class="text-caption text-grey">Attendance Rate</span>
-                                    <span class="text-caption font-weight-bold">{{ classItem.attendance }}%</span>
-                                </div>
-                                <v-progress-linear :model-value="classItem.attendance"
-                                    :color="getAttendanceColor(classItem.attendance)" height="6"
-                                    rounded></v-progress-linear>
-                            </div>
-
-                            <!-- Status Badge -->
-                            <div class="d-flex justify-space-between align-center">
-                                <v-chip :color="classItem.status === 'active' ? 'success' : 'grey'" size="small">
-                                    {{ classItem.status }}
-                                </v-chip>
-                                <div class="text-caption text-grey">
-                                    {{ classItem.semester }}
-                                </div>
-                            </div>
-                        </v-card-text>
-
-                        <v-divider></v-divider>
-
-                        <!-- Quick Actions -->
-                        <v-card-actions class="pa-3">
-                            <v-btn size="small" variant="text" prepend-icon="mdi-checkbox-marked-circle"
-                                @click.stop="takeAttendance(classItem)">
-                                Attendance
-                            </v-btn>
-                            <v-btn size="small" variant="text" prepend-icon="mdi-account-multiple"
-                                @click.stop="viewStudents(classItem)">
-                                Students
-                            </v-btn>
-                            <v-btn size="small" variant="text" prepend-icon="mdi-chart-line"
-                                @click.stop="viewInsights(classItem)">
-                                Insights
-                            </v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-col>
+                        <!-- Status & Active -->
+                        <div class="d-flex justify-space-between align-center">
+                          <div>
+                            <v-chip :color="classItem.status === 'planned' ? 'info' : (classItem.status === 'completed' ? 'success' : 'warning')" size="small">
+                              {{ classItem.status }}
+                            </v-chip>
+                            <v-chip size="small" variant="outlined" class="ml-2">
+                              {{ classItem.active ? 'Active' : 'Inactive' }}
+                            </v-chip>
+                          </div>
+                          <div class="text-caption text-grey">
+                            {{ classItem.semester }}
+                          </div>
+                        </div>
+                    </v-card-text>
+                </v-card>
+            </v-col>
             </v-row>
 
             <!-- List View -->
             <div class="modern-table-wrapper" v-if="viewMode === 'list'">
                 <v-table class="modern-table">
-                    <thead>
-                        <tr class="modern-header-row">
-                            <th class="modern-header-cell">
-                                <div class="header-content">Class</div>
-                            </th>
-                            <th class="modern-header-cell">
-                                <div class="header-content">Group</div>
-                            </th>
-                            <th class="modern-header-cell">
-                                <div class="header-content">Schedule</div>
-                            </th>
-                            <th class="modern-header-cell">
-                                <div class="header-content">Room</div>
-                            </th>
-                            <th class="modern-header-cell center-align">
-                                <div class="header-content">Students</div>
-                            </th>
-                            <th class="modern-header-cell center-align">
-                                <div class="header-content">Attendance</div>
-                            </th>
-                            <th class="modern-header-cell center-align">
-                                <div class="header-content">Status</div>
-                            </th>
-                            <th class="modern-header-cell center-align">
-                                <div class="header-content">Actions</div>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="classItem in filteredClasses" :key="classItem.id" class="modern-table-row"
-                            @click="viewClassDetails(classItem)">
-                            <td class="modern-table-cell">
-                                <div class="class-info">
-                                    <div class="color-indicator mr-3" :style="{ background: classItem.color }"></div>
-                                    <div class="class-details">
-                                        <div class="class-name">{{ classItem.subject }}</div>
-                                        <div class="class-code">{{ classItem.code }}</div>
-                                    </div>
+                <thead>
+                    <tr class="modern-header-row">
+                        <th class="modern-header-cell">
+                            <div class="header-content">Class</div>
+                        </th>
+                        <th class="modern-header-cell">
+                            <div class="header-content">Group</div>
+                        </th>
+                        <th class="modern-header-cell">
+                            <div class="header-content">Schedule</div>
+                        </th>
+                        <th class="modern-header-cell">
+                            <div class="header-content">Room</div>
+                        </th>
+                        <th class="modern-header-cell center-align">
+                            <div class="header-content">Students</div>
+                        </th>
+                        <th class="modern-header-cell center-align">
+                            <div class="header-content">Attendance</div>
+                        </th>
+                        <th class="modern-header-cell center-align">
+                            <div class="header-content">Status</div>
+                        </th>
+                        <th class="modern-header-cell center-align">
+                            <div class="header-content">Actions</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="classItem in filteredClasses" :key="classItem.id" class="modern-table-row"
+                        @click="viewClassDetails(classItem)">
+                        <td class="modern-table-cell">
+                            <div class="class-info">
+                                <div class="color-indicator mr-3" :style="{ background: classItem.color }"></div>
+                                <div class="class-details">
+                                    <div class="class-name">{{ classItem.subject }}</div>
+                                    <div class="class-code">{{ classItem.code }}</div>
                                 </div>
-                            </td>
-                            <td class="modern-table-cell">
-                                <div class="group-info">{{ classItem.group }}</div>
-                            </td>
-                            <td class="modern-table-cell">
-                                <div class="schedule-info">{{ classItem.schedule }}</div>
-                            </td>
-                            <td class="modern-table-cell">
-                                <div class="room-info">{{ classItem.room }}</div>
-                            </td>
-                            <td class="modern-table-cell center-align">
-                                <v-chip size="small" variant="tonal" color="primary" class="students-chip">
-                                    {{ classItem.students }}
+                            </div>
+                        </td>
+                        <td class="modern-table-cell">
+                            <div class="group-info">{{ classItem.group }}</div>
+                        </td>
+                        <td class="modern-table-cell">
+                            <div class="schedule-info">
+                              <div>{{ classItem.start_formatted }} - {{ classItem.end_formatted }}</div>
+                              <div class="text-caption text-grey">Offering #{{ classItem.offering_id }} • {{ classItem.room }}</div>
+                              <div class="mt-1">
+                                <v-chip :color="classItem.status === 'planned' ? 'info' : (classItem.status === 'completed' ? 'success' : 'warning')" size="small">
+                                  {{ classItem.status }}
                                 </v-chip>
-                            </td>
-                            <td class="modern-table-cell center-align">
-                                <div class="attendance-progress">
-                                    <v-progress-linear :model-value="classItem.attendance"
-                                        :color="getAttendanceColor(classItem.attendance)" height="8" rounded
-                                        class="mr-2" style="max-width: 80px;"></v-progress-linear>
-                                    <span class="attendance-text">{{ classItem.attendance }}%</span>
-                                </div>
-                            </td>
-                            <td class="modern-table-cell center-align">
-                                <v-chip :color="classItem.status === 'active' ? 'success' : 'grey'" size="small"
-                                    class="status-chip">
-                                    {{ classItem.status }}
-                                </v-chip>
-                            </td>
-                            <td class="modern-table-cell center-align">
-                                <div class="action-group">
-                                    <v-btn icon size="small" variant="text" @click.stop="takeAttendance(classItem)"
-                                        class="action-btn" color="success">
-                                        <v-icon>mdi-checkbox-marked-circle</v-icon>
-                                        <v-tooltip activator="parent" location="top">Take Attendance</v-tooltip>
-                                    </v-btn>
-                                    <v-btn icon size="small" variant="text" @click.stop="viewStudents(classItem)"
-                                        class="action-btn" color="primary">
-                                        <v-icon>mdi-account-multiple</v-icon>
-                                        <v-tooltip activator="parent" location="top">View Students</v-tooltip>
-                                    </v-btn>
-                                    <v-btn icon size="small" variant="text" @click.stop="editClass(classItem)"
-                                        class="action-btn" color="info">
-                                        <v-icon>mdi-pencil</v-icon>
-                                        <v-tooltip activator="parent" location="top">Edit</v-tooltip>
-                                    </v-btn>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </v-table>
+                                <v-chip size="small" variant="outlined" class="ml-1">{{ classItem.active ? 'Active' : 'Inactive' }}</v-chip>
+                              </div>
+                            </div>
+                        </td>
+                        <td class="modern-table-cell">
+                            <div class="room-info">{{ classItem.room }}</div>
+                        </td>
+                        <td class="modern-table-cell center-align">
+                            <v-chip size="small" variant="tonal" color="primary" class="students-chip">
+                                {{ classItem.students }}
+                            </v-chip>
+                        </td>
+                        <td class="modern-table-cell center-align">
+                            <div class="attendance-progress">
+                                <v-progress-linear :model-value="classItem.attendance"
+                                    :color="getAttendanceColor(classItem.attendance)" height="8" rounded class="mr-2"
+                                    style="max-width: 80px;"></v-progress-linear>
+                                <span class="attendance-text">{{ classItem.attendance }}%</span>
+                            </div>
+                        </td>
+                        <td class="modern-table-cell center-align">
+                            <v-chip :color="classItem.status === 'active' ? 'success' : 'grey'" size="small" 
+                                class="status-chip">
+                                {{ classItem.status }}
+                            </v-chip>
+                        </td>
+                        <td class="modern-table-cell center-align">
+                            <div class="action-group">
+                                <v-btn icon size="small" variant="text" 
+                                    @click.stop="takeAttendance(classItem)" class="action-btn" color="success">
+                                    <v-icon>mdi-checkbox-marked-circle</v-icon>
+                                    <v-tooltip activator="parent" location="top">Take Attendance</v-tooltip>
+                                </v-btn>
+                                <v-btn icon size="small" variant="text" 
+                                    @click.stop="viewStudents(classItem)" class="action-btn" color="primary">
+                                    <v-icon>mdi-account-multiple</v-icon>
+                                    <v-tooltip activator="parent" location="top">View Students</v-tooltip>
+                                </v-btn>
+                                <v-btn icon size="small" variant="text" 
+                                    @click.stop="editClass(classItem)" class="action-btn" color="info">
+                                    <v-icon>mdi-pencil</v-icon>
+                                    <v-tooltip activator="parent" location="top">Edit</v-tooltip>
+                                </v-btn>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </v-table>
             </div>
 
             <!-- Empty State -->
             <v-card v-if="filteredClasses.length === 0" elevation="1" class="text-center pa-8">
                 <v-icon size="64" color="grey-lighten-1">mdi-google-classroom</v-icon>
-                <div class="text-h6 mt-4 mb-2">No Classes Found</div>
-                <div class="text-grey mb-4">Start by creating your first class</div>
+            <div class="text-h6 mt-4 mb-2">No Classes Found</div>
+            <div class="text-grey mb-4">Start by creating your first class</div>
                 <v-btn color="primary" prepend-icon="mdi-plus" @click="openAddClassDialog">
                     Add New Class
                 </v-btn>
@@ -513,19 +502,25 @@
 </template>
 
 <script setup>
-import { useLecturer } from '~/composables/useLecturer'
-import { useAuthStore } from '~/store/userAuth'
+import { ref, computed, onMounted, reactive } from 'vue'
+import { useLecturerSessionStore } from '~/store/lecturers/sessionStore'
+import { useLecturerSubjectStore } from '~/store/lecturers/subjectStore'
+import { useLecturerScheduleStore } from '~/store/lecturers/scheduleStore'
+import { useLecturerRoomStore } from '~/store/lecturers/roomStore'
+import { userAuth } from '~/store/userAuth'
 
 definePageMeta({
-    layout: 'lecturer',
-    // middleware: ['auth', 'role-lecturer']
+  layout: 'lecturer',
+  middleware: ['auth']
 })
 
-// Use lecturer composable for API integration
-const { loading, error, classes: lecturerClasses, fetchClasses } = useLecturer()
-const authStore = useAuthStore()
+const sessionStore = useLecturerSessionStore()
+const subjectStore = useLecturerSubjectStore()
+const scheduleStore = useLecturerScheduleStore()
+const roomStore = useLecturerRoomStore()
+const authStore = userAuth()
 
-// State
+// UI state
 const searchQuery = ref('')
 const filterSemester = ref('All Semesters')
 const filterStatus = ref('All Status')
@@ -537,9 +532,156 @@ const editMode = ref(false)
 const selectedClass = ref(null)
 const confirmMessage = ref('')
 const confirmCallback = ref(null)
+const classForm = ref(null)
 
-// Form Data
+// Form data
 const formData = ref({
+  subject: '',
+  code: '',
+  group: '',
+  semester: '',
+  room: '',
+  schedule: '',
+  students: 0,
+  color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  description: '',
+  status: 'active'
+})
+
+// Options for dropdowns
+const semesters = ref(['All Semesters', 'Fall 2024', 'Spring 2024', 'Summer 2024'])
+const statusOptions = ['All Status', 'active', 'inactive', 'planned', 'completed']
+const groups = ref(['Group A', 'Group B', 'Group C', 'Group D'])
+const colorOptions = [
+  { title: 'Blue', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+  { title: 'Green', value: 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)' },
+  { title: 'Orange', value: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
+  { title: 'Purple', value: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' },
+  { title: 'Red', value: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)' },
+  { title: 'Indigo', value: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }
+]
+
+// Format helper
+const formatDateTime = (iso) => {
+  if (!iso) return 'TBA'
+  try {
+    return new Date(iso).toLocaleString(undefined, { 
+      year: 'numeric', 
+      month: 'short', 
+      day: '2-digit', 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    })
+  } catch { 
+    return iso 
+  }
+}
+
+// Map session to UI item
+const mapSessionToItem = (s) => {
+  const raw = s.raw || {}
+  let offering = raw.offering || raw.course_offering || null
+  const oid = s.offering_id ?? raw.offering_id ?? null
+  
+  if (!offering && oid && Array.isArray(scheduleStore.schedules)) {
+    offering = scheduleStore.schedules.find(o => 
+      String(o.id) === String(oid) || String(o.global_id) === String(oid)
+    ) || null
+  }
+  offering = offering || {}
+
+  const subjectId = offering?.subject_id ?? offering?.subject?.id ?? raw.subject_id ?? raw.subject?.id ?? null
+  let subjectName = null
+  
+  if (subjectId && Array.isArray(subjectStore.subjects)) {
+    const found = subjectStore.subjects.find(x => 
+      String(x.id) === String(subjectId) || String(x.global_id) === String(subjectId)
+    )
+    if (found) subjectName = found.subject_name || found.name || found.subjectName || null
+  }
+  
+  const embeddedSubject = offering.subject || raw.subject || {}
+  subjectName = subjectName || embeddedSubject.name || embeddedSubject.subject_name || 
+                offering.subject_name || raw.subject_name || 'Unknown Subject'
+
+  const startIso = s.start_datetime ?? s.start_time ?? raw.start_time ?? offering.start_time ?? null
+  const endIso = s.end_datetime ?? s.end_time ?? raw.end_time ?? offering.end_time ?? null
+
+  const roomId = s.room_id ?? raw.room_id ?? offering.room_id ?? offering.room?.id ?? null
+  let roomName = null
+  
+  if (roomId && Array.isArray(roomStore.rooms)) {
+    const foundRoom = roomStore.rooms.find(r => 
+      String(r.id) === String(roomId) || String(r.global_id) === String(roomId)
+    )
+    if (foundRoom) roomName = foundRoom.room
+  }
+  roomName = roomName || offering.room?.room || offering.room_name || raw.room_name || raw.room || 'TBA'
+
+  return {
+    id: s.id,
+    offering_id: s.offering_id ?? raw.offering_id ?? offering.id ?? offering.global_id ?? null,
+    room_id: roomId,
+    start_iso: startIso,
+    end_iso: endIso,
+    start_formatted: formatDateTime(startIso),
+    end_formatted: formatDateTime(endIso),
+    subject: subjectName,
+    code: embeddedSubject.code || offering.subject_code || raw.subject_code || 'N/A',
+    group: offering.group?.group_name || raw.group_name || offering.group || 'N/A',
+    room: roomName,
+    attendance: raw.attendance_rate ?? raw.attendance ?? 0,
+    students: raw.students_count ?? raw.students ?? offering.enrollments?.length ?? 0,
+    status: s.status ?? raw.status ?? 'planned',
+    active: s.active === true || s.active === 1 || raw.active === true || raw.active === 1,
+    semester: offering.term?.term || raw.term_name || offering.term_name || '',
+    color: offering.color || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    raw,
+    offering_raw: offering
+  }
+}
+
+// Computed classes list
+const classes = computed(() => {
+  const sessions = sessionStore.sessions || []
+  return sessions.map(mapSessionToItem)
+})
+
+// Filtered classes
+const filteredClasses = computed(() => {
+  let result = classes.value.slice()
+  
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase()
+    result = result.filter(c =>
+      String(c.subject || '').toLowerCase().includes(q) ||
+      String(c.code || '').toLowerCase().includes(q) ||
+      String(c.group || '').toLowerCase().includes(q)
+    )
+  }
+  
+  if (filterSemester.value !== 'All Semesters') {
+    result = result.filter(c => c.semester === filterSemester.value)
+  }
+  
+  if (filterStatus.value !== 'All Status') {
+    result = result.filter(c => c.status === filterStatus.value)
+  }
+  
+  return result
+})
+
+// UI helper functions
+const getAttendanceColor = (attendance) => {
+  if (attendance >= 90) return 'success'
+  if (attendance >= 75) return 'primary'
+  if (attendance >= 60) return 'warning'
+  return 'error'
+}
+
+const openAddClassDialog = () => {
+  editMode.value = false
+  formData.value = {
     subject: '',
     code: '',
     group: '',
@@ -550,305 +692,116 @@ const formData = ref({
     color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     description: '',
     status: 'active'
-})
-
-// Options
-const semesters = ['All Semesters', 'Fall 2024', 'Spring 2025', 'Summer 2025']
-const statusOptions = ['All Status', 'active', 'inactive']
-const groups = ['CS-9-G1', 'CS-9-G2', 'CS-10-G1', 'CS-10-G2', 'IT-9-G1', 'IT-10-G1', 'IT-10-G2']
-const colorOptions = [
-    { title: 'Purple Gradient', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-    { title: 'Blue Gradient', value: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)' },
-    { title: 'Green Gradient', value: 'linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%)' },
-    { title: 'Orange Gradient', value: 'linear-gradient(135deg, #FF9800 0%, #F57C00 100%)' },
-    { title: 'Red Gradient', value: 'linear-gradient(135deg, #F44336 0%, #C62828 100%)' },
-    { title: 'Teal Gradient', value: 'linear-gradient(135deg, #009688 0%, #00695C 100%)' },
-]
-
-// Fetch classes on mount
-onMounted(async () => {
-    // Uncomment when backend API is ready
-    // await fetchClasses()
-})
-
-// Temporary local classes data (will be replaced with API data)
-const localClasses = ref([
-    {
-        id: 1,
-        subject: 'Database Systems',
-        code: 'CS301',
-        group: 'CS-9-G1',
-        semester: 'Spring 2025',
-        room: 'Lab A-101',
-        schedule: 'Mon, Wed 10:00 AM - 12:00 PM',
-        students: 35,
-        attendance: 87,
-        sessions: 24,
-        color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        status: 'active',
-        description: 'Introduction to database management systems'
-    },
-    {
-        id: 2,
-        subject: 'Web Development',
-        code: 'CS303',
-        group: 'CS-9-G2',
-        semester: 'Spring 2025',
-        room: 'Lab B-205',
-        schedule: 'Tue, Thu 2:00 PM - 4:00 PM',
-        students: 32,
-        attendance: 92,
-        sessions: 22,
-        color: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)',
-        status: 'active',
-        description: 'Modern web development with frameworks'
-    },
-    {
-        id: 3,
-        subject: 'Data Structures',
-        code: 'CS201',
-        group: 'CS-10-G1',
-        semester: 'Spring 2025',
-        room: 'Room C-302',
-        schedule: 'Mon, Wed, Fri 8:00 AM - 9:30 AM',
-        students: 40,
-        attendance: 78,
-        sessions: 26,
-        color: 'linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%)',
-        status: 'active',
-        description: 'Core data structures and algorithms'
-    },
-    {
-        id: 4,
-        subject: 'Software Engineering',
-        code: 'CS405',
-        group: 'CS-10-G2',
-        semester: 'Spring 2025',
-        room: 'Room D-104',
-        schedule: 'Tue, Thu 10:00 AM - 12:00 PM',
-        students: 28,
-        attendance: 85,
-        sessions: 20,
-        color: 'linear-gradient(135deg, #FF9800 0%, #F57C00 100%)',
-        status: 'active',
-        description: 'Software development lifecycle and practices'
-    },
-    {
-        id: 5,
-        subject: 'Operating Systems',
-        code: 'CS407',
-        group: 'IT-10-G1',
-        semester: 'Fall 2024',
-        room: 'Lab E-201',
-        schedule: 'Wed, Fri 1:00 PM - 3:00 PM',
-        students: 30,
-        attendance: 65,
-        sessions: 28,
-        color: 'linear-gradient(135deg, #F44336 0%, #C62828 100%)',
-        status: 'inactive',
-        description: 'Operating system concepts and design'
-    },
-    {
-        id: 6,
-        subject: 'Computer Networks',
-        code: 'CS501',
-        group: 'IT-10-G2',
-        semester: 'Spring 2025',
-        room: 'Lab F-103',
-        schedule: 'Mon, Thu 3:00 PM - 5:00 PM',
-        students: 25,
-        attendance: 90,
-        sessions: 21,
-        color: 'linear-gradient(135deg, #009688 0%, #00695C 100%)',
-        status: 'active',
-        description: 'Network protocols and architecture'
-    }
-])
-
-// Classes data - use localClasses for now, switch to lecturerClasses when API is ready
-const classes = computed(() => {
-    // When backend is ready, uncomment this:
-    // return lecturerClasses.value || []
-
-    // For now, use local data:
-    return localClasses.value
-})
-
-// Computed
-const filteredClasses = computed(() => {
-    let result = classes.value
-
-    // Filter by search query
-    if (searchQuery.value) {
-        const query = searchQuery.value.toLowerCase()
-        result = result.filter(c =>
-            c.subject.toLowerCase().includes(query) ||
-            c.code.toLowerCase().includes(query) ||
-            c.group.toLowerCase().includes(query)
-        )
-    }
-
-    // Filter by semester
-    if (filterSemester.value !== 'All Semesters') {
-        result = result.filter(c => c.semester === filterSemester.value)
-    }
-
-    // Filter by status
-    if (filterStatus.value !== 'All Status') {
-        result = result.filter(c => c.status === filterStatus.value)
-    }
-
-    return result
-})
-
-// Methods
-const getAttendanceColor = (attendance) => {
-    if (attendance >= 90) return 'success'
-    if (attendance >= 75) return 'primary'
-    if (attendance >= 60) return 'warning'
-    return 'error'
-}
-
-const openAddClassDialog = () => {
-    editMode.value = false
-    formData.value = {
-        subject: '',
-        code: '',
-        group: '',
-        semester: '',
-        room: '',
-        schedule: '',
-        students: 0,
-        color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        description: '',
-        status: 'active'
-    }
-    classDialog.value = true
+  }
+  classDialog.value = true
 }
 
 const editClass = (classItem) => {
-    editMode.value = true
-    selectedClass.value = classItem
-    formData.value = { ...classItem }
-    classDialog.value = true
+  editMode.value = true
+  selectedClass.value = classItem
+  formData.value = { ...classItem }
+  classDialog.value = true
 }
 
 const closeClassDialog = () => {
-    classDialog.value = false
-    editMode.value = false
-    selectedClass.value = null
+  classDialog.value = false
+  editMode.value = false
+  selectedClass.value = null
 }
 
-const saveClass = () => {
-    if (editMode.value) {
-        const index = localClasses.value.findIndex(c => c.id === selectedClass.value.id)
-        if (index !== -1) {
-            localClasses.value[index] = { ...localClasses.value[index], ...formData.value }
-        }
-    } else {
-        const newClass = {
-            id: localClasses.value.length + 1,
-            ...formData.value,
-            attendance: 0,
-            sessions: 0
-        }
-        localClasses.value.push(newClass)
-    }
-    closeClassDialog()
+const saveClass = async () => {
+  const { valid } = await classForm.value.validate()
+  if (!valid) return
+  
+  // TODO: Implement actual save logic with API
+  console.log('Saving class:', formData.value)
+  closeClassDialog()
 }
 
 const viewClassDetails = (classItem) => {
-    selectedClass.value = classItem
-    detailsDialog.value = true
+  selectedClass.value = classItem
+  detailsDialog.value = true
 }
 
 const deleteClass = (classItem) => {
-    confirmMessage.value = `Are you sure you want to delete "${classItem.subject}"?`
-    confirmCallback.value = () => {
-        localClasses.value = localClasses.value.filter(c => c.id !== classItem.id)
-        confirmDialog.value = false
-    }
-    confirmDialog.value = true
+  confirmMessage.value = `Are you sure you want to delete "${classItem.subject}"?`
+  confirmCallback.value = () => {
+    // TODO: Implement actual delete logic
+    console.log('Deleting class:', classItem)
+    confirmDialog.value = false
+  }
+  confirmDialog.value = true
 }
 
 const duplicateClass = (classItem) => {
-    const newClass = {
-        ...classItem,
-        id: localClasses.value.length + 1,
-        subject: `${classItem.subject} (Copy)`,
-    }
-    localClasses.value.push(newClass)
+  console.log('Duplicating class:', classItem)
+  // TODO: Implement duplicate logic
 }
 
 const archiveClass = (classItem) => {
-    confirmMessage.value = `Are you sure you want to archive "${classItem.subject}"?`
-    confirmCallback.value = () => {
-        const index = localClasses.value.findIndex(c => c.id === classItem.id)
-        if (index !== -1) {
-            localClasses.value[index].status = 'inactive'
-        }
-        confirmDialog.value = false
-    }
-    confirmDialog.value = true
+  console.log('Archiving class:', classItem)
+  // TODO: Implement archive logic
 }
 
 const confirmAction = () => {
-    if (confirmCallback.value) {
-        confirmCallback.value()
-    }
+  if (confirmCallback.value) {
+    confirmCallback.value()
+  }
 }
 
 const resetFilters = () => {
-    searchQuery.value = ''
-    filterSemester.value = 'All Semesters'
-    filterStatus.value = 'All Status'
+  searchQuery.value = ''
+  filterSemester.value = 'All Semesters'
+  filterStatus.value = 'All Status'
 }
 
 const takeAttendance = (classItem) => {
-    // Navigate to attendance page or open attendance dialog
-    console.log('Take attendance for:', classItem.subject)
+  navigateTo(`/lecturer/classes/${classItem.id}/attendance`)
 }
 
 const viewStudents = (classItem) => {
-    // Navigate to analytics page for this class
-    navigateTo(`/lecturer/classes/${classItem.id}/analytics`)
+  navigateTo(`/lecturer/classes/${classItem.id}/analytics`)
 }
 
 const viewInsights = (classItem) => {
-    // Navigate to insights page
-    navigateTo('/lecturer/insights')
+  navigateTo('/lecturer/insights')
 }
 
 const generateReport = (classItem) => {
-    // Generate and download report
-    console.log('Generate report for:', classItem.subject)
+  console.log('Generating report for:', classItem)
+  // TODO: Implement report generation
 }
 
-// Import/Export functions
 const handleImportCSV = () => {
-    // Implementation for CSV import
-    console.log('Importing classes from CSV...')
-    // You can implement actual CSV import logic here
+  console.log('Import CSV')
+  // TODO: Implement CSV import
 }
 
 const handleExportExcel = () => {
-    // Implementation for Excel export
-    console.log('Exporting classes to Excel...')
-    // You can implement actual Excel export logic here
+  console.log('Export to Excel')
+  // TODO: Implement Excel export
 }
 
 const handleExportPDF = () => {
-    // Implementation for PDF export
-    console.log('Exporting classes to PDF...')
-    // You can implement actual PDF export logic here
+  console.log('Export to PDF')
+  // TODO: Implement PDF export
 }
 
-// Initialize - fetch classes on mount
+// Fetch data on mount
 onMounted(async () => {
-    await classStore.fetchClasses()
+  try {
+    await Promise.all([
+      subjectStore.fetchSubjects(),
+      scheduleStore.fetchSchedules(),
+      roomStore.fetchRooms(),
+      sessionStore.fetchSessions()
+    ])
+    console.log('✅ All data loaded successfully')
+  } catch (err) {
+    console.error('❌ Failed to load data:', err)
+  }
 })
 </script>
-
 <style scoped>
 .classes-page {
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
@@ -1289,63 +1242,107 @@ onMounted(async () => {
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    transition: all 0.2s ease;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.info-item:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.info-item:last-child {
+    margin-bottom: 0;
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-    .header-container {
-        padding: 20px 24px;
-        gap: 24px;
-    }
-
-    .action-section {
-        flex-direction: column;
-        gap: 8px;
-    }
+.text-caption {
+    font-size: 12px;
+    color: #64748b;
+    margin: 0;
 }
 
-@media (max-width: 768px) {
-    .header-container {
-        flex-direction: column;
-        gap: 20px;
-    }
+.text-h6 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 8px 0;
+}
 
-    .modern-table-section {
-        padding: 16px 20px;
-    }
+.text-overline {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+    margin-bottom: 4px;
+}
 
-    .title-wrapper {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
+.text-body-2 {
+    font-size: 14px;
+    color: #374151;
+    margin: 0;
+}
 
-    .stats-cards {
-        flex-wrap: wrap;
-        gap: 12px;
-    }
+.pa-4 {
+    padding: 32px 24px;
+}
 
-    .toolbar-right {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-    }
+.pa-6 {
+    padding: 24px;
+}
 
-    .search-container {
-        min-width: auto;
-        width: 100%;
-    }
+.pa-8 {
+    padding: 32px;
+}
 
-    .table-toolbar {
-        flex-direction: column;
-        gap: 16px;
-        align-items: stretch;
-    }
+.pb-4 {
+    padding-bottom: 16px;
+}
+
+.mb-4 {
+    margin-bottom: 16px;
+}
+
+.mt-1 {
+    margin-top: 4px;
+}
+
+.rounded {
+    border-radius: 12px !important;
+}
+
+.overflow-hidden {
+    overflow: hidden !important;
+}
+
+.position-relative {
+    position: relative !important;
+}
+
+.cursor-pointer {
+    cursor: pointer !important;
+}
+
+.transition-all {
+    transition: all 0.2s ease !important;
+}
+
+.scale-up {
+    transform: scale(1.05) !important;
+}
+
+.scale-down {
+    transform: scale(0.95) !important;
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.2s ease;
+}
+
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}
+
+.slide-enter-active, .slide-leave-active {
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.slide-enter, .slide-leave-to {
+    transform: translateY(10px);
+    opacity: 0;
 }
 </style>
