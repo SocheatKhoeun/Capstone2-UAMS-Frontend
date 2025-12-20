@@ -2,12 +2,18 @@
   <v-container fluid class="pa-6">
     <!-- Welcome Section -->
     <div class="mb-6">
-      <h1 class="text-h4 font-weight-bold mb-2">Welcome back, Dr. CHAN Rithy 👋</h1>
+      <h1 class="text-h4 font-weight-bold mb-2">Welcome back, {{ getUserName() }} 👋</h1>
       <p class="text-grey">Here's what's happening with your classes today</p>
     </div>
 
+    <!-- Loading State -->
+    <div v-if="loading" class="text-center py-12">
+      <v-progress-circular indeterminate color="primary" size="64" />
+      <p class="mt-4 text-grey">Loading dashboard data...</p>
+    </div>
+
     <!-- Quick Stats -->
-    <v-row class="mb-6">
+    <v-row v-if="!loading" class="mb-6">
       <v-col cols="12" md="3">
         <v-card class="stat-card" elevation="1">
           <v-card-text>
@@ -74,7 +80,7 @@
     </v-row>
 
     <!-- Today's Schedule -->
-    <v-row>
+    <v-row v-if="!loading">
       <v-col cols="12" md="8">
         <v-card elevation="1">
           <v-card-title class="pa-4 d-flex justify-space-between align-center">
@@ -182,49 +188,168 @@
 </template>
 
 <script setup>
+import { useLecturerClassesStore } from '~/store/useLecturerClassesStore'
+import { userAuth } from '~/store/userAuth'
+
 definePageMeta({
   layout: 'lecturer',
   middleware: ['auth']
 })
 
-const totalClasses = ref(6)
-const totalStudents = ref(245)
-const avgAttendance = ref(87)
+const store = useLecturerClassesStore()
+const userStore = userAuth()
 
+const loading = ref(true)
+const totalClasses = ref(0)
+const totalStudents = ref(0)
+const avgAttendance = ref(0)
 const currentDay = ref(new Date().toLocaleDateString('en-US', { weekday: 'long' }))
+const todayClasses = ref([])
 
-const todayClasses = ref([
-  {
-    id: 1,
-    subject: 'Data Structures & Algorithms',
-    code: 'CS201',
-    group: 'CS-9-G1',
-    time: '08:00 - 10:00',
-    room: 'Lab 301',
-    students: 42,
-    status: 'completed'
-  },
-  {
-    id: 2,
-    subject: 'Database Management Systems',
-    code: 'CS303',
-    group: 'IT-10-G2',
-    time: '10:30 - 12:30',
-    room: 'Room 205',
-    students: 38,
-    status: 'ongoing'
-  },
-  {
-    id: 3,
-    subject: 'Web Development',
-    code: 'CS405',
-    group: 'CS-11-G1',
-    time: '14:00 - 16:00',
-    room: 'Lab 302',
-    students: 35,
-    status: 'upcoming'
+// Related data
+const subjects = ref([])
+const groups = ref([])
+const rooms = ref([])
+const enrollments = ref([])
+
+onMounted(async () => {
+  await loadDashboardData()
+})
+
+const loadDashboardData = async () => {
+  loading.value = true
+  try {
+    await Promise.all([
+      store.fetchCourseOfferings(),
+      store.fetchSessions(),
+      fetchRelatedData()
+    ])
+
+    // Calculate stats
+    totalClasses.value = store.courseOfferings.length
+    calculateTodayClasses()
+    calculateStats()
+  } catch (error) {
+    console.error('Error loading dashboard data:', error)
+  } finally {
+    loading.value = false
   }
-])
+}
+
+const fetchRelatedData = async () => {
+  const { $UserPrivateAxios } = useNuxtApp()
+  const paths = [
+    '/lecturer/auth',
+    '/api/v1/lecturer/auth'
+  ]
+
+  const tryFetch = async (endpoint) => {
+    for (const basePath of paths) {
+      try {
+        const response = await $UserPrivateAxios.get(`${basePath}${endpoint}`)
+        return response
+      } catch (err) {
+        if (err.response?.status === 404 && basePath !== paths[paths.length - 1]) {
+          continue
+        }
+        throw err
+      }
+    }
+    return { data: { data: [] } }
+  }
+
+  try {
+    const [subjectsRes, groupsRes, roomsRes] = await Promise.all([
+      tryFetch('/subjects').catch(() => ({ data: { data: [] } })),
+      tryFetch('/groups').catch(() => ({ data: { data: [] } })),
+      tryFetch('/rooms').catch(() => ({ data: { data: [] } }))
+    ])
+
+    subjects.value = Array.isArray(subjectsRes.data?.data) ? subjectsRes.data.data : (subjectsRes.data?.data?.items || [])
+    groups.value = Array.isArray(groupsRes.data?.data) ? groupsRes.data.data : (groupsRes.data?.data?.items || [])
+    rooms.value = Array.isArray(roomsRes.data?.data) ? roomsRes.data.data : (roomsRes.data?.data?.items || [])
+
+    // Try to fetch enrollments for student count
+    try {
+      const enrollmentsRes = await tryFetch('/course_offerings')
+      const offerings = Array.isArray(enrollmentsRes.data?.data) 
+        ? enrollmentsRes.data.data 
+        : (enrollmentsRes.data?.data?.items || [])
+      
+      // Get unique student count from enrollments (if available in response)
+      // This is a placeholder - actual implementation depends on backend response structure
+      totalStudents.value = offerings.length * 30 // Placeholder calculation
+    } catch (err) {
+      console.warn('Could not fetch enrollment data:', err)
+    }
+  } catch (err) {
+    console.error('Error fetching related data:', err)
+  }
+}
+
+const calculateTodayClasses = () => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+
+  const todaySessions = store.sessions.filter(session => {
+    if (!session.start_datetime) return false
+    const sessionDate = new Date(session.start_datetime)
+    return sessionDate >= today && sessionDate < tomorrow
+  }).sort((a, b) => {
+    const dateA = new Date(a.start_datetime)
+    const dateB = new Date(b.start_datetime)
+    return dateA - dateB
+  })
+
+  todayClasses.value = todaySessions.map(session => {
+    const offering = store.courseOfferings.find(co => co.id === session.offering_id)
+    const subject = subjects.value.find(s => s.id === offering?.subject_id)
+    const group = groups.value.find(g => g.id === offering?.group_id)
+    const room = rooms.value.find(r => r.id === session.room_id)
+
+    const startTime = session.start_datetime ? new Date(session.start_datetime) : null
+    const endTime = session.end_datetime ? new Date(session.end_datetime) : null
+    const now = new Date()
+
+    let status = 'upcoming'
+    if (startTime && endTime) {
+      if (now < startTime) {
+        status = 'upcoming'
+      } else if (now >= startTime && now <= endTime) {
+        status = 'ongoing'
+      } else {
+        status = 'completed'
+      }
+    }
+
+    return {
+      id: session.id,
+      global_id: session.global_id,
+      subject: subject?.subject_name || subject?.name || 'Unknown Subject',
+      code: subject?.subject_code || subject?.code || 'N/A',
+      group: group?.group_name || group?.name || 'N/A',
+      time: formatTimeRange(startTime, endTime),
+      room: room?.room_name || room?.name || 'TBA',
+      students: 0, // Will be calculated if enrollment data is available
+      status: status
+    }
+  })
+}
+
+const formatTimeRange = (startTime, endTime) => {
+  if (!startTime || !endTime) return 'TBA'
+  const formatTime = (date) => {
+    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+  }
+  return `${formatTime(startTime)} - ${formatTime(endTime)}`
+}
+
+const calculateStats = () => {
+  // Calculate average attendance (placeholder - would need attendance data)
+  avgAttendance.value = 87 // Placeholder
+}
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -233,6 +358,14 @@ const getStatusColor = (status) => {
     case 'upcoming': return 'warning'
     default: return 'grey'
   }
+}
+
+const getUserName = () => {
+  const user = userStore.getUser()
+  if (user?.first_name && user?.last_name) {
+    return `${user.first_name} ${user.last_name}`
+  }
+  return 'Lecturer'
 }
 </script>
 

@@ -73,28 +73,11 @@
           </div>
           <div class="toolbar-controls">
             <div class="filters-row">
-              <v-select
-                v-model="statusFilter"
-                :items="statusOptions"
-                label="Status"
-                variant="solo"
-                density="comfortable"
-                hide-details
-                flat
-                class="filter-field"
-              />
+              <v-select v-model="statusFilter" :items="statusOptions" label="Status" variant="solo"
+                density="comfortable" hide-details flat class="filter-field" />
               <div class="search-wrapper">
-                <v-text-field
-                  v-model="searchQuery"
-                  placeholder="Search schedules..."
-                  prepend-inner-icon="mdi-magnify"
-                  variant="solo"
-                  density="comfortable"
-                  hide-details
-                  flat
-                  class="search-field"
-                  clearable
-                />
+                <v-text-field v-model="searchQuery" placeholder="Search schedules..." prepend-inner-icon="mdi-magnify"
+                  variant="solo" density="comfortable" hide-details flat class="search-field" clearable />
               </div>
             </div>
           </div>
@@ -120,7 +103,8 @@
               <p class="empty-text">
                 {{ searchQuery ? "Try adjusting your search or filters" : "Create your first schedule to get started" }}
               </p>
-              <v-btn v-if="!searchQuery" color="primary" variant="flat" size="large" @click="openCreateDialog" class="mt-6">
+              <v-btn v-if="!searchQuery" color="primary" variant="flat" size="large" @click="openCreateDialog"
+                class="mt-6">
                 <v-icon start>mdi-plus</v-icon>
                 Create Schedule
               </v-btn>
@@ -129,12 +113,8 @@
 
           <!-- Schedules Grid -->
           <div v-else class="cards-grid">
-            <v-card
-              v-for="schedule in paginatedSchedules"
-              :key="schedule.id"
-              class="schedule-card"
-              @click="openDetailDialog(schedule)"
-            >
+            <v-card v-for="schedule in paginatedSchedules" :key="schedule.id" class="schedule-card"
+              @click="openDetailDialog(schedule)">
               <div class="card-header">
                 <div class="header-left">
                   <v-chip :color="schedule.active ? 'success' : 'red'" size="small" variant="flat" class="status-chip">
@@ -144,7 +124,8 @@
                 </div>
                 <v-menu>
                   <template v-slot:activator="{ props }">
-                    <v-btn icon="mdi-dots-vertical" variant="text" size="small" density="comfortable" v-bind="props" @click.stop />
+                    <v-btn icon="mdi-dots-vertical" variant="text" size="small" density="comfortable" v-bind="props"
+                      @click.stop />
                   </template>
                   <v-list class="action-menu" density="compact">
                     <v-list-item @click.stop="editSchedule(schedule)" class="menu-item">
@@ -187,7 +168,8 @@
                   <v-icon icon="mdi-update" size="14" />
                   {{ formatDate(schedule.updated_at) }}
                 </span>
-                <v-btn variant="tonal" size="small" color="primary" @click.stop="openDetailDialog(schedule)" class="view-btn">
+                <v-btn variant="tonal" size="small" color="primary" @click.stop="openDetailDialog(schedule)"
+                  class="view-btn">
                   View Details
                   <v-icon end size="16">mdi-arrow-right</v-icon>
                 </v-btn>
@@ -205,21 +187,17 @@
               </span>
             </div>
             <div class="pagination-controls">
-              <v-btn variant="outlined" :disabled="currentPage === 1" @click="currentPage--" icon="mdi-chevron-left" size="small" />
+              <v-btn variant="outlined" :disabled="currentPage === 1" @click="currentPage--" icon="mdi-chevron-left"
+                size="small" />
               <div class="page-numbers">
-                <v-btn
-                  v-for="page in visiblePages"
-                  :key="page"
-                  :variant="page === currentPage ? 'flat' : 'text'"
-                  :color="page === currentPage ? 'primary' : 'default'"
-                  size="small"
-                  @click="currentPage = page"
-                  class="page-btn"
-                >
+                <v-btn v-for="page in visiblePages" :key="page" :variant="page === currentPage ? 'flat' : 'text'"
+                  :color="page === currentPage ? 'primary' : 'default'" size="small" @click="currentPage = page"
+                  class="page-btn">
                   {{ page }}
                 </v-btn>
               </div>
-              <v-btn variant="outlined" :disabled="currentPage >= totalPages" @click="currentPage++" icon="mdi-chevron-right" size="small" />
+              <v-btn variant="outlined" :disabled="currentPage >= totalPages" @click="currentPage++"
+                icon="mdi-chevron-right" size="small" />
             </div>
           </div>
         </div>
@@ -250,74 +228,29 @@
               <h3 class="section-title">Basic Information</h3>
               <v-row dense>
                 <v-col cols="12" md="6">
-                  <v-select
-                    v-model="formData.group_id"
-                    :items="groupOptions"
-                    item-title="title"
-                    item-value="value"
-                    :rules="requiredRules"
-                    label="Group *"
-                    variant="outlined"
-                    density="comfortable"
-                    hide-details="auto"
-                    :loading="loadingOptions"
-                  />
+                  <v-select v-model="formData.group_id" :items="groupOptions" item-title="title" item-value="value"
+                    :rules="requiredRules" label="Group *" variant="outlined" density="comfortable" hide-details="auto"
+                    :loading="loadingOptions" />
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-select
-                    v-model="formData.subject_id"
-                    :items="subjectOptions"
-                    item-title="title"
-                    item-value="value"
-                    :rules="requiredRules"
-                    label="Subject *"
-                    variant="outlined"
-                    density="comfortable"
-                    hide-details="auto"
-                    :loading="loadingOptions"
-                  />
+                  <v-select v-model="formData.subject_id" :items="subjectOptions" item-title="title" item-value="value"
+                    :rules="requiredRules" label="Subject *" variant="outlined" density="comfortable"
+                    hide-details="auto" :loading="loadingOptions" />
                 </v-col>
                 <v-col cols="12" md="4">
-                  <v-select
-                    v-model="formData.term_id"
-                    :items="termOptions"
-                    item-title="title"
-                    item-value="value"
-                    :rules="requiredRules"
-                    label="Term *"
-                    variant="outlined"
-                    density="comfortable"
-                    hide-details="auto"
-                    :loading="loadingOptions"
-                  />
+                  <v-select v-model="formData.term_id" :items="termOptions" item-title="title" item-value="value"
+                    :rules="requiredRules" label="Term *" variant="outlined" density="comfortable" hide-details="auto"
+                    :loading="loadingOptions" />
                 </v-col>
                 <v-col cols="12" md="4">
-                  <v-select
-                    v-model="formData.generation_id"
-                    :items="generationOptions"
-                    item-title="title"
-                    item-value="value"
-                    :rules="requiredRules"
-                    label="Generation *"
-                    variant="outlined"
-                    density="comfortable"
-                    hide-details="auto"
-                    :loading="loadingOptions"
-                  />
+                  <v-select v-model="formData.generation_id" :items="generationOptions" item-title="title"
+                    item-value="value" :rules="requiredRules" label="Generation *" variant="outlined"
+                    density="comfortable" hide-details="auto" :loading="loadingOptions" />
                 </v-col>
                 <v-col cols="12" md="4">
-                  <v-select
-                    v-model="formData.room_id"
-                    :items="roomOptions"
-                    item-title="title"
-                    item-value="value"
-                    label="Room"
-                    variant="outlined"
-                    density="comfortable"
-                    hide-details="auto"
-                    :loading="loadingOptions"
-                    clearable
-                  />
+                  <v-select v-model="formData.room_id" :items="roomOptions" item-title="title" item-value="value"
+                    label="Room" variant="outlined" density="comfortable" hide-details="auto" :loading="loadingOptions"
+                    clearable />
                 </v-col>
               </v-row>
             </div>
@@ -329,32 +262,14 @@
               <h3 class="section-title">Staff Assignment</h3>
               <v-row dense>
                 <v-col cols="12" md="6">
-                  <v-select
-                    v-model="formData.instructor_id"
-                    :items="instructorOptions"
-                    item-title="title"
-                    item-value="value"
-                    :rules="requiredRules"
-                    label="Instructor *"
-                    variant="outlined"
-                    density="comfortable"
-                    hide-details="auto"
-                    :loading="loadingOptions"
-                  />
+                  <v-select v-model="formData.instructor_id" :items="instructorOptions" item-title="title"
+                    item-value="value" :rules="requiredRules" label="Instructor *" variant="outlined"
+                    density="comfortable" hide-details="auto" :loading="loadingOptions" />
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-select
-                    v-model="formData.assistant_id"
-                    :items="instructorOptions"
-                    item-title="title"
-                    item-value="value"
-                    :rules="requiredRules"
-                    label="Assistant *"
-                    variant="outlined"
-                    density="comfortable"
-                    hide-details="auto"
-                    :loading="loadingOptions"
-                  />
+                  <v-select v-model="formData.assistant_id" :items="instructorOptions" item-title="title"
+                    item-value="value" :rules="requiredRules" label="Assistant *" variant="outlined"
+                    density="comfortable" hide-details="auto" :loading="loadingOptions" />
                 </v-col>
               </v-row>
             </div>
@@ -366,50 +281,24 @@
               <h3 class="section-title">Schedule Details</h3>
               <v-row dense>
                 <v-col cols="12" md="6">
-                  <v-text-field
-                    v-model="formData.start_time"
-                    type="datetime-local"
-                    label="Start Time"
-                    variant="outlined"
-                    density="comfortable"
-                    hide-details="auto"
-                  />
+                  <v-text-field v-model="formData.start_time" type="datetime-local" label="Start Time"
+                    variant="outlined" density="comfortable" hide-details="auto" />
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-text-field
-                    v-model="formData.end_time"
-                    type="datetime-local"
-                    label="End Time"
-                    variant="outlined"
-                    density="comfortable"
-                    hide-details="auto"
-                  />
+                  <v-text-field v-model="formData.end_time" type="datetime-local" label="End Time" variant="outlined"
+                    density="comfortable" hide-details="auto" />
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-select
-                    v-model="formData.status"
-                    :items="statusItems"
-                    item-title="title"
-                    item-value="value"
-                    :rules="requiredRules"
-                    label="Status *"
-                    variant="outlined"
-                    density="comfortable"
-                    hide-details="auto"
-                  />
+                  <v-select v-model="formData.status" :items="statusItems" item-title="title" item-value="value"
+                    :rules="requiredRules" label="Status *" variant="outlined" density="comfortable"
+                    hide-details="auto" />
                 </v-col>
                 <v-col cols="12" md="6" class="d-flex align-center">
                   <v-switch v-model="formData.active" label="Active Schedule" color="success" hide-details inset />
                 </v-col>
                 <v-col cols="12">
-                  <v-textarea
-                    v-model="formData.description"
-                    label="Description"
-                    rows="3"
-                    variant="outlined"
-                    density="comfortable"
-                    hide-details="auto"
-                  />
+                  <v-textarea v-model="formData.description" label="Description" rows="3" variant="outlined"
+                    density="comfortable" hide-details="auto" />
                 </v-col>
               </v-row>
             </div>
@@ -419,13 +308,8 @@
         <v-divider />
         <v-card-actions class="dialog-actions">
           <v-btn variant="outlined" @click="closeDialog" :disabled="loading">Cancel</v-btn>
-          <v-btn
-            :color="isEdit ? 'warning' : 'primary'"
-            variant="flat"
-            @click="submitForm"
-            :disabled="!formValid || loading"
-            :loading="loading"
-          >
+          <v-btn :color="isEdit ? 'warning' : 'primary'" variant="flat" @click="submitForm"
+            :disabled="!formValid || loading" :loading="loading">
             <v-icon start>{{ isEdit ? 'mdi-content-save' : 'mdi-plus' }}</v-icon>
             {{ isEdit ? 'Update Schedule' : 'Create Schedule' }}
           </v-btn>
@@ -540,7 +424,8 @@
               <div class="info-content">
                 <div class="info-label">Status</div>
                 <div class="info-value">
-                  <v-chip :color="getStatusColor(selectedSchedule.status)" size="small" variant="flat" class="status-chip">
+                  <v-chip :color="getStatusColor(selectedSchedule.status)" size="small" variant="flat"
+                    class="status-chip">
                     {{ getStatusLabel(selectedSchedule.status) }}
                   </v-chip>
                 </div>
@@ -555,7 +440,8 @@
               <div class="info-content">
                 <div class="info-label">Active</div>
                 <div class="info-value">
-                  <v-chip :color="selectedSchedule.active ? 'success' : 'error'" size="small" variant="flat" class="status-chip">
+                  <v-chip :color="selectedSchedule.active ? 'success' : 'error'" size="small" variant="flat"
+                    class="status-chip">
                     {{ selectedSchedule.active ? 'Active' : 'Inactive' }}
                   </v-chip>
                 </div>
@@ -573,52 +459,52 @@
               </div>
             </div>
 
-        <v-divider />
+            <v-divider />
 
-        <v-card-text class="detail-body">
-          <v-row>
-            <v-col cols="12" md="6">
-              <div class="detail-item">
-                <span class="detail-label">Room</span>
-                <span class="detail-value">{{ getRoomName(selectedSchedule.room_id) }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">Instructor</span>
-                <span class="detail-value">{{ getInstructorName(selectedSchedule.instructor_id) }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">Assistant</span>
-                <span class="detail-value">{{ getInstructorName(selectedSchedule.assistant_id) }}</span>
-              </div>
-            </v-col>
-            <v-col cols="12" md="6">
-              <div class="detail-item">
-                <span class="detail-label">Start Time</span>
-                <span class="detail-value">{{ formatDateTime(selectedSchedule.start_time) }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">End Time</span>
-                <span class="detail-value">{{ formatDateTime(selectedSchedule.end_time) }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">Status</span>
-                <span class="detail-value">{{ getStatusLabel(selectedSchedule.status) }}</span>
-              </div>
-            </v-col>
-            <v-col cols="12">
-              <div class="detail-item">
-                <span class="detail-label">Description</span>
-                <span class="detail-value description">{{ selectedSchedule.description || 'No description' }}</span>
-              </div>
-            </v-col>
-            <v-col cols="12">
-              <div class="detail-item">
-                <span class="detail-label">Last Updated</span>
-                <span class="detail-value">{{ formatDate(selectedSchedule.updated_at) }}</span>
-              </div>
-            </v-col>
-          </v-row>
-        </v-card-text>
+            <v-card-text class="detail-body">
+              <v-row>
+                <v-col cols="12" md="6">
+                  <div class="detail-item">
+                    <span class="detail-label">Room</span>
+                    <span class="detail-value">{{ getRoomName(selectedSchedule.room_id) }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Instructor</span>
+                    <span class="detail-value">{{ getInstructorName(selectedSchedule.instructor_id) }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Assistant</span>
+                    <span class="detail-value">{{ getInstructorName(selectedSchedule.assistant_id) }}</span>
+                  </div>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <div class="detail-item">
+                    <span class="detail-label">Start Time</span>
+                    <span class="detail-value">{{ formatDateTime(selectedSchedule.start_time) }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">End Time</span>
+                    <span class="detail-value">{{ formatDateTime(selectedSchedule.end_time) }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Status</span>
+                    <span class="detail-value">{{ getStatusLabel(selectedSchedule.status) }}</span>
+                  </div>
+                </v-col>
+                <v-col cols="12">
+                  <div class="detail-item">
+                    <span class="detail-label">Description</span>
+                    <span class="detail-value description">{{ selectedSchedule.description || 'No description' }}</span>
+                  </div>
+                </v-col>
+                <v-col cols="12">
+                  <div class="detail-item">
+                    <span class="detail-label">Last Updated</span>
+                    <span class="detail-value">{{ formatDate(selectedSchedule.updated_at) }}</span>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-card-text>
             <!-- End Time -->
             <div class="info-card">
               <div class="info-icon-wrapper time">
@@ -647,7 +533,8 @@
 
         <!-- Dialog Actions -->
         <v-card-actions class="detail-dialog-actions">
-          <v-btn variant="outlined" color="grey-darken-1" @click="scheduleDetailDialog = false" class="action-btn cancel-btn">
+          <v-btn variant="outlined" color="grey-darken-1" @click="scheduleDetailDialog = false"
+            class="action-btn cancel-btn">
             <v-icon start>mdi-close</v-icon>
             Close
           </v-btn>
@@ -821,7 +708,7 @@ const openCreateDialog = () => {
   resetForm()
   isEdit.value = false
   scheduleDialog.value = true
-  
+
   // Debug: Log options available
   console.log('Dialog opened - SubjectOptions:', subjectOptions.value.length, 'items')
   console.log('Dialog opened - TermOptions:', termOptions.value.length, 'items')
@@ -938,6 +825,8 @@ const submitForm = async () => {
       return
     }
 
+    let result
+    if (isEdit.value) {
       result = await scheduleStore.updateSchedule(formData.global_id, payload)
     } else {
       result = await scheduleStore.createSchedule(payload)
@@ -997,16 +886,6 @@ const getInstructorName = (id) => {
   return i ? `${i.first_name} ${i.last_name}` : 'N/A'
 }
 
-const getStatusLabel = (status) => {
-  const statusMap = {
-    1: 'Planned',
-    2: 'Active',
-    3: 'Completed',
-    4: 'Canceled'
-  }
-  return statusMap[status] || 'Unknown'
-}
-
 const getStatusColor = (status) => {
   const colorMap = {
     1: 'info',      // Planned
@@ -1021,8 +900,6 @@ const getStatusLabel = (status) => ({
   1: 'Planned', 2: 'Active', 3: 'Completed', 4: 'Canceled'
 }[status] || 'Unknown')
 
-const formatDate = (iso) => iso ? new Date(iso).toLocaleDateString() : 'N/A'
-const formatDateTime = (iso) => iso ? new Date(iso).toLocaleString() : 'N/A'
 const formatDateRange = (start, end) => {
   if (!start || !end) return 'No date range'
   try {
@@ -1074,9 +951,9 @@ const goToNextPage = () => {
 }
 
 // Watch for filter changes and reset pagination
-watch([searchQuery, generationFilter, yearFilter, statusFilter], () => {
-  currentPage.value = 1
-})
+// watch([searchQuery, generationFilter, yearFilter, statusFilter], () => {
+//   currentPage.value = 1
+// })
 
 // Debug: Watch formData changes for subject_id and term_id
 watch(() => formData.subject_id, (newVal, oldVal) => {
