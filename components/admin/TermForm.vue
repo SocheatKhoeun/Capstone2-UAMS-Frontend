@@ -1,19 +1,6 @@
 <template>
   <v-form ref="formRef" v-model="formValid" @submit.prevent="onSubmit">
     <div class="form-group">
-      <label class="form-label">Global ID <span class="text-red">*</span></label>
-      <v-text-field 
-        v-model="localForm.global_id" 
-        :rules="globalIdRules" 
-        variant="outlined"
-        density="comfortable" 
-        hide-details="auto" 
-        class="form-field" 
-        placeholder="TERM-001"
-        :disabled="isEdit" />
-    </div>
-    
-    <div class="form-group">
       <label class="form-label">Term Name <span class="text-red">*</span></label>
       <v-text-field 
         v-model="localForm.term" 
@@ -85,7 +72,6 @@ const emit = defineEmits(['update:modelValue', 'submit', 'cancel'])
 
 // Local form state
 const localForm = reactive({
-  global_id: props.modelValue.global_id || '',
   term: props.modelValue.term || '',
   active: props.modelValue.active ?? 1
 })
@@ -94,11 +80,6 @@ const localForm = reactive({
 const formRef = ref(null)
 const formValid = ref(false)
 
-// Validation rules
-const globalIdRules = [
-  (v: string) => !!v || 'Global ID is required',
-  (v: string) => /^TERM-\d{3}$/.test(v) || 'Global ID must be in format: TERM-001'
-]
 
 const termRules = [
   (v: string) => !!v || 'Term name is required',
