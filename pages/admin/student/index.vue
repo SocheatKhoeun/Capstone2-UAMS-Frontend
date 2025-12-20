@@ -304,7 +304,7 @@
                             <v-col cols="6">
                                 <div class="form-group">
                                     <label class="form-label">Password {{ isEdit ? '' : '*' }} <small>({{ isEdit ?
-                                            'leave blank to keep current' : 'min 8 chars' }})</small></label>
+                                        'leave blank to keep current' : 'min 8 chars' }})</small></label>
                                     <v-text-field v-model="formData.password" :rules="isEdit ? [] : passwordRules"
                                         variant="outlined" density="comfortable" type="password"
                                         :placeholder="isEdit ? 'Leave blank to keep current' : '••••••••'"
@@ -317,14 +317,14 @@
                         <v-row>
                             <v-col cols="6">
                                 <div class="form-group">
-                                    <label class="form-label">First Name <small>(optional)</small></label>
+                                    <label class="form-label">First Name</label>
                                     <v-text-field v-model="formData.firstName" :rules="nameRules" variant="outlined"
                                         density="comfortable" placeholder="Enter first name" class="form-field" />
                                 </div>
                             </v-col>
                             <v-col cols="6">
                                 <div class="form-group">
-                                    <label class="form-label">Last Name <small>(optional)</small></label>
+                                    <label class="form-label">Last Name</label>
                                     <v-text-field v-model="formData.lastName" :rules="nameRules" variant="outlined"
                                         density="comfortable" placeholder="Enter last name" class="form-field" />
                                 </div>
@@ -342,7 +342,7 @@
                             </v-col>
                             <v-col cols="6">
                                 <div class="form-group">
-                                    <label class="form-label">Phone <small>(optional)</small></label>
+                                    <label class="form-label">Phone</label>
                                     <v-text-field v-model="formData.phone" variant="outlined" density="comfortable"
                                         placeholder="+855 12 345 678" class="form-field" />
                                 </div>
@@ -361,6 +361,14 @@
                             </v-col>
                             <v-col cols="6">
                                 <div class="form-group">
+                                    <label class="form-label">Specialization *</label>
+                                    <v-select v-model="formData.specializationId" :items="specializationsList"
+                                        :rules="specializationRules" variant="outlined" density="comfortable"
+                                        class="form-field" item-title="title" item-value="value" />
+                                </div>
+                            </v-col>
+                            <v-col cols="6">
+                                <div class="form-group">
                                     <label class="form-label">Group *</label>
                                     <v-select v-model="formData.groupId" :items="groupsList" :rules="groupRules"
                                         variant="outlined" density="comfortable" class="form-field" item-title="title"
@@ -373,7 +381,7 @@
                         <v-row>
                             <v-col cols="6">
                                 <div class="form-group">
-                                    <label class="form-label">Gender <small>(optional)</small></label>
+                                    <label class="form-label">Gender</label>
                                     <v-select v-model="formData.gender" :items="genderOptions" variant="outlined"
                                         density="comfortable" class="form-field" />
                                 </div>
@@ -390,7 +398,7 @@
 
                         <!-- Address (Optional) -->
                         <div class="form-group">
-                            <label class="form-label">Address <small>(optional)</small></label>
+                            <label class="form-label">Address </label>
                             <v-textarea v-model="formData.address" variant="outlined" density="comfortable"
                                 placeholder="Full address" rows="2" class="form-field" />
                         </div>
@@ -529,6 +537,7 @@ const deleteLoading = ref(false)
 const pageLoading = ref(false)
 const generationsList = ref([])
 const groupsList = ref([])
+const specializationsList = ref([])
 
 // Search and filters
 const searchQuery = ref('')
@@ -550,6 +559,7 @@ const formData = reactive({
     firstName: '',      // Optional
     lastName: '',       // Optional
     generationId: null, // Required
+    specializationId: null, // Required
     groupId: null,      // Required
     phone: '',          // Optional
     gender: '',         // Optional
@@ -592,11 +602,16 @@ const groupRules = [
     v => v !== null && v !== undefined || 'Group is required'
 ]
 
+const specializationRules = [
+    v => v !== null && v !== undefined || 'Specialization is required'
+]
+
 // Filter options
 const generationOptions = ['All', '9', '10', '11', '12']
 const genderOptions = ['male', 'female', 'other']
 const statusOptions = ['All', 'Active', 'Inactive']
 const tableSortOptions = ['A-Z', 'Z-A', 'Gen 9', 'Gen 10', 'Gen 11', 'Gen 12']
+const specializeOptions = computed(() => ['All', ...specializationsList.value.map(s => s.title)])
 
 // Student data from store
 const students = computed(() => studentStore.students)
@@ -605,6 +620,7 @@ const students = computed(() => studentStore.students)
 onMounted(async () => {
     await fetchStudents()
     await fetchGenerations()
+    await fetchSpecializations()
     await fetchGroups()
 })
 
@@ -631,10 +647,14 @@ const fetchGenerations = async () => {
     try {
         const { $AdminPrivateAxios } = useNuxtApp()
         const response = await $AdminPrivateAxios.get('/generations/')
-        const generations = response.data.data || response.data || []
+
+        // API wrapper returns { status, data, message, code }
+        const payload = response.data?.data ?? response.data ?? []
+        const generations = Array.isArray(payload) ? payload : payload.items ?? []
+
         generationsList.value = generations.map(gen => ({
-            title: gen.name || `Gen ${gen.year}`,
-            value: gen.id
+            title: gen.generation || gen.name || gen.generation_name || `Gen ${gen.start_year ?? ''}`.trim(),
+            value: gen.id ?? gen.global_id ?? gen.generation
         }))
     } catch (error) {
         console.error('Error fetching generations:', error)
@@ -655,6 +675,26 @@ const fetchGroups = async () => {
     } catch (error) {
         console.error('Error fetching groups:', error)
         groupsList.value = []
+    }
+}
+
+// Fetch specializations function
+const fetchSpecializations = async () => {
+    try {
+        const { $AdminPrivateAxios } = useNuxtApp()
+        const response = await $AdminPrivateAxios.get('/specializations/')
+
+        // API wrapper returns { status, data, message, code }
+        const payload = response.data?.data ?? response.data ?? []
+        const specializations = Array.isArray(payload) ? payload : payload.items ?? []
+
+        specializationsList.value = specializations.map(spec => ({
+            title: spec.name,
+            value: spec.id ?? spec.global_id
+        }))
+    } catch (error) {
+        console.error('Error fetching specializations:', error)
+        specializationsList.value = []
     }
 }
 
