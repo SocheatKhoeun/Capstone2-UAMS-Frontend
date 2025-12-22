@@ -141,10 +141,14 @@
               </div>
 
               <div class="card-content">
-                <h3 class="card-title">{{ schedule.groups && schedule.groups.length > 0 ? schedule.groups[0].name :
-                  getGroupName(schedule.group_id) }}</h3>
-                <p class="card-subtitle">{{ getSubjectName(schedule.subject_id) }}</p>
+                <h3 class="card-title">{{ getSubjectName(schedule.subject_id) }}</h3>
+                <p class="card-subtitle">{{ schedule.course_type === 'lab' ? 'Laboratory' : 'Lecture' }}</p>
                 <div class="info-grid">
+                  <div class="info-item">
+                    <v-icon icon="mdi-account-group" size="16" color="primary" />
+                    <span>{{ schedule.groups && schedule.groups.length > 0 ? schedule.groups[0].name :
+                      getGroupName(schedule.group_id) }}</span>
+                  </div>
                   <div class="info-item">
                     <v-icon icon="mdi-school" size="16" color="primary" />
                     <span>{{ getGenerationName(schedule.generation_id) }}</span>

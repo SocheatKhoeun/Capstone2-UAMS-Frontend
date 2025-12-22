@@ -36,8 +36,8 @@
         <div class="action-section">
           <v-menu offset-y>
             <template v-slot:activator="{ props }">
-              <v-btn class="modern-btn" prepend-icon="mdi-import" variant="outlined" 
-                color="grey" v-bind="props" elevation="0">
+              <v-btn class="modern-btn" prepend-icon="mdi-import" variant="outlined" color="grey" v-bind="props"
+                elevation="0">
                 Import
                 <v-icon icon="mdi-chevron-down" end />
               </v-btn>
@@ -52,8 +52,8 @@
 
           <v-menu offset-y>
             <template v-slot:activator="{ props }">
-              <v-btn class="modern-btn" prepend-icon="mdi-export" variant="outlined" 
-                color="grey" v-bind="props" elevation="0">
+              <v-btn class="modern-btn" prepend-icon="mdi-export" variant="outlined" color="grey" v-bind="props"
+                elevation="0">
                 Export
                 <v-icon icon="mdi-chevron-down" end />
               </v-btn>
@@ -96,43 +96,51 @@
         </div>
 
         <!-- Schedule Table -->
-        <div class="schedule-grid">
-          <!-- Header Row - Time Column -->
-          <div class="time-column header-cell">
-            <div class="pa-3 text-center font-weight-bold">Time</div>
+        <div class="schedule-grid" :style="gridStyle">
+          <!-- Top-left corner cell -->
+          <div class="corner-cell header-cell">
+            <div class="pa-3 text-center font-weight-bold text-body-2">Time / Day</div>
           </div>
 
-          <!-- Header Row - Days -->
-          <div v-for="day in weekDays" :key="day" class="day-column header-cell">
+          <!-- Header Row - Days of Week -->
+          <div v-for="day in activeWeekDays" :key="`header-${day}`" class="day-column header-cell">
             <div class="pa-3 text-center">
-              <div class="font-weight-bold">{{ day }}</div>
+              <div class="font-weight-bold text-body-2">{{ day }}</div>
               <div class="text-caption text-grey">{{ getDayDate(day) }}</div>
             </div>
           </div>
 
-          <!-- Time Slots -->
-          <template v-for="slot in timeSlots" :key="slot">
-            <!-- Time Column -->
-            <div class="time-column cell">
-              <div class="pa-3 text-center text-body-2 text-grey">
-                {{ slot }}
-              </div>
+          <!-- Time Slot Rows -->
+          <template v-for="slot in timeSlots" :key="`time-${slot}`">
+            <!-- Time Label Column -->
+            <div class="time-column header-cell">
+              <div class="pa-3 text-center font-weight-bold text-body-2">{{ slot }}</div>
             </div>
 
-            <!-- Day Cells -->
-            <div v-for="day in weekDays" :key="`${day}-${slot}`" class="day-column cell">
+            <!-- Day Cells for this Time Slot -->
+            <div v-for="day in activeWeekDays" :key="`${slot}-${day}`" class="cell">
               <div class="pa-2">
+                <div v-if="getSessionsForSlot(day, slot).length === 0" class="empty-slot">
+                  <!-- Empty slot -->
+                </div>
                 <div v-for="session in getSessionsForSlot(day, slot)" :key="session.id" class="session-card mb-2"
                   :class="session.color" @click="viewSession(session)">
-                  <div class="font-weight-bold text-body-2 mb-1">{{ session.code }}</div>
-                  <div class="text-caption">{{ session.subject }}</div>
-                  <div class="text-caption">
-                    <v-icon size="x-small">mdi-map-marker</v-icon>
-                    {{ session.room }}
+                  <div class="session-header mb-1">
+                    <span class="font-weight-bold text-body-2">{{ session.subject }}</span>
                   </div>
-                  <div class="text-caption">
-                    <v-icon size="x-small">mdi-account-group</v-icon>
-                    {{ session.group }}
+                  <div class="session-info">
+                    <div class="text-caption d-flex align-center mb-1">
+                      <v-icon size="x-small" class="mr-1">mdi-account-group</v-icon>
+                      <span class="font-weight-medium">{{ session.group }}</span>
+                    </div>
+                    <div class="text-caption d-flex align-center mb-1">
+                      <v-icon size="x-small" class="mr-1">mdi-school</v-icon>
+                      <span>{{ session.generation }}</span>
+                    </div>
+                    <div class="text-caption d-flex align-center">
+                      <v-icon size="x-small" class="mr-1">mdi-map-marker</v-icon>
+                      <span>{{ session.room }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -147,30 +155,13 @@
       <v-card class="legend-card" elevation="0">
         <v-card-text>
           <div class="d-flex align-center flex-wrap gap-4">
-            <span class="legend-title">Legend:</span>
-            <div class="d-flex align-center">
-              <div class="legend-box bg-blue mr-2"></div>
-              <span class="legend-text">Data Structures</span>
+            <span class="legend-title">Subjects:</span>
+            <div v-for="[subjectId, color] in subjectColorMap" :key="subjectId" class="d-flex align-center">
+              <div class="legend-box mr-2" :class="color"></div>
+              <span class="legend-text">{{ getSubjectName(subjectId) }}</span>
             </div>
-            <div class="d-flex align-center">
-              <div class="legend-box bg-green mr-2"></div>
-              <span class="legend-text">Database</span>
-            </div>
-            <div class="d-flex align-center">
-              <div class="legend-box bg-orange mr-2"></div>
-              <span class="legend-text">Web Development</span>
-            </div>
-            <div class="d-flex align-center">
-              <div class="legend-box bg-purple mr-2"></div>
-              <span class="legend-text">Mobile Development</span>
-            </div>
-            <div class="d-flex align-center">
-              <div class="legend-box bg-red mr-2"></div>
-              <span class="legend-text">Software Engineering</span>
-            </div>
-            <div class="d-flex align-center">
-              <div class="legend-box bg-indigo mr-2"></div>
-              <span class="legend-text">AI</span>
+            <div v-if="subjectColorMap.size === 0" class="text-caption text-grey">
+              No subjects scheduled yet
             </div>
           </div>
         </v-card-text>
@@ -180,21 +171,221 @@
 </template>
 
 <script setup>
+import { userAuth } from '~/store/userAuth'
+
 definePageMeta({
-  // middleware: ['auth', 'role-lecturer'],
+  middleware: ['auth'],
   layout: 'lecturer'
 })
 
-const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-const timeSlots = [
-  '08:00 - 10:00',
-  '10:00 - 12:00',
-  '13:00 - 15:00',
-  '15:00 - 17:00'
-]
+const userStore = userAuth()
+
+const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 const currentWeek = ref(0)
 const addScheduleDialog = ref(false)
+
+// Reference data
+const groups = ref([])
+const subjects = ref([])
+const rooms = ref([])
+const generations = ref([])
+const schedules = ref([])
+const loading = ref(false)
+const currentInstructorId = ref(null)
+
+// Dynamic color palette for subjects
+const colorPalette = [
+  'bg-blue',
+  'bg-green',
+  'bg-orange',
+  'bg-purple',
+  'bg-red',
+  'bg-indigo',
+  'bg-teal',
+  'bg-pink',
+  'bg-cyan',
+  'bg-amber',
+  'bg-lime',
+  'bg-brown'
+]
+
+// Subject color mapping (dynamically assigned, consistent per subject)
+const subjectColorMap = ref(new Map())
+
+// Dynamically generate time slots from actual schedule data
+const timeSlots = computed(() => {
+  const slots = new Set()
+
+  schedule.value.forEach(s => {
+    if (s.time) {
+      slots.add(s.time)
+    }
+  })
+
+  // If no slots found, return default slots
+  if (slots.size === 0) {
+    return [
+      '08:00 - 10:00',
+      '10:00 - 12:00',
+      '13:00 - 15:00',
+      '15:00 - 17:00'
+    ]
+  }
+
+  // Sort time slots chronologically
+  return Array.from(slots).sort((a, b) => {
+    const timeA = a.split(' - ')[0]
+    const timeB = b.split(' - ')[0]
+    return timeA.localeCompare(timeB)
+  })
+})
+
+// Filter weekdays that have actual schedules
+const activeWeekDays = computed(() => {
+  const daysWithSchedule = new Set()
+
+  schedule.value.forEach(s => {
+    if (s.day) {
+      daysWithSchedule.add(s.day)
+    }
+  })
+
+  // If no days found, return weekdays only
+  if (daysWithSchedule.size === 0) {
+    return weekDays.filter(day => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].includes(day))
+  }
+
+  // Return days in order, filtering to show only days that exist in schedule
+  return weekDays.filter(day => daysWithSchedule.has(day))
+})
+
+// Dynamic grid style based on number of active days
+const gridStyle = computed(() => {
+  const numDays = activeWeekDays.value.length || 5
+  return {
+    gridTemplateColumns: `150px repeat(${numDays}, minmax(180px, 1fr))`
+  }
+})
+
+// Get current instructor's ID from token
+const getCurrentInstructorId = () => {
+  const user = userStore.getUser()
+  const token = userStore.getToken()
+
+  if (user?.id) {
+    return user.id
+  }
+
+  // Decode token to get instructor ID
+  if (token) {
+    try {
+      const parts = token.split('.')
+      if (parts.length === 3) {
+        const payload = JSON.parse(atob(parts[1]))
+        return payload.user_id || payload.userId || null
+      }
+    } catch (e) {
+      console.error('Failed to decode token:', e)
+    }
+  }
+
+  return null
+}
+
+// Filter schedules for current lecturer
+const lecturerSchedules = computed(() => {
+  if (!currentInstructorId.value) return []
+
+  return schedules.value.filter(schedule => {
+    return schedule.instructor_id === currentInstructorId.value ||
+      schedule.assistant_id === currentInstructorId.value
+  })
+})
+
+// Transform backend data to UI format
+const schedule = computed(() => {
+  return lecturerSchedules.value.map(s => {
+    const startTime = s.start_time ? new Date(s.start_time) : null
+    const endTime = s.end_time ? new Date(s.end_time) : null
+
+    let day = 'Monday'
+    let timeSlot = '08:00 - 10:00'
+
+    if (startTime) {
+      const dayIndex = startTime.getDay() // 0 = Sunday, 1 = Monday, etc.
+      const dayMap = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+      day = dayMap[dayIndex] || 'Monday'
+
+      const hours = startTime.getHours()
+      const minutes = startTime.getMinutes()
+      const startStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+
+      if (endTime) {
+        const endHours = endTime.getHours()
+        const endMinutes = endTime.getMinutes()
+        const endStr = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`
+        timeSlot = `${startStr} - ${endStr}`
+      } else {
+        // Default 2 hour duration if no end time
+        const endHours = hours + 2
+        const endStr = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+        timeSlot = `${startStr} - ${endStr}`
+      }
+    }
+
+    const subjectName = getSubjectName(s.subject_id)
+    const subjectCode = getSubjectCode(subjectName)
+    const color = getSubjectColor(s.subject_id)
+
+    // Get group name from multiple possible sources
+    let groupName = 'Unknown Group'
+    if (s.groups && s.groups.length > 0) {
+      groupName = s.groups[0].name || s.groups[0].group_name || 'Unknown Group'
+    } else if (s.group_id) {
+      groupName = getGroupName(s.group_id)
+    }
+
+    return {
+      id: s.global_id || s.id,
+      day: day,
+      time: timeSlot,
+      subject: subjectName,
+      code: subjectCode,
+      group: groupName,
+      room: getRoomName(s.room_id),
+      generation: getGenerationName(s.generation_id),
+      color: color,
+      rawData: s
+    }
+  })
+})
+
+// Helper to get subject color based on subject ID (consistent per subject)
+const getSubjectColor = (subjectId) => {
+  // Check if we already have a color for this subject
+  if (subjectColorMap.value.has(subjectId)) {
+    return subjectColorMap.value.get(subjectId)
+  }
+
+  // Assign a new color based on the current map size
+  const colorIndex = subjectColorMap.value.size % colorPalette.length
+  const assignedColor = colorPalette[colorIndex]
+
+  // Store the color for this subject
+  subjectColorMap.value.set(subjectId, assignedColor)
+
+  return assignedColor
+}
+
+// Helper to generate subject code
+const getSubjectCode = (subjectName) => {
+  const words = subjectName.split(' ')
+  if (words.length >= 2) {
+    return words.map(w => w[0]).join('').toUpperCase().substring(0, 3) + '101'
+  }
+  return subjectName.substring(0, 3).toUpperCase() + '101'
+}
 
 // Computed stats
 const totalSessions = computed(() => schedule.value.length)
@@ -227,147 +418,24 @@ const currentWeekRange = computed(() => {
   return `${firstDay.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${lastDay.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
 })
 
-const schedule = ref([
-  {
-    id: 1,
-    day: 'Monday',
-    time: '08:00 - 10:00',
-    subject: 'Data Structures & Algorithms',
-    code: 'CS201',
-    group: 'CS-9-G1',
-    room: 'Lab 301',
-    color: 'bg-blue'
-  },
-  {
-    id: 2,
-    day: 'Monday',
-    time: '10:00 - 12:00',
-    subject: 'Database Management',
-    code: 'CS303',
-    group: 'IT-10-G2',
-    room: 'Room 205',
-    color: 'bg-green'
-  },
-  {
-    id: 3,
-    day: 'Monday',
-    time: '13:00 - 15:00',
-    subject: 'Software Engineering',
-    code: 'CS301',
-    group: 'CS-10-G2',
-    room: 'Room 201',
-    color: 'bg-red'
-  },
-  {
-    id: 4,
-    day: 'Tuesday',
-    time: '08:00 - 10:00',
-    subject: 'Web Development',
-    code: 'CS405',
-    group: 'CS-11-G1',
-    room: 'Lab 302',
-    color: 'bg-orange'
-  },
-  {
-    id: 5,
-    day: 'Tuesday',
-    time: '10:00 - 12:00',
-    subject: 'Artificial Intelligence',
-    code: 'CS501',
-    group: 'CS-12-G1',
-    room: 'Lab 401',
-    color: 'bg-indigo'
-  },
-  {
-    id: 6,
-    day: 'Wednesday',
-    time: '08:00 - 10:00',
-    subject: 'Data Structures & Algorithms',
-    code: 'CS201',
-    group: 'CS-9-G1',
-    room: 'Lab 301',
-    color: 'bg-blue'
-  },
-  {
-    id: 7,
-    day: 'Wednesday',
-    time: '13:00 - 15:00',
-    subject: 'Mobile App Development',
-    code: 'CS407',
-    group: 'SE-11-G3',
-    room: 'Lab 303',
-    color: 'bg-purple'
-  },
-  {
-    id: 8,
-    day: 'Wednesday',
-    time: '13:00 - 15:00',
-    subject: 'Software Engineering',
-    code: 'CS301',
-    group: 'CS-10-G2',
-    room: 'Room 201',
-    color: 'bg-red'
-  },
-  {
-    id: 9,
-    day: 'Thursday',
-    time: '08:00 - 10:00',
-    subject: 'Database Management',
-    code: 'CS303',
-    group: 'IT-10-G2',
-    room: 'Room 205',
-    color: 'bg-green'
-  },
-  {
-    id: 10,
-    day: 'Thursday',
-    time: '10:00 - 12:00',
-    subject: 'Mobile App Development',
-    code: 'CS407',
-    group: 'SE-11-G3',
-    room: 'Lab 303',
-    color: 'bg-purple'
-  },
-  {
-    id: 11,
-    day: 'Thursday',
-    time: '13:00 - 15:00',
-    subject: 'Artificial Intelligence',
-    code: 'CS501',
-    group: 'CS-12-G1',
-    room: 'Lab 401',
-    color: 'bg-indigo'
-  },
-  {
-    id: 12,
-    day: 'Friday',
-    time: '08:00 - 10:00',
-    subject: 'Data Structures & Algorithms',
-    code: 'CS201',
-    group: 'CS-9-G1',
-    room: 'Lab 301',
-    color: 'bg-blue'
-  },
-  {
-    id: 13,
-    day: 'Friday',
-    time: '10:00 - 12:00',
-    subject: 'Web Development',
-    code: 'CS405',
-    group: 'CS-11-G1',
-    room: 'Lab 302',
-    color: 'bg-orange'
-  }
-])
-
 const getSessionsForSlot = (day, time) => {
   return schedule.value.filter(s => s.day === day && s.time === time)
 }
 
 const getDayDate = (day) => {
   const dayIndex = weekDays.indexOf(day)
+  if (dayIndex === -1) return ''
+
   const today = new Date()
-  const targetDate = new Date(today.setDate(today.getDate() - today.getDay() + 1 + dayIndex + (currentWeek.value * 7)))
+  const currentDay = today.getDay() // 0 = Sunday
+  const targetDay = dayIndex
+
+  // Calculate days to add/subtract to get to target day
+  let daysToAdd = targetDay - currentDay + (currentWeek.value * 7)
+
+  const targetDate = new Date(today)
+  targetDate.setDate(today.getDate() + daysToAdd)
+
   return targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
@@ -382,6 +450,61 @@ const nextWeek = () => {
 const viewSession = (session) => {
   console.log('View session:', session)
   // Navigate to class details or session page
+}
+
+// Helper functions to get reference data names
+const getGroupName = (id) => {
+  const group = groups.value.find(g => g.id === id)
+  if (!group) {
+    console.log('❌ Group not found for id:', id, 'Available groups:', groups.value.map(g => ({ id: g.id, name: g.group_name || g.name })))
+  }
+  return group?.group_name || group?.name || 'Unknown Group'
+}
+
+const getSubjectName = (id) => {
+  const subject = subjects.value.find(s => s.id === id)
+  return subject?.name || 'Unknown Subject'
+}
+
+const getRoomName = (id) => {
+  const room = rooms.value.find(r => r.id === id)
+  return room?.room || 'No Room'
+}
+
+const getGenerationName = (id) => {
+  const generation = generations.value.find(g => g.id === id)
+  return generation?.generation || 'N/A'
+}
+
+// Fetch reference data
+const fetchReferenceData = async () => {
+  try {
+    const { $UserPrivateAxios } = useNuxtApp()
+
+    // Use lecturer endpoints instead of admin endpoints
+    const [groupsRes, subjectsRes, roomsRes, generationsRes] = await Promise.all([
+      $UserPrivateAxios.get('/lecturer/auth/groups/'),
+      $UserPrivateAxios.get('/lecturer/auth/subjects/'),
+      $UserPrivateAxios.get('/lecturer/auth/rooms/'),
+      $UserPrivateAxios.get('/lecturer/auth/generations/')
+    ])
+
+    groups.value = groupsRes.data?.data || []
+    subjects.value = subjectsRes.data?.data || []
+    rooms.value = roomsRes.data?.data || []
+    generations.value = generationsRes.data?.data || []
+
+    console.log('📚 Reference data loaded:', {
+      groups: groups.value.length,
+      subjects: subjects.value.length,
+      rooms: rooms.value.length,
+      generations: generations.value.length,
+      sampleGroup: groups.value[0],
+      groupsData: groups.value.slice(0, 3)
+    })
+  } catch (error) {
+    console.error('Failed to load reference data:', error)
+  }
 }
 
 // Import/Export functions
@@ -399,6 +522,40 @@ const handleExportPDF = () => {
   console.log('Exporting schedule to PDF...')
   // Implementation for PDF export
 }
+
+// Lifecycle - Fetch data on mount
+onMounted(async () => {
+  console.log('🔄 Loading lecturer schedule data...')
+
+  // Get current instructor ID
+  currentInstructorId.value = getCurrentInstructorId()
+  console.log('👤 Current instructor ID:', currentInstructorId.value)
+
+  // Fetch schedules using lecturer endpoint and reference data
+  try {
+    const { $UserPrivateAxios } = useNuxtApp()
+
+    // Fetch schedules from lecturer endpoint
+    const schedulesRes = await $UserPrivateAxios.get('/lecturer/auth/course_offerings/')
+    schedules.value = schedulesRes.data?.data || []
+
+    console.log('📅 Schedules fetched:', schedules.value.length)
+  } catch (error) {
+    console.error('Failed to fetch schedules:', error)
+  }
+
+  // Fetch reference data
+  await fetchReferenceData()
+
+  console.log('✅ Lecturer schedule loaded:', {
+    totalSchedules: schedules.value.length,
+    lecturerSchedules: lecturerSchedules.value.length,
+    displaySchedules: schedule.value.length,
+    sampleSchedule: schedules.value[0],
+    groupsCount: groups.value.length,
+    sampleGroup: groups.value[0]
+  })
+})
 </script>
 
 <style scoped>
@@ -617,11 +774,40 @@ const handleExportPDF = () => {
 /* Schedule Grid */
 .schedule-grid {
   display: grid;
-  grid-template-columns: 120px repeat(5, 1fr);
   min-width: 100%;
+  gap: 0;
 }
 
-.header-cell {
+.corner-cell {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  border-bottom: 2px solid #cbd5e1;
+  border-right: 2px solid #cbd5e1;
+  font-weight: 700;
+  color: #1e293b;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.corner-cell {
+  z-index: 4;
+  position: sticky;
+  top: 0;
+  left: 0;
+}
+
+.cell {
+  border-bottom: 1px solid #f1f5f9;
+  border-right: 1px solid #f1f5f9;
+  min-height: 100px;
+  transition: all 0.2s ease;
+}
+
+.cell:hover {
+  background: #f8fafc;
+}
+
+.time-column {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border-bottom: 2px solid #e2e8f0;
   border-right: 1px solid #e2e8f0;
@@ -659,6 +845,26 @@ const handleExportPDF = () => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+.session-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 4px;
+}
+
+.session-info {
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.session-info .text-caption {
+  opacity: 0.95;
+  line-height: 1.4;
+}
+
+.session-info .font-weight-medium {
+  font-weight: 600;
+}
+
 .bg-blue {
   background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
 }
@@ -681,6 +887,30 @@ const handleExportPDF = () => {
 
 .bg-indigo {
   background: linear-gradient(135deg, #3F51B5 0%, #283593 100%);
+}
+
+.bg-teal {
+  background: linear-gradient(135deg, #009688 0%, #00796B 100%);
+}
+
+.bg-pink {
+  background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%);
+}
+
+.bg-cyan {
+  background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%);
+}
+
+.bg-amber {
+  background: linear-gradient(135deg, #FFC107 0%, #FFA000 100%);
+}
+
+.bg-lime {
+  background: linear-gradient(135deg, #CDDC39 0%, #AFB42B 100%);
+}
+
+.bg-brown {
+  background: linear-gradient(135deg, #795548 0%, #5D4037 100%);
 }
 
 /* Legend Section */
@@ -740,6 +970,30 @@ const handleExportPDF = () => {
   background: linear-gradient(135deg, #3F51B5 0%, #283593 100%);
 }
 
+.legend-box.bg-teal {
+  background: linear-gradient(135deg, #009688 0%, #00796B 100%);
+}
+
+.legend-box.bg-pink {
+  background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%);
+}
+
+.legend-box.bg-cyan {
+  background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%);
+}
+
+.legend-box.bg-amber {
+  background: linear-gradient(135deg, #FFC107 0%, #FFA000 100%);
+}
+
+.legend-box.bg-lime {
+  background: linear-gradient(135deg, #CDDC39 0%, #AFB42B 100%);
+}
+
+.legend-box.bg-brown {
+  background: linear-gradient(135deg, #795548 0%, #5D4037 100%);
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
   .header-container {
@@ -768,20 +1022,29 @@ const handleExportPDF = () => {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
-  }
-
-  .stats-cards {
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .schedule-grid {
-    grid-template-columns: 80px repeat(5, 1fr);
     font-size: 12px;
   }
 
   .week-selector {
     padding: 16px;
+  }
+
+  .day-label-cell {
+    font-size: 13px;
+  }
+
+  .session-card {
+    font-size: 11px;
+    padding: 8px;
+  }
+
+  .schedule-grid {
+    font-size: 12px;
+  }
+
+  .corner-cell,
+  .header-cell {
+    padding: 8px 4px;
   }
 }
 
@@ -797,6 +1060,7 @@ const handleExportPDF = () => {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
