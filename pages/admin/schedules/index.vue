@@ -141,7 +141,8 @@
               </div>
 
               <div class="card-content">
-                <h3 class="card-title">{{ getGroupName(schedule.group_id) }}</h3>
+                <h3 class="card-title">{{ schedule.groups && schedule.groups.length > 0 ? schedule.groups[0].name :
+                  getGroupName(schedule.group_id) }}</h3>
                 <p class="card-subtitle">{{ getSubjectName(schedule.subject_id) }}</p>
                 <div class="info-grid">
                   <div class="info-item">
@@ -281,17 +282,22 @@
               <h3 class="section-title">Schedule Details</h3>
               <v-row dense>
                 <v-col cols="12" md="6">
-                  <v-text-field v-model="formData.start_time" type="datetime-local" label="Start Time"
-                    variant="outlined" density="comfortable" hide-details="auto" />
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-text-field v-model="formData.end_time" type="datetime-local" label="End Time" variant="outlined"
+                  <v-select v-model="formData.course_type" :items="courseTypeOptions" item-title="title"
+                    item-value="value" :rules="requiredRules" label="Course Type *" variant="outlined"
                     density="comfortable" hide-details="auto" />
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-select v-model="formData.status" :items="statusItems" item-title="title" item-value="value"
                     :rules="requiredRules" label="Status *" variant="outlined" density="comfortable"
                     hide-details="auto" />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="formData.start_time" type="datetime-local" label="Start Time"
+                    variant="outlined" density="comfortable" hide-details="auto" />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="formData.end_time" type="datetime-local" label="End Time" variant="outlined"
+                    density="comfortable" hide-details="auto" />
                 </v-col>
                 <v-col cols="12" md="6" class="d-flex align-center">
                   <v-switch v-model="formData.active" label="Active Schedule" color="success" hide-details inset />
@@ -318,231 +324,200 @@
     </v-dialog>
 
     <!-- Schedule Detail View Dialog -->
-    <v-dialog v-model="scheduleDetailDialog" max-width="900" persistent>
-      <v-card v-if="selectedSchedule" class="detail-dialog-card" elevation="24">
+    <v-dialog v-model="scheduleDetailDialog" max-width="800" persistent scrollable>
+      <v-card v-if="selectedSchedule" class="modern-detail-dialog" elevation="24">
         <!-- Dialog Header -->
-        <div class="detail-dialog-header">
+        <div class="detail-header">
           <div class="header-content">
-            <div class="header-icon-wrapper">
-              <v-icon icon="mdi-calendar-clock" color="white" size="28" />
+            <div class="header-icon">
+              <v-icon icon="mdi-calendar-clock" size="28" />
             </div>
             <div class="header-text">
-              <h2 class="detail-dialog-title">Schedule Details</h2>
-              <p class="detail-dialog-subtitle">Complete schedule information overview</p>
+              <h2 class="detail-title">Schedule Details</h2>
+              <p class="detail-subtitle">Complete schedule information</p>
             </div>
           </div>
-          <v-btn icon="mdi-close" variant="text" size="small" @click="scheduleDetailDialog = false" class="close-btn" />
+          <v-btn icon="mdi-close" variant="text" size="small" @click="closeDetailDialog" class="close-btn" />
         </div>
 
         <v-divider />
 
         <!-- Dialog Content -->
-        <v-card-text class="detail-dialog-content">
-          <div class="detail-info-grid">
-            <!-- Group -->
-            <div class="info-card">
-              <div class="info-icon-wrapper group">
-                <v-icon icon="mdi-account-group" color="white" size="20" />
-              </div>
-              <div class="info-content">
-                <div class="info-label">Group</div>
-                <div class="info-value">{{ getGroupName(selectedSchedule.group_id) }}</div>
-              </div>
+        <v-card-text class="detail-content">
+          <!-- Primary Info Section -->
+          <div class="info-section">
+            <div class="section-header">
+              <v-icon icon="mdi-information" size="20" color="primary" />
+              <h3 class="section-title">Basic Information</h3>
             </div>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <label class="detail-label">
+                  <v-icon icon="mdi-account-group" size="16" class="mr-1" />
+                  Group
+                </label>
+                <div class="detail-value">
+                  {{ selectedSchedule.groups && selectedSchedule.groups.length > 0 ? selectedSchedule.groups[0].name :
+                    getGroupName(selectedSchedule.group_id) }}
+                </div>
+              </div>
 
-            <!-- Subject -->
-            <div class="info-card">
-              <div class="info-icon-wrapper subject">
-                <v-icon icon="mdi-book-open-variant" color="white" size="20" />
+              <div class="detail-item">
+                <label class="detail-label">
+                  <v-icon icon="mdi-book-open-variant" size="16" class="mr-1" />
+                  Subject
+                </label>
+                <div class="detail-value">{{ getSubjectName(selectedSchedule.subject_id) }}</div>
               </div>
-              <div class="info-content">
-                <div class="info-label">Subject</div>
-                <div class="info-value">{{ getSubjectName(selectedSchedule.subject_id) }}</div>
-              </div>
-            </div>
 
-            <!-- Term -->
-            <div class="info-card">
-              <div class="info-icon-wrapper term">
-                <v-icon icon="mdi-calendar-range" color="white" size="20" />
+              <div class="detail-item">
+                <label class="detail-label">
+                  <v-icon icon="mdi-calendar-range" size="16" class="mr-1" />
+                  Term
+                </label>
+                <div class="detail-value">{{ getTermName(selectedSchedule.term_id) }}</div>
               </div>
-              <div class="info-content">
-                <div class="info-label">Term</div>
-                <div class="info-value">{{ getTermName(selectedSchedule.term_id) }}</div>
-              </div>
-            </div>
 
-            <!-- Generation -->
-            <div class="info-card">
-              <div class="info-icon-wrapper generation">
-                <v-icon icon="mdi-account-school" color="white" size="20" />
+              <div class="detail-item">
+                <label class="detail-label">
+                  <v-icon icon="mdi-account-school" size="16" class="mr-1" />
+                  Generation
+                </label>
+                <div class="detail-value">{{ getGenerationName(selectedSchedule.generation_id) }}</div>
               </div>
-              <div class="info-content">
-                <div class="info-label">Generation</div>
-                <div class="info-value">{{ getGenerationName(selectedSchedule.generation_id) }}</div>
-              </div>
-            </div>
 
-            <!-- Instructor -->
-            <div class="info-card">
-              <div class="info-icon-wrapper instructor">
-                <v-icon icon="mdi-account-tie" color="white" size="20" />
+              <div class="detail-item">
+                <label class="detail-label">
+                  <v-icon icon="mdi-door" size="16" class="mr-1" />
+                  Room
+                </label>
+                <div class="detail-value">{{ getRoomName(selectedSchedule.room_id) }}</div>
               </div>
-              <div class="info-content">
-                <div class="info-label">Instructor</div>
-                <div class="info-value">{{ getInstructorName(selectedSchedule.instructor_id) }}</div>
-              </div>
-            </div>
 
-            <!-- Assistant -->
-            <div class="info-card">
-              <div class="info-icon-wrapper assistant">
-                <v-icon icon="mdi-account-supervisor" color="white" size="20" />
-              </div>
-              <div class="info-content">
-                <div class="info-label">Assistant</div>
-                <div class="info-value">{{ getInstructorName(selectedSchedule.assistant_id) || 'N/A' }}</div>
-              </div>
-            </div>
-
-            <!-- Room -->
-            <div class="info-card">
-              <div class="info-icon-wrapper room">
-                <v-icon icon="mdi-door" color="white" size="20" />
-              </div>
-              <div class="info-content">
-                <div class="info-label">Room</div>
-                <div class="info-value">{{ getRoomName(selectedSchedule.room_id) }}</div>
-              </div>
-            </div>
-
-            <!-- Status -->
-            <div class="info-card">
-              <div class="info-icon-wrapper status">
-                <v-icon icon="mdi-information" color="white" size="20" />
-              </div>
-              <div class="info-content">
-                <div class="info-label">Status</div>
-                <div class="info-value">
-                  <v-chip :color="getStatusColor(selectedSchedule.status)" size="small" variant="flat"
-                    class="status-chip">
-                    {{ getStatusLabel(selectedSchedule.status) }}
+              <div class="detail-item">
+                <label class="detail-label">
+                  <v-icon icon="mdi-school" size="16" class="mr-1" />
+                  Course Type
+                </label>
+                <div class="detail-value">
+                  <v-chip :color="selectedSchedule.course_type === 'lab' ? 'success' : 'info'" size="small"
+                    variant="tonal">
+                    <v-icon :icon="selectedSchedule.course_type === 'lab' ? 'mdi-flask' : 'mdi-book-open-page-variant'"
+                      size="14" start />
+                    {{ selectedSchedule.course_type === 'lab' ? 'Lab' : 'Lecture' }}
                   </v-chip>
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- Active -->
-            <div class="info-card">
-              <div class="info-icon-wrapper active">
-                <v-icon icon="mdi-toggle-switch" color="white" size="20" />
+          <v-divider class="my-5" />
+
+          <!-- Staff Section -->
+          <div class="info-section">
+            <div class="section-header">
+              <v-icon icon="mdi-account-tie" size="20" color="primary" />
+              <h3 class="section-title">Teaching Staff</h3>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <label class="detail-label">
+                  <v-icon icon="mdi-account-tie" size="16" class="mr-1" />
+                  Instructor
+                </label>
+                <div class="detail-value">{{ getInstructorName(selectedSchedule.instructor_id) }}</div>
               </div>
-              <div class="info-content">
-                <div class="info-label">Active</div>
-                <div class="info-value">
-                  <v-chip :color="selectedSchedule.active ? 'success' : 'error'" size="small" variant="flat"
-                    class="status-chip">
+
+              <div class="detail-item">
+                <label class="detail-label">
+                  <v-icon icon="mdi-account-supervisor" size="16" class="mr-1" />
+                  Assistant
+                </label>
+                <div class="detail-value">{{ getInstructorName(selectedSchedule.assistant_id) || 'N/A' }}</div>
+              </div>
+            </div>
+          </div>
+
+          <v-divider class="my-5" />
+
+          <!-- Schedule Section -->
+          <div class="info-section">
+            <div class="section-header">
+              <v-icon icon="mdi-clock-outline" size="20" color="primary" />
+              <h3 class="section-title">Schedule & Status</h3>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <label class="detail-label">
+                  <v-icon icon="mdi-calendar-start" size="16" class="mr-1" />
+                  Start Time
+                </label>
+                <div class="detail-value">{{ formatDateTime(selectedSchedule.start_time) }}</div>
+              </div>
+
+              <div class="detail-item">
+                <label class="detail-label">
+                  <v-icon icon="mdi-calendar-end" size="16" class="mr-1" />
+                  End Time
+                </label>
+                <div class="detail-value">{{ formatDateTime(selectedSchedule.end_time) }}</div>
+              </div>
+
+              <div class="detail-item">
+                <label class="detail-label">
+                  <v-icon icon="mdi-information" size="16" class="mr-1" />
+                  Status
+                </label>
+                <div class="detail-value">
+                  <v-chip :color="getStatusColor(selectedSchedule.status)" size="small" variant="flat">
+                    {{ getStatusLabel(selectedSchedule.status) }}
+                  </v-chip>
+                </div>
+              </div>
+
+              <div class="detail-item">
+                <label class="detail-label">
+                  <v-icon icon="mdi-toggle-switch" size="16" class="mr-1" />
+                  Active
+                </label>
+                <div class="detail-value">
+                  <v-chip :color="selectedSchedule.active ? 'success' : 'error'" size="small" variant="flat">
+                    <v-icon :icon="selectedSchedule.active ? 'mdi-check-circle' : 'mdi-close-circle'" size="14" start />
                     {{ selectedSchedule.active ? 'Active' : 'Inactive' }}
                   </v-chip>
                 </div>
               </div>
             </div>
-
-            <!-- Start Time -->
-            <div class="info-card">
-              <div class="info-icon-wrapper time">
-                <v-icon icon="mdi-calendar-clock" color="white" size="20" />
-              </div>
-              <div class="info-content">
-                <div class="info-label">Start Time</div>
-                <div class="info-value">{{ formatDateTime(selectedSchedule.start_time) }}</div>
-              </div>
-            </div>
-
-            <v-divider />
-
-            <v-card-text class="detail-body">
-              <v-row>
-                <v-col cols="12" md="6">
-                  <div class="detail-item">
-                    <span class="detail-label">Room</span>
-                    <span class="detail-value">{{ getRoomName(selectedSchedule.room_id) }}</span>
-                  </div>
-                  <div class="detail-item">
-                    <span class="detail-label">Instructor</span>
-                    <span class="detail-value">{{ getInstructorName(selectedSchedule.instructor_id) }}</span>
-                  </div>
-                  <div class="detail-item">
-                    <span class="detail-label">Assistant</span>
-                    <span class="detail-value">{{ getInstructorName(selectedSchedule.assistant_id) }}</span>
-                  </div>
-                </v-col>
-                <v-col cols="12" md="6">
-                  <div class="detail-item">
-                    <span class="detail-label">Start Time</span>
-                    <span class="detail-value">{{ formatDateTime(selectedSchedule.start_time) }}</span>
-                  </div>
-                  <div class="detail-item">
-                    <span class="detail-label">End Time</span>
-                    <span class="detail-value">{{ formatDateTime(selectedSchedule.end_time) }}</span>
-                  </div>
-                  <div class="detail-item">
-                    <span class="detail-label">Status</span>
-                    <span class="detail-value">{{ getStatusLabel(selectedSchedule.status) }}</span>
-                  </div>
-                </v-col>
-                <v-col cols="12">
-                  <div class="detail-item">
-                    <span class="detail-label">Description</span>
-                    <span class="detail-value description">{{ selectedSchedule.description || 'No description' }}</span>
-                  </div>
-                </v-col>
-                <v-col cols="12">
-                  <div class="detail-item">
-                    <span class="detail-label">Last Updated</span>
-                    <span class="detail-value">{{ formatDate(selectedSchedule.updated_at) }}</span>
-                  </div>
-                </v-col>
-              </v-row>
-            </v-card-text>
-            <!-- End Time -->
-            <div class="info-card">
-              <div class="info-icon-wrapper time">
-                <v-icon icon="mdi-calendar-clock" color="white" size="20" />
-              </div>
-              <div class="info-content">
-                <div class="info-label">End Time</div>
-                <div class="info-value">{{ formatDateTime(selectedSchedule.end_time) }}</div>
-              </div>
-            </div>
-
-            <!-- Description -->
-            <div class="info-card full-width" v-if="selectedSchedule.description">
-              <div class="info-icon-wrapper description">
-                <v-icon icon="mdi-text" color="white" size="20" />
-              </div>
-              <div class="info-content">
-                <div class="info-label">Description</div>
-                <div class="info-value description-text">{{ selectedSchedule.description || 'N/A' }}</div>
-              </div>
-            </div>
           </div>
+
+          <!-- Description Section (if exists) -->
+          <template v-if="selectedSchedule.description">
+            <v-divider class="my-5" />
+            <div class="info-section">
+              <div class="section-header">
+                <v-icon icon="mdi-text" size="20" color="primary" />
+                <h3 class="section-title">Description</h3>
+              </div>
+              <div class="description-box">
+                <p class="description-text">{{ selectedSchedule.description }}</p>
+              </div>
+            </div>
+          </template>
         </v-card-text>
 
         <v-divider />
 
         <!-- Dialog Actions -->
-        <v-card-actions class="detail-dialog-actions">
-          <v-btn variant="outlined" color="grey-darken-1" @click="scheduleDetailDialog = false"
-            class="action-btn cancel-btn">
+        <v-card-actions class="detail-actions">
+          <v-btn variant="outlined" color="grey-darken-1" @click="closeDetailDialog" class="action-btn">
             <v-icon start>mdi-close</v-icon>
             Close
           </v-btn>
           <v-spacer />
-          <!-- <v-btn color="primary" variant="flat" @click="editScheduleFromDetail" class="action-btn submit-btn">
+          <v-btn color="primary" variant="flat" @click="editFromDetail" class="action-btn">
             <v-icon start>mdi-pencil</v-icon>
             Edit Schedule
-          </v-btn> -->
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -599,7 +574,7 @@ const currentPage = ref(1)
 const itemsPerPage = ref(9)
 
 const scheduleDialog = ref(false)
-const detailDialog = ref(false)
+const scheduleDetailDialog = ref(false)
 const deleteDialog = ref(false)
 const isEdit = ref(false)
 const formValid = ref(false)
@@ -626,6 +601,7 @@ const formData = reactive({
   instructor_id: null,
   assistant_id: null,
   generation_id: null,
+  course_type: 'lecture',
   description: '',
   status: 1,
   active: true,
@@ -640,6 +616,10 @@ const statusItems = [
   { title: 'Completed', value: 3 },
   { title: 'Canceled', value: 4 }
 ]
+const courseTypeOptions = [
+  { title: 'Lecture', value: 'lecture' },
+  { title: 'Lab', value: 'lab' }
+]
 
 const requiredRules = [(v) => (v !== null && v !== undefined && v !== '') || 'Field is required']
 
@@ -651,10 +631,11 @@ const filteredSchedules = computed(() => {
   let list = schedules.value
   if (searchQuery.value) {
     const q = searchQuery.value.toLowerCase()
-    list = list.filter(s =>
-      getGroupName(s.group_id).toLowerCase().includes(q) ||
-      getSubjectName(s.subject_id).toLowerCase().includes(q)
-    )
+    list = list.filter(s => {
+      const groupName = s.groups && s.groups.length > 0 ? s.groups[0].name : getGroupName(s.group_id)
+      return groupName.toLowerCase().includes(q) ||
+        getSubjectName(s.subject_id).toLowerCase().includes(q)
+    })
   }
   if (statusFilter.value !== 'All') {
     const active = statusFilter.value === 'Active'
@@ -717,12 +698,17 @@ const openCreateDialog = () => {
 
 const openDetailDialog = (schedule) => {
   selectedSchedule.value = schedule
-  detailDialog.value = true
+  scheduleDetailDialog.value = true
 }
 
 const editFromDetail = () => {
-  detailDialog.value = false
+  scheduleDetailDialog.value = false
   editSchedule(selectedSchedule.value)
+}
+
+const closeDetailDialog = () => {
+  scheduleDetailDialog.value = false
+  selectedSchedule.value = null
 }
 
 const editSchedule = async (schedule) => {
@@ -738,13 +724,14 @@ const editSchedule = async (schedule) => {
 
   Object.assign(formData, {
     global_id: schedule.global_id,
-    group_id: schedule.group_id,
+    group_id: schedule.group_id || (schedule.groups && schedule.groups.length > 0 ? schedule.groups[0].id : null),
     subject_id: schedule.subject_id,
     term_id: schedule.term_id,
     room_id: schedule.room_id || null,
     instructor_id: schedule.instructor_id,
     assistant_id: schedule.assistant_id,
     generation_id: schedule.generation_id,
+    course_type: schedule.course_type || 'lecture',
     description: schedule.description || '',
     status: schedule.status || 1,
     active: !!schedule.active,
@@ -771,6 +758,7 @@ const resetForm = () => {
     instructor_id: null,
     assistant_id: null,
     generation_id: null,
+    course_type: 'lecture',
     description: '',
     status: 1,
     active: true,
@@ -803,14 +791,16 @@ const submitForm = async () => {
     }
 
     // Create a clean payload that matches the backend API with sanitized IDs
+    const groupId = sanitizeId(formData.group_id)
     const payload = {
-      group_id: sanitizeId(formData.group_id),
+      group_ids: groupId ? [groupId] : [], // Backend expects array of group IDs
       subject_id: sanitizeId(formData.subject_id),
       term_id: sanitizeId(formData.term_id),
       room_id: sanitizeId(formData.room_id),
       instructor_id: sanitizeId(formData.instructor_id),
       assistant_id: sanitizeId(formData.assistant_id),
       generation_id: sanitizeId(formData.generation_id),
+      course_type: formData.course_type || 'lecture', // Required field
       description: formData.description || '',
       status: formData.status || 1,
       active: formData.active !== undefined ? formData.active : true,
@@ -822,8 +812,8 @@ const submitForm = async () => {
     console.log("===========================================")
 
     // Validate required fields
-    if (!payload.group_id || !payload.subject_id || !payload.term_id ||
-      !payload.instructor_id || !payload.assistant_id || !payload.generation_id) {
+    if (!payload.group_ids || payload.group_ids.length === 0 || !payload.subject_id || !payload.term_id ||
+      !payload.instructor_id || !payload.assistant_id || !payload.generation_id || !payload.course_type) {
       alert('Please fill in all required fields with valid values')
       return
     }
@@ -882,6 +872,7 @@ const confirmDelete = async () => {
 // Helpers
 const getGroupName = (id) => groups.value.find(g => g.id === id)?.group_name || 'Unknown Group'
 const getSubjectName = (id) => subjects.value.find(s => s.id === id)?.name || 'Unknown Subject'
+const getTermName = (id) => terms.value.find(t => t.id === id)?.term || 'Unknown Term'
 const getRoomName = (id) => rooms.value.find(r => r.id === id)?.room || 'No Room'
 const getGenerationName = (id) => generations.value.find(g => g.id === id)?.generation || 'N/A'
 const getInstructorName = (id) => {
@@ -1914,7 +1905,188 @@ onMounted(async () => {
   border-top: 1px solid #e2e8f0;
 }
 
-/* Detail Dialog Styles */
+/* Modern Detail Dialog Styles */
+.modern-detail-dialog {
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+}
+
+.detail-header .header-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.detail-header .header-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.detail-header .header-text {
+  flex: 1;
+}
+
+.detail-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.detail-subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  font-weight: 400;
+}
+
+.detail-header .close-btn {
+  color: white !important;
+  opacity: 0.9;
+}
+
+.detail-header .close-btn:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.detail-content {
+  padding: 28px !important;
+  background: #fafbfc;
+}
+
+.info-section {
+  margin-bottom: 0;
+}
+
+.info-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.section-header .section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.detail-item:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+  transform: translateY(-2px);
+}
+
+.detail-label {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  font-size: 15px;
+  font-weight: 500;
+  color: #111827;
+  line-height: 1.5;
+}
+
+.description-box {
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.description-text {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #4b5563;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.detail-actions {
+  padding: 20px 28px !important;
+  gap: 12px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.detail-actions .action-btn {
+  min-width: 120px;
+  height: 42px;
+  font-weight: 600;
+  text-transform: none;
+  border-radius: 8px;
+  letter-spacing: 0.3px;
+}
+
+/* Responsive Detail Dialog */
+@media (max-width: 768px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-header {
+    padding: 20px;
+  }
+
+  .detail-content {
+    padding: 20px !important;
+  }
+
+  .detail-title {
+    font-size: 18px;
+  }
+}
+
+/* Legacy Detail Dialog Styles - Can be removed later */
 .detail-dialog-card {
   border-radius: 20px !important;
   overflow: hidden;
