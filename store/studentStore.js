@@ -80,15 +80,30 @@ export const useStudentStore = defineStore("studentStore", {
       this.error = null;
 
       try {
-        const backendData = transformStudentToBackend(studentData);
+        // If caller already provided backend-shaped payload (student_code present), use it directly.
+        // Otherwise transform from frontend shape for backward compatibility.
+        let backendData = {};
+        if (studentData && studentData.student_code) {
+          backendData = { ...studentData }
+        } else {
+          backendData = transformStudentToBackend(studentData)
+        }
 
-        // Debug: Log the data being sent
-        console.log("Sending student data:", backendData);
+        // Coerce numeric id fields if present
+        if (backendData.generation_id !== undefined && backendData.generation_id !== null) {
+          backendData.generation_id = parseInt(String(backendData.generation_id))
+        }
+        if (backendData.group_id !== undefined && backendData.group_id !== null) {
+          backendData.group_id = parseInt(String(backendData.group_id))
+        }
+        if (backendData.specialization_id !== undefined && backendData.specialization_id !== null) {
+          backendData.specialization_id = parseInt(String(backendData.specialization_id))
+        }
+        if (backendData.active !== undefined) {
+          backendData.active = Number(backendData.active) ? 1 : 0
+        }
 
-        const response = await $AdminPrivateAxios.post(
-          "/students/",
-          backendData
-        );
+        const response = await $AdminPrivateAxios.post("/students/", backendData);
         const backendStudent = response.data.data || response.data;
         const newStudent = transformStudentFromBackend(backendStudent);
 
@@ -154,65 +169,59 @@ export const useStudentStore = defineStore("studentStore", {
     },
 
     // Create new student with profile image
-    async createStudentWithImage(formData) {
-      const { $AdminPrivateAxios, $UserPrivateAxios } = useNuxtApp();
-      const uploadStore = useUploadStore();
+    // If updateId provided, attempt update with image (fallback depends on backend)
+    async createStudentWithImage(formData, updateId = null) {
+      const { $AdminPrivateAxios } = useNuxtApp();
       this.loading = true;
       this.error = null;
 
       try {
-        console.log("Uploading profile image to uploads endpoint...");
-
-        // Find the file entry in the provided FormData
-        let file = null
-        let fileKey = null
-        for (let [key, value] of formData.entries()) {
-          if (
-            (typeof File !== 'undefined' && value instanceof File) ||
-            (value && value.size && value.name)
-          ) {
-            file = value
-            fileKey = key
-            break
+        // Coerce numeric fields inside FormData before sending
+        const normalizeField = (fd, key) => {
+          const val = fd.get(key)
+          if (val === null || typeof val === 'undefined') return
+          if (['generation_id','group_id','specialization_id','active'].includes(key)) {
+            fd.set(key, String(Number(val)))
           }
         }
 
-        if (!file) {
-          throw new Error('No file found in formData to upload')
+        normalizeField(formData, 'generation_id')
+        normalizeField(formData, 'group_id')
+        normalizeField(formData, 'specialization_id')
+        normalizeField(formData, 'active')
+
+        // If updateId provided and backend supports update via /students/{id}/with-image, try it.
+        let response
+        if (updateId) {
+          try {
+            response = await $AdminPrivateAxios.patch(`/students/${updateId}`, formData, {
+              headers: { 'Content-Type': 'multipart/form-data' }
+            })
+          } catch (err) {
+            // fallback: try POST to /students/with-image with same FormData (for create)
+            response = await $AdminPrivateAxios.post('/students/with-image', formData, {
+              headers: { 'Content-Type': 'multipart/form-data' }
+            })
+          }
+        } else {
+          response = await $AdminPrivateAxios.post('/students/with-image', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          })
         }
 
-        const uploadForm = new FormData()
-        uploadForm.append('file', file)
-
-        // Upload via central uploadStore (it will prefer USER_PRIVATE_API from env)
-        const uploadResp = await uploadStore.uploadImage(uploadForm)
-
-        const uploadData = uploadResp.data?.data || uploadResp.data || uploadResp
-        const imageUrl = uploadData?.url || uploadData?.secure_url || null
-
-        if (!imageUrl) {
-          console.warn('Upload completed but no URL returned', uploadData)
-        }
-
-        // Build backend payload from original FormData (skip the file entry)
-        const backendPayload = {}
-        for (let [key, value] of formData.entries()) {
-          if (key === fileKey) continue
-          backendPayload[key] = value
-        }
-
-        // Attach uploaded image URL so backend can persist it
-        if (imageUrl) backendPayload.profile_image = imageUrl
-
-        // Create student using regular student creation endpoint
-        const response = await $AdminPrivateAxios.post('/students/', backendPayload)
         const backendStudent = response.data?.data || response.data
         const newStudent = transformStudentFromBackend(backendStudent)
 
-        // Add to local state
-        this.students.push(newStudent)
+        // Add or replace in local state
+        if (updateId) {
+          const idx = this.students.findIndex(s => String(s.id) === String(updateId) || String(s.globalId) === String(updateId))
+          if (idx !== -1) this.students.splice(idx, 1, newStudent)
+          else this.students.push(newStudent)
+        } else {
+          this.students.push(newStudent)
+        }
 
-        console.log('Student created with image:', newStudent)
+        console.log('Student created/updated with image:', newStudent)
         return newStudent
       } catch (error) {
         console.error("Failed to create student with image", error);
@@ -247,7 +256,27 @@ export const useStudentStore = defineStore("studentStore", {
       this.error = null;
 
       try {
-        const backendData = transformStudentUpdateToBackend(studentData);
+        // If caller provided backend-shaped data use it directly; else transform
+        let backendData = {}
+        if (studentData && (studentData.student_code || studentData.first_name || studentData.email)) {
+          backendData = { ...studentData }
+        } else {
+          backendData = transformStudentUpdateToBackend(studentData)
+        }
+
+        // Coerce numeric id fields if present
+        if (backendData.generation_id !== undefined && backendData.generation_id !== null) {
+          backendData.generation_id = parseInt(String(backendData.generation_id))
+        }
+        if (backendData.group_id !== undefined && backendData.group_id !== null) {
+          backendData.group_id = parseInt(String(backendData.group_id))
+        }
+        if (backendData.specialization_id !== undefined && backendData.specialization_id !== null) {
+          backendData.specialization_id = parseInt(String(backendData.specialization_id))
+        }
+        if (backendData.active !== undefined) {
+          backendData.active = Number(backendData.active) ? 1 : 0
+        }
 
         // Debug: Log the update data
         console.log("Updating student with data:", backendData);
@@ -259,9 +288,9 @@ export const useStudentStore = defineStore("studentStore", {
         const backendStudent = response.data.data || response.data;
         const updatedStudent = transformStudentFromBackend(backendStudent);
 
-        // Update in local state (search by globalId)
+        // Update in local state (search by numeric id first)
         const index = this.students.findIndex(
-          (s) => s.globalId === studentId || s.studentId === studentId
+          (s) => String(s.id) === String(studentId) || String(s.globalId) === String(studentId) || String(s.studentId) === String(studentId)
         );
         if (index > -1) {
           this.students[index] = updatedStudent;

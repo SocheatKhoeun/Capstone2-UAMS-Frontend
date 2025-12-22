@@ -580,10 +580,10 @@ const fetchGenerations = async () => {
         const payload = response.data?.data ?? response.data ?? []
         const generations = Array.isArray(payload) ? payload : payload.items ?? []
 
-        // Use global_id as the option value when available
+        // Use numeric id as the option value when available
         generationsList.value = generations.map(gen => ({
             title: gen.generation || gen.name || gen.generation_name || `Gen ${gen.start_year ?? ''}`.trim(),
-            value: gen.global_id ?? gen.id ?? gen.generation
+            value: gen.id ?? gen.global_id ?? gen.generation
         }))
     } catch (error) {
         console.error('Error fetching generations:', error)
@@ -597,10 +597,10 @@ const fetchGroups = async () => {
         const { $AdminPrivateAxios } = useNuxtApp()
         const response = await $AdminPrivateAxios.get('/groups/')
         const groups = response.data.data || response.data || []
-        // Use global_id when available
+        // Use numeric id when available
         groupsList.value = groups.map(grp => ({
             title: grp.group_name || grp.name,
-            value: grp.global_id ?? grp.id
+            value: grp.id ?? grp.global_id
         }))
     } catch (error) {
         console.error('Error fetching groups:', error)
@@ -617,10 +617,10 @@ const fetchSpecializations = async () => {
         const payload = response.data?.data ?? response.data ?? []
         const specializations = Array.isArray(payload) ? payload : payload.items ?? []
 
-        // Use global_id when available
+        // Use numeric id when available
         specializationsList.value = specializations.map(spec => ({
             title: spec.name,
-            value: spec.global_id ?? spec.id ?? spec.global_id
+            value: spec.id ?? spec.global_id
         }))
     } catch (error) {
         console.error('Error fetching specializations:', error)
@@ -841,7 +841,7 @@ const submitForm = async () => {
     formLoading.value = true
 
     try {
-        // Build payload object
+        // Build backend-oriented payload object (use numeric ids)
         const payload = {
             student_code: formData.student_code,
             first_name: formData.first_name,
@@ -851,25 +851,38 @@ const submitForm = async () => {
             email: formData.email,
             phone_number: formData.phone_number || null,
             address: formData.address || null,
-            generation_id: formData.generation_id,
-            group_id: formData.group_id,
-            specialization_id: formData.specialization_id,
+            generation_id: formData.generation_id ? parseInt(String(formData.generation_id)) : null,
+            group_id: formData.group_id ? parseInt(String(formData.group_id)) : null,
+            specialization_id: formData.specialization_id ? parseInt(String(formData.specialization_id)) : null,
             active: formData.active ? 1 : 0,
             password: formData.password || (isEdit.value ? undefined : '')
         }
 
         if (profileImage.value) {
-            // Use FormData and include file under 'profile_image' (store will upload and map)
+            // Use FormData and include file under 'profile_image'
             const fd = new FormData()
             for (const key in payload) {
-                if (typeof payload[key] !== 'undefined' && payload[key] !== null) fd.append(key, payload[key])
+                if (typeof payload[key] !== 'undefined' && payload[key] !== null) fd.append(key, String(payload[key]))
             }
             fd.append('profile_image', profileImage.value)
-            await studentStore.createStudentWithImage(fd)
+
+            if (isEdit.value && selectedStudent.value?.id) {
+                // update with image via dedicated endpoint (backend should accept /students/{id}/with-image or /students/with-image)
+                // prefer /students/with-image for creation; for update we send to /students/{id}/ with formdata via store.updateStudentWithImage if implemented else fallback to createStudentWithImage
+                await studentStore.createStudentWithImage(fd, selectedStudent.value.id)
+            } else {
+                await studentStore.createStudentWithImage(fd)
+            }
         } else {
             // If editing and password empty, remove password key
             if (isEdit.value && !payload.password) delete payload.password
-            await studentStore.createStudent(payload)
+
+            if (isEdit.value && selectedStudent.value?.id) {
+                // Use numeric id for update
+                await studentStore.updateStudent(selectedStudent.value.id, payload)
+            } else {
+                await studentStore.createStudent(payload)
+            }
         }
 
         await fetchStudents()
