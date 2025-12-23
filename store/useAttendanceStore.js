@@ -15,14 +15,14 @@ export const useAttendanceStore = defineStore("attendance", {
     summary: (state) => {
       const total = state.attendances.length;
       const present = state.attendances.filter(
-        (a) => a.status === "present"
+        (a) => a.status === "present",
       ).length;
       const late = state.attendances.filter((a) => a.status === "late").length;
       const absent = state.attendances.filter(
-        (a) => a.status === "absent"
+        (a) => a.status === "absent",
       ).length;
       const excused = state.attendances.filter(
-        (a) => a.status === "excused"
+        (a) => a.status === "excused",
       ).length;
       return { total, present, late, absent, excused };
     },
@@ -32,11 +32,11 @@ export const useAttendanceStore = defineStore("attendance", {
       const total = state.attendances.length;
       if (!total) return 0;
       const present = state.attendances.filter(
-        (a) => a.status === "present"
+        (a) => a.status === "present",
       ).length;
       const late = state.attendances.filter((a) => a.status === "late").length;
       const excused = state.attendances.filter(
-        (a) => a.status === "excused"
+        (a) => a.status === "excused",
       ).length;
       return ((present + late + excused) / total) * 100;
     },
@@ -64,7 +64,7 @@ export const useAttendanceStore = defineStore("attendance", {
 
       try {
         const { $UserPrivateAxios } = useNuxtApp();
-        const response = await $UserPrivateAxios.get("/users/attendance/");
+        const response = await $UserPrivateAxios.get("/user/attendance/");
 
         // Transform data to include session details
         this.attendances = response.data.data.map((item) => ({
@@ -95,8 +95,8 @@ export const useAttendanceStore = defineStore("attendance", {
       try {
         const { $UserPrivateAxios } = useNuxtApp();
         const response = await $UserPrivateAxios.post(
-          "/users/attendance/",
-          data
+          "/user/attendance/",
+          data,
         );
 
         // Refresh attendance list

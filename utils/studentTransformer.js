@@ -20,7 +20,7 @@ export const transformStudentFromBackend = (backendStudent) => {
         .filter(Boolean)
         .join(" ") || "N/A",
     email: backendStudent.email,
-    phone: backendStudent.phone || "",
+    phone: backendStudent.phone_number || backendStudent.phone || "",
     firstName: backendStudent.first_name || "",
     lastName: backendStudent.last_name || "",
     gender: backendStudent.gender || "",
@@ -63,13 +63,49 @@ export const transformStudentsFromBackend = (backendStudents) => {
  * @returns {Object} Backend-formatted student object
  */
 export const transformStudentToBackend = (frontendData) => {
+  if (!frontendData) return {};
+
+  const hasBackendKeys =
+    "student_code" in frontendData ||
+    "first_name" in frontendData ||
+    "phone_number" in frontendData ||
+    "generation_id" in frontendData ||
+    "group_id" in frontendData;
+
+  if (hasBackendKeys) {
+    const backendData = { ...frontendData };
+    const normalizeId = (value) => {
+      if (value === "" || value === null || typeof value === "undefined") {
+        return undefined;
+      }
+      const num = Number(value);
+      return Number.isNaN(num) ? undefined : num;
+    };
+
+    backendData.generation_id = normalizeId(backendData.generation_id);
+    backendData.group_id = normalizeId(backendData.group_id);
+    backendData.specialization_id = normalizeId(backendData.specialization_id);
+
+    if (typeof backendData.generation_id === "undefined") {
+      delete backendData.generation_id;
+    }
+    if (typeof backendData.group_id === "undefined") {
+      delete backendData.group_id;
+    }
+    if (typeof backendData.specialization_id === "undefined") {
+      delete backendData.specialization_id;
+    }
+
+    return backendData;
+  }
+
   // Required fields for student creation
   const backendData = {
     student_code: frontendData.studentId || frontendData.studentCode,
     email: frontendData.email,
     password: frontendData.password,
-    generation_id: parseInt(frontendData.generationId),
-    group_id: parseInt(frontendData.groupId),
+    generation_id: Number(frontendData.generationId),
+    group_id: Number(frontendData.groupId),
   };
 
   // Optional fields
@@ -82,7 +118,7 @@ export const transformStudentToBackend = (frontendData) => {
   }
 
   if (frontendData.phone) {
-    backendData.phone = frontendData.phone;
+    backendData.phone_number = frontendData.phone;
   }
 
   if (frontendData.dob) {
@@ -98,7 +134,10 @@ export const transformStudentToBackend = (frontendData) => {
   }
 
   if (frontendData.groupId) {
-    backendData.group_id = parseInt(frontendData.groupId);
+    const groupId = Number(frontendData.groupId);
+    if (!Number.isNaN(groupId)) {
+      backendData.group_id = groupId;
+    }
   }
 
   if (typeof frontendData.active !== "undefined") {

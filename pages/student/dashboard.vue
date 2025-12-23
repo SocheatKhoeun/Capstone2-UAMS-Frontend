@@ -6,20 +6,35 @@
                 <div class="title-section">
                     <div class="title-wrapper">
                         <div class="title-icon">
-                            <v-icon icon="mdi-view-dashboard" size="32" color="white" />
+                            <v-icon
+                                icon="mdi-view-dashboard"
+                                size="32"
+                                color="white"
+                            />
                         </div>
                         <div class="title-content">
                             <h1 class="page-title">Student Dashboard</h1>
                             <div class="breadcrumb">
                                 <span class="breadcrumb-item">Student</span>
-                                <v-icon icon="mdi-chevron-right" size="16" color="grey" class="breadcrumb-separator" />
-                                <span class="breadcrumb-item active">Dashboard</span>
+                                <v-icon
+                                    icon="mdi-chevron-right"
+                                    size="16"
+                                    color="grey"
+                                    class="breadcrumb-separator"
+                                />
+                                <span class="breadcrumb-item active"
+                                    >Dashboard</span
+                                >
                             </div>
                         </div>
                     </div>
                     <div class="welcome-message">
-                        <span class="greeting">Welcome back, {{ studentName }}! 👋</span>
-                        <span class="sub-greeting">Student ID: {{ studentId }}</span>
+                        <span class="greeting"
+                            >Welcome back, {{ studentName }}! 👋</span
+                        >
+                        <!-- <span class="sub-greeting"
+                            >Student ID: {{ studentId }}</span
+                        > -->
                     </div>
                 </div>
             </div>
@@ -32,44 +47,85 @@
                 <div class="stats-grid">
                     <div class="stat-card stat-card-0">
                         <div class="stat-header">
-                            <v-avatar size="56" color="#22c55e" class="stat-icon">
-                                <v-icon size="32" color="white">mdi-check-circle</v-icon>
+                            <v-avatar
+                                size="56"
+                                color="#22c55e"
+                                class="stat-icon"
+                            >
+                                <v-icon size="32" color="white"
+                                    >mdi-check-circle</v-icon
+                                >
                             </v-avatar>
-                            <v-chip color="green" size="x-small" variant="flat" class="stat-trend">
+                            <v-chip
+                                color="green"
+                                size="x-small"
+                                variant="flat"
+                                class="stat-trend"
+                            >
                                 +5%
                             </v-chip>
                         </div>
                         <div class="stat-value">{{ attendanceRate }}%</div>
                         <div class="stat-label">Attendance Rate</div>
-                        <div class="stat-details">{{ presentDays }} days present this month</div>
+                        <div class="stat-details">
+                            {{ presentDays }} days present this month
+                        </div>
                     </div>
 
                     <div class="stat-card stat-card-1">
                         <div class="stat-header">
-                            <v-avatar size="56" color="#3b82f6" class="stat-icon">
-                                <v-icon size="32" color="white">mdi-calendar</v-icon>
+                            <v-avatar
+                                size="56"
+                                color="#3b82f6"
+                                class="stat-icon"
+                            >
+                                <v-icon size="32" color="white"
+                                    >mdi-calendar</v-icon
+                                >
                             </v-avatar>
-                            <v-chip color="blue" size="x-small" variant="flat" class="stat-trend">
+                            <v-chip
+                                color="blue"
+                                size="x-small"
+                                variant="flat"
+                                class="stat-trend"
+                            >
                                 Today
                             </v-chip>
                         </div>
                         <div class="stat-value">{{ todayClasses }}</div>
                         <div class="stat-label">Today's Classes</div>
-                        <div class="stat-details">{{ completedClasses }} completed • {{ upcomingClasses }} upcoming</div>
+                        <div class="stat-details">
+                            {{ completedClasses }} completed •
+                            {{ upcomingClasses }} upcoming
+                        </div>
                     </div>
 
                     <div class="stat-card stat-card-2">
                         <div class="stat-header">
-                            <v-avatar size="56" color="#f59e0b" class="stat-icon">
-                                <v-icon size="32" color="white">mdi-calendar-remove</v-icon>
+                            <v-avatar
+                                size="56"
+                                color="#f59e0b"
+                                class="stat-icon"
+                            >
+                                <v-icon size="32" color="white"
+                                    >mdi-calendar-remove</v-icon
+                                >
                             </v-avatar>
-                            <v-chip color="orange" size="x-small" variant="flat" class="stat-trend">
+                            <v-chip
+                                color="orange"
+                                size="x-small"
+                                variant="flat"
+                                class="stat-trend"
+                            >
                                 Pending
                             </v-chip>
                         </div>
                         <div class="stat-value">{{ pendingLeaves }}</div>
                         <div class="stat-label">Leave Requests</div>
-                        <div class="stat-details">{{ approvedLeaves }} approved • {{ rejectedLeaves }} rejected</div>
+                        <div class="stat-details">
+                            {{ approvedLeaves }} approved •
+                            {{ rejectedLeaves }} rejected
+                        </div>
                     </div>
                 </div>
 
@@ -77,30 +133,60 @@
                 <div class="main-content-grid">
                     <!-- Today's Schedule Card -->
                     <v-card class="schedule-card" elevation="2" rounded="xl">
-                        <v-card-title class="d-flex align-center justify-space-between">
+                        <v-card-title
+                            class="d-flex align-center justify-space-between"
+                        >
                             <div class="card-title-section">
-                                <v-icon icon="mdi-calendar-clock" size="20" class="mr-2" color="primary" />
-                                <span class="font-weight-bold">Today's Schedule</span>
+                                <v-icon
+                                    icon="mdi-calendar-clock"
+                                    size="20"
+                                    class="mr-2"
+                                    color="primary"
+                                />
+                                <span class="font-weight-bold"
+                                    >Today's Schedule</span
+                                >
                             </div>
-                            <v-btn variant="text" size="small" color="primary" to="/student/schedules">
+                            <v-btn
+                                variant="text"
+                                size="small"
+                                color="primary"
+                                to="/student/schedules"
+                            >
                                 View All
                             </v-btn>
                         </v-card-title>
                         <v-card-text class="pa-0">
                             <div class="schedule-list">
-                                <div v-for="class_item in todaySchedule" :key="class_item.id" class="schedule-item">
+                                <div
+                                    v-for="class_item in todaySchedule"
+                                    :key="class_item.id"
+                                    class="schedule-item"
+                                >
                                     <div class="schedule-time">
-                                        <div class="time-badge">{{ formatTime(class_item.time) }}</div>
+                                        <div class="time-badge">
+                                            {{ formatTime(class_item.time) }}
+                                        </div>
                                     </div>
                                     <div class="schedule-divider">
-                                        <div class="divider-dot" :class="class_item.status"></div>
+                                        <div
+                                            class="divider-dot"
+                                            :class="class_item.status"
+                                        ></div>
                                         <div class="divider-line"></div>
                                     </div>
                                     <div class="schedule-content">
                                         <div class="schedule-header">
-                                            <h4 class="schedule-subject">{{ class_item.subject }}</h4>
-                                            <v-chip 
-                                                :color="class_item.status === 'completed' ? 'success' : 'primary'" 
+                                            <h4 class="schedule-subject">
+                                                {{ class_item.subject }}
+                                            </h4>
+                                            <v-chip
+                                                :color="
+                                                    class_item.status ===
+                                                    'completed'
+                                                        ? 'success'
+                                                        : 'primary'
+                                                "
                                                 size="small"
                                                 class="text-capitalize"
                                             >
@@ -109,11 +195,15 @@
                                         </div>
                                         <div class="schedule-details">
                                             <div class="detail-item">
-                                                <v-icon size="14" class="mr-1">mdi-map-marker</v-icon>
+                                                <v-icon size="14" class="mr-1"
+                                                    >mdi-map-marker</v-icon
+                                                >
                                                 {{ class_item.room }}
                                             </div>
                                             <div class="detail-item">
-                                                <v-icon size="14" class="mr-1">mdi-account-tie</v-icon>
+                                                <v-icon size="14" class="mr-1"
+                                                    >mdi-account-tie</v-icon
+                                                >
                                                 {{ class_item.lecturer }}
                                             </div>
                                         </div>
@@ -126,37 +216,37 @@
                     <!-- Quick Actions & Progress Card -->
                     <div class="sidebar-cards">
                         <!-- Quick Actions -->
-                        <v-card class="actions-card" elevation="2" rounded="xl">
+                        <!-- <v-card class="actions-card" elevation="2" rounded="xl">
                             <v-card-title class="card-title-section">
                                 <v-icon icon="mdi-lightning-bolt" size="20" class="mr-2" color="warning" />
                                 <span class="font-weight-bold">Quick Actions</span>
                             </v-card-title>
                             <v-card-text class="pa-4">
                                 <div class="action-buttons">
-                                    <v-btn 
-                                        block 
-                                        class="action-btn mb-3" 
-                                        color="primary" 
+                                    <v-btn
+                                        block
+                                        class="action-btn mb-3"
+                                        color="primary"
                                         variant="flat"
                                         prepend-icon="mdi-check-circle"
                                         to="/student/attendance"
                                     >
                                         View Attendance
                                     </v-btn>
-                                    <v-btn 
-                                        block 
-                                        class="action-btn mb-3" 
-                                        color="secondary" 
+                                    <v-btn
+                                        block
+                                        class="action-btn mb-3"
+                                        color="secondary"
                                         variant="flat"
                                         prepend-icon="mdi-calendar"
                                         to="/student/schedules"
                                     >
                                         Full Schedule
                                     </v-btn>
-                                    <v-btn 
-                                        block 
-                                        class="action-btn" 
-                                        color="warning" 
+                                    <v-btn
+                                        block
+                                        class="action-btn"
+                                        color="warning"
                                         variant="flat"
                                         prepend-icon="mdi-calendar-remove"
                                         to="/student/leave"
@@ -165,13 +255,23 @@
                                     </v-btn>
                                 </div>
                             </v-card-text>
-                        </v-card>
-
+                        </v-card> -->
                         <!-- Attendance Progress -->
-                        <v-card class="progress-card" elevation="2" rounded="xl">
+                        <v-card
+                            class="progress-card"
+                            elevation="2"
+                            rounded="xl"
+                        >
                             <v-card-title class="card-title-section">
-                                <v-icon icon="mdi-chart-arc" size="20" class="mr-2" color="success" />
-                                <span class="font-weight-bold">Monthly Progress</span>
+                                <v-icon
+                                    icon="mdi-chart-arc"
+                                    size="20"
+                                    class="mr-2"
+                                    color="success"
+                                />
+                                <span class="font-weight-bold"
+                                    >Monthly Progress</span
+                                >
                             </v-card-title>
                             <v-card-text class="pa-4">
                                 <div class="progress-circle">
@@ -182,8 +282,12 @@
                                         color="success"
                                     >
                                         <div class="progress-center">
-                                            <div class="progress-value">{{ attendanceRate }}%</div>
-                                            <div class="progress-label">Attendance</div>
+                                            <div class="progress-value">
+                                                {{ attendanceRate }}%
+                                            </div>
+                                            <div class="progress-label">
+                                                Attendance
+                                            </div>
                                         </div>
                                     </v-progress-circular>
                                 </div>
@@ -211,63 +315,155 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from "vue";
+import { userAuth } from "~/store/userAuth";
+
 definePageMeta({
-    layout: 'student',
-    middleware: ['auth']
-})
+    layout: "student",
+    middleware: ["auth"],
+});
 
-const studentName = ref('John Doe')
-const studentId = ref('STU-2024-001')
-const attendanceRate = ref(87)
-const todayClasses = ref(4)
-const pendingLeaves = ref(1)
-const presentDays = ref(23)
-const absentDays = ref(2)
-const leaveDays = ref(1)
-const approvedLeaves = ref(3)
-const rejectedLeaves = ref(0)
-const completedClasses = ref(2)
-const upcomingClasses = ref(2)
+const studentName = ref("Student");
+const studentId = ref("N/A");
+const attendanceRate = ref(0);
+const todayClasses = ref(0);
+const pendingLeaves = ref(0);
+const presentDays = ref(0);
+const absentDays = ref(0);
+const leaveDays = ref(0);
+const approvedLeaves = ref(0);
+const rejectedLeaves = ref(0);
+const completedClasses = ref(0);
+const upcomingClasses = ref(0);
 
-const todaySchedule = ref([
-    {
-        id: 1,
-        subject: 'Mathematics',
-        time: '08:00 - 10:00',
-        room: 'Room A101',
-        lecturer: 'Dr. Smith',
-        status: 'completed'
-    },
-    {
-        id: 2,
-        subject: 'Computer Science',
-        time: '10:30 - 12:30',
-        room: 'Lab B201',
-        lecturer: 'Prof. Johnson',
-        status: 'completed'
-    },
-    {
-        id: 3,
-        subject: 'Physics',
-        time: '14:00 - 16:00',
-        room: 'Room C301',
-        lecturer: 'Dr. Brown',
-        status: 'upcoming'
-    },
-    {
-        id: 4,
-        subject: 'English',
-        time: '16:30 - 18:30',
-        room: 'Room D401',
-        lecturer: 'Ms. Davis',
-        status: 'upcoming'
-    }
-])
+const todaySchedule = ref([]);
 
 const formatTime = (timeRange) => {
-    const [start] = timeRange.split(' - ')
-    return start
-}
+    const [start] = timeRange.split(" - ");
+    return start;
+};
+
+const formatTimeRange = (startStr, endStr) => {
+    if (!startStr || !endStr) return "TBD";
+    const start = new Date(startStr);
+    const end = new Date(endStr);
+    const startLabel = start.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+    const endLabel = end.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+    return `${startLabel} - ${endLabel}`;
+};
+
+const loadDashboardData = async () => {
+    const authStore = userAuth();
+    const user = authStore.getUser() || {};
+
+    const firstName = user.first_name || user.firstName || "";
+    const lastName = user.last_name || user.lastName || "";
+    const displayName =
+        `${firstName} ${lastName}`.trim() ||
+        user.student_name ||
+        user.name ||
+        "Student";
+    studentName.value = displayName;
+    const raw = user.raw || {};
+    studentId.value =
+        user.student_code ||
+        user.studentCode ||
+        raw.student_code ||
+        raw.global_id ||
+        user.student_id ||
+        user.user_id ||
+        user.id ||
+        "N/A";
+
+    const globalId =
+        user.global_id ||
+        user.globalId ||
+        user.user_global_id ||
+        raw.global_id ||
+        null;
+    if (!globalId) {
+        console.warn("Student global_id missing; dashboard API not called.");
+        return;
+    }
+
+    try {
+        const { $UserPrivateAxios } = useNuxtApp();
+        const response = await $UserPrivateAxios.get(
+            `/user/dashboard/stats/${globalId}`,
+        );
+        const data = response?.data?.data || response?.data || {};
+
+        attendanceRate.value = Math.round(Number(data.attendance_rate || 0));
+        presentDays.value = Number(data.days_present_month || 0);
+        absentDays.value = Number(data.days_absent_month || 0);
+        todayClasses.value = Number(data.todays_classes?.total || 0);
+        completedClasses.value = Number(data.todays_classes?.completed || 0);
+        upcomingClasses.value = Number(data.todays_classes?.upcoming || 0);
+        pendingLeaves.value = Number(data.leave_requests?.pending || 0);
+        approvedLeaves.value = Number(data.leave_requests?.approved || 0);
+        rejectedLeaves.value = Number(data.leave_requests?.rejected || 0);
+
+        const totalMonthly = Number(data.monthly_progress?.total || 0);
+        leaveDays.value = Math.max(
+            totalMonthly - presentDays.value - absentDays.value,
+            0,
+        );
+
+        const schedule = Array.isArray(data.todays_schedule)
+            ? data.todays_schedule
+            : [];
+        const now = new Date();
+        todaySchedule.value = schedule.map((session) => {
+            const start = session.start_datetime
+                ? new Date(session.start_datetime)
+                : null;
+            const end = session.end_datetime
+                ? new Date(session.end_datetime)
+                : null;
+            const subjectName = session.subject?.code
+                ? `${session.subject.code} - ${session.subject.name || ""}`
+                : session.subject?.name || "Subject";
+            const instructorName = [
+                session.instructor?.first_name,
+                session.instructor?.last_name,
+            ]
+                .filter(Boolean)
+                .join(" ")
+                .trim();
+            const status = start && end && now > end ? "completed" : "upcoming";
+
+            return {
+                id: session.id,
+                subject: subjectName,
+                time: formatTimeRange(
+                    session.start_datetime,
+                    session.end_datetime,
+                ),
+                room: session.room?.room || "TBD",
+                lecturer:
+                    instructorName ||
+                    session.instructor?.position ||
+                    "Instructor",
+                status,
+            };
+        });
+    } catch (error) {
+        console.error(
+            "Failed to load student dashboard stats:",
+            error.response?.data?.message || error.message,
+        );
+    }
+};
+
+onMounted(() => {
+    loadDashboardData();
+});
 </script>
 
 <style scoped>

@@ -7,35 +7,64 @@
                 <div class="title-section">
                     <div class="title-wrapper">
                         <div class="title-icon">
-                            <v-icon icon="mdi-calendar-clock" size="32" color="white" />
+                            <v-icon
+                                icon="mdi-calendar-clock"
+                                size="32"
+                                color="white"
+                            />
                         </div>
                         <div class="title-content">
-                            <h1 class="page-title">Leave Requests Management</h1>
+                            <h1 class="page-title">
+                                Leave Requests Management
+                            </h1>
                             <div class="breadcrumb">
                                 <span class="breadcrumb-item">Admin</span>
-                                <v-icon icon="mdi-chevron-right" size="16" class="breadcrumb-separator" />
-                                <span class="breadcrumb-item active">Leave Requests</span>
+                                <v-icon
+                                    icon="mdi-chevron-right"
+                                    size="16"
+                                    class="breadcrumb-separator"
+                                />
+                                <span class="breadcrumb-item active"
+                                    >Leave Requests</span
+                                >
                             </div>
                         </div>
                     </div>
                     <div class="stats-cards">
                         <div class="stat-card">
-                            <div class="stat-number">{{ leaveRequests?.length || 0 }}</div>
+                            <div class="stat-number">
+                                {{ leaveRequests?.length || 0 }}
+                            </div>
                             <div class="stat-label">Total Requests</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">{{leaveRequests?.filter(r => r.status === 'Pending').length || 0
-                            }}</div>
+                            <div class="stat-number">
+                                {{
+                                    leaveRequests?.filter(
+                                        (r) => r.status === "Pending",
+                                    ).length || 0
+                                }}
+                            </div>
                             <div class="stat-label">Pending</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">{{leaveRequests?.filter(r => r.status === 'Approved').length || 0
-                            }}</div>
+                            <div class="stat-number">
+                                {{
+                                    leaveRequests?.filter(
+                                        (r) => r.status === "Approved",
+                                    ).length || 0
+                                }}
+                            </div>
                             <div class="stat-label">Approved</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">{{leaveRequests?.filter(r => r.status === 'Rejected').length || 0
-                            }}</div>
+                            <div class="stat-number">
+                                {{
+                                    leaveRequests?.filter(
+                                        (r) => r.status === "Rejected",
+                                    ).length || 0
+                                }}
+                            </div>
                             <div class="stat-label">Rejected</div>
                         </div>
                     </div>
@@ -43,14 +72,24 @@
 
                 <div class="action-section">
                     <!-- Export Button Component -->
-                    <ExportButtons :data="filteredGroups" :columns="exportColumns" filename="Groups_Export"
-                        @export-start="handleExportStart" @export-complete="handleExportComplete"
-                        @export-error="handleExportError" />
+                    <ExportButtons
+                        :data="filteredGroups"
+                        :columns="exportColumns"
+                        filename="Groups_Export"
+                        @export-start="handleExportStart"
+                        @export-complete="handleExportComplete"
+                        @export-error="handleExportError"
+                    />
 
                     <!-- Import Button Component -->
-                    <ImportCsv :columns="importColumns" :validate-row="validateImportRow"
-                        :transform-row="transformImportRow" @import-start="handleImportStart"
-                        @import-complete="handleImportComplete" @import-error="handleImportError" />
+                    <ImportCsv
+                        :columns="importColumns"
+                        :validate-row="validateImportRow"
+                        :transform-row="transformImportRow"
+                        @import-start="handleImportStart"
+                        @import-complete="handleImportComplete"
+                        @import-error="handleImportError"
+                    />
                 </div>
             </div>
         </div>
@@ -68,30 +107,65 @@
                 <div class="table-toolbar">
                     <div class="toolbar-left">
                         <h2 class="table-title">
-                            <v-icon icon="mdi-format-list-bulleted" size="20" class="mr-2" />
+                            <v-icon
+                                icon="mdi-format-list-bulleted"
+                                size="20"
+                                class="mr-2"
+                            />
                             Leave Requests
                         </h2>
-                        <div class="table-subtitle">View and monitor all leave requests</div>
+                        <div class="table-subtitle">
+                            View and monitor all leave requests
+                        </div>
                     </div>
 
                     <div class="toolbar-right">
                         <div class="search-container">
-                            <v-text-field v-model="searchQuery" placeholder="Search by student name, ID, or reason..."
-                                prepend-inner-icon="mdi-magnify" variant="outlined" density="comfortable"
-                                class="search-input" clearable />
+                            <v-text-field
+                                v-model="searchQuery"
+                                placeholder="Search by student name, ID, or reason..."
+                                prepend-inner-icon="mdi-magnify"
+                                variant="outlined"
+                                density="comfortable"
+                                class="search-input"
+                                clearable
+                            />
                         </div>
 
-                        <v-select v-model="statusFilter" :items="statusOptions" label="Status" variant="outlined"
-                            density="comfortable" class="filter-select" />
+                        <v-select
+                            v-model="statusFilter"
+                            :items="statusOptions"
+                            label="Status"
+                            variant="outlined"
+                            density="comfortable"
+                            class="filter-select"
+                        />
 
-                        <v-select v-model="leaveTypeFilter" :items="leaveTypeOptions" label="Leave Type"
-                            variant="outlined" density="comfortable" class="filter-select" />
+                        <v-select
+                            v-model="leaveTypeFilter"
+                            :items="leaveTypeOptions"
+                            label="Leave Type"
+                            variant="outlined"
+                            density="comfortable"
+                            class="filter-select"
+                        />
 
-                        <v-select v-model="tableSortOrder" :items="tableSortOptions" label="Sort by" variant="outlined"
-                            density="comfortable" class="sort-select" />
+                        <v-select
+                            v-model="tableSortOrder"
+                            :items="tableSortOptions"
+                            label="Sort by"
+                            variant="outlined"
+                            density="comfortable"
+                            class="sort-select"
+                        />
 
-                        <v-btn icon="mdi-filter-variant" variant="outlined" class="filter-btn"
-                            @click="showFilters = !showFilters" :color="showFilters ? 'primary' : 'grey'" />
+                        <v-btn
+                            icon="mdi-filter-variant"
+                            variant="outlined"
+                            class="filter-btn"
+                            @click="showFilters = !showFilters"
+                            :color="showFilters ? 'primary' : 'grey'"
+                        />
                     </div>
                 </div>
 
@@ -101,18 +175,33 @@
                         <div class="filters-content">
                             <div class="filter-group">
                                 <div class="filter-label">Duration</div>
-                                <v-select v-model="durationFilter" :items="durationOptions" variant="outlined"
-                                    density="comfortable" class="filter-input" />
+                                <v-select
+                                    v-model="durationFilter"
+                                    :items="durationOptions"
+                                    variant="outlined"
+                                    density="comfortable"
+                                    class="filter-input"
+                                />
                             </div>
                             <div class="filter-group">
                                 <div class="filter-label">Date Range</div>
-                                <v-text-field v-model="dateRangeFilter" type="date" variant="outlined"
-                                    density="comfortable" class="filter-input" />
+                                <v-text-field
+                                    v-model="dateRangeFilter"
+                                    type="date"
+                                    variant="outlined"
+                                    density="comfortable"
+                                    class="filter-input"
+                                />
                             </div>
                             <div class="filter-group">
                                 <div class="filter-label">Generation</div>
-                                <v-select v-model="generationFilter" :items="generationOptions" variant="outlined"
-                                    density="comfortable" class="filter-input" />
+                                <v-select
+                                    v-model="generationFilter"
+                                    :items="generationOptions"
+                                    variant="outlined"
+                                    density="comfortable"
+                                    class="filter-input"
+                                />
                             </div>
                         </div>
                     </div>
@@ -139,7 +228,9 @@
                                     <div class="header-content">Status</div>
                                 </th>
                                 <th class="modern-header-cell">
-                                    <div class="header-content">Requested On</div>
+                                    <div class="header-content">
+                                        Requested On
+                                    </div>
                                 </th>
                                 <th class="modern-header-cell center-align">
                                     <div class="header-content">Actions</div>
@@ -147,57 +238,115 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="request in paginatedLeaveRequests" :key="request.leave_id"
-                                class="modern-table-row">
+                            <tr
+                                v-for="request in paginatedLeaveRequests"
+                                :key="request.leave_id"
+                                class="modern-table-row"
+                            >
                                 <td class="modern-table-cell id-column">
-                                    <div class="id-badge">{{ request.leave_id }}</div>
+                                    <div class="id-badge">
+                                        {{ request.leave_id }}
+                                    </div>
                                 </td>
                                 <td class="modern-table-cell">
                                     <div class="student-info">
                                         <div class="student-avatar">
-                                            {{ request.student_name?.charAt(0)?.toUpperCase() }}
+                                            {{
+                                                request.student_name
+                                                    ?.charAt(0)
+                                                    ?.toUpperCase()
+                                            }}
                                         </div>
                                         <div class="student-details">
-                                            <div class="student-name">{{ request.student_name }}</div>
-                                            <div class="student-meta">ID: {{ request.student_id }} • Gen {{
-                                                request.generation
-                                            }}</div>
+                                            <div class="student-name">
+                                                {{ request.student_name }}
+                                            </div>
+                                            <div class="student-meta">
+                                                ID: {{ request.student_id }} •
+                                                Gen {{ request.generation }}
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="modern-table-cell">
-                                    <v-chip :color="getLeaveTypeColor(request.leave_type)" variant="flat" size="small"
-                                        class="leave-type-chip">
-                                        <v-icon :icon="getLeaveTypeIcon(request.leave_type)" start size="16" />
+                                    <v-chip
+                                        :color="
+                                            getLeaveTypeColor(
+                                                request.leave_type,
+                                            )
+                                        "
+                                        variant="flat"
+                                        size="small"
+                                        class="leave-type-chip"
+                                    >
+                                        <v-icon
+                                            :icon="
+                                                getLeaveTypeIcon(
+                                                    request.leave_type,
+                                                )
+                                            "
+                                            start
+                                            size="16"
+                                        />
                                         {{ request.leave_type }}
                                     </v-chip>
                                 </td>
                                 <td class="modern-table-cell">
                                     <div class="duration-info">
-                                        <div class="duration-primary">{{ request.duration_days }} {{
-                                            request.duration_days === 1
-                                                ? 'day' : 'days' }}</div>
-                                        <div class="duration-secondary">{{ formatDate(request.start_date) }} - {{
-                                            formatDate(request.end_date) }}</div>
+                                        <div class="duration-primary">
+                                            {{ request.duration_days }}
+                                            {{
+                                                request.duration_days === 1
+                                                    ? "day"
+                                                    : "days"
+                                            }}
+                                        </div>
+                                        <div class="duration-secondary">
+                                            {{
+                                                formatDate(request.start_date)
+                                            }}
+                                            - {{ formatDate(request.end_date) }}
+                                        </div>
                                     </div>
                                 </td>
                                 <td class="modern-table-cell">
-                                    <v-chip :color="getStatusColor(request.status)" variant="tonal" size="small"
-                                        class="status-chip">
-                                        <v-icon :icon="getStatusIcon(request.status)" start size="16" />
+                                    <v-chip
+                                        :color="getStatusColor(request.status)"
+                                        variant="tonal"
+                                        size="small"
+                                        class="status-chip"
+                                    >
+                                        <v-icon
+                                            :icon="
+                                                getStatusIcon(request.status)
+                                            "
+                                            start
+                                            size="16"
+                                        />
                                         {{ request.status }}
                                     </v-chip>
                                 </td>
                                 <td class="modern-table-cell">
                                     <div class="date-info">
-                                        <div class="date-primary">{{ formatDate(request.created_on) }}</div>
-                                        <div class="date-secondary">{{ formatTime(request.created_on) }}</div>
+                                        <div class="date-primary">
+                                            {{ formatDate(request.created_on) }}
+                                        </div>
+                                        <div class="date-secondary">
+                                            {{ formatTime(request.created_on) }}
+                                        </div>
                                     </div>
                                 </td>
                                 <td class="modern-table-cell center-align">
                                     <div class="action-group">
-                                        <v-btn icon class="action-btn" @click="viewRequest(request)" size="small">
-                                            <v-icon color="#3b82f6">mdi-eye</v-icon>
+                                        <v-btn
+                                            icon
+                                            class="action-btn"
+                                            @click="viewRequest(request)"
+                                            size="small"
+                                        >
+                                            <v-icon color="#3b82f6"
+                                                >mdi-eye</v-icon
+                                            >
                                         </v-btn>
                                     </div>
                                 </td>
@@ -206,27 +355,52 @@
                     </v-table>
 
                     <!-- Empty State -->
-                    <div v-if="filteredLeaveRequests.length === 0" class="empty-state">
-                        <v-icon icon="mdi-calendar-clock-outline" size="64" color="grey-lighten-1" />
+                    <div
+                        v-if="filteredLeaveRequests.length === 0"
+                        class="empty-state"
+                    >
+                        <v-icon
+                            icon="mdi-calendar-clock-outline"
+                            size="64"
+                            color="grey-lighten-1"
+                        />
                         <h3 class="empty-title">No leave requests found</h3>
                         <p class="empty-subtitle">
-                            {{ searchQuery ? 'Try adjusting your search criteria or filters.' : 'No leave requests have been submitted yet.' }}
+                            {{
+                                searchQuery
+                                    ? "Try adjusting your search criteria or filters."
+                                    : "No leave requests have been submitted yet."
+                            }}
                         </p>
                     </div>
 
                     <!-- Pagination Footer -->
-                    <div v-if="filteredLeaveRequests.length > 0" class="pagination-section">
-                        <v-btn variant="outlined" :disabled="currentPage === 1" @click="goToPrevPage"
-                            class="pagination-btn">
+                    <div
+                        v-if="filteredLeaveRequests.length > 0"
+                        class="pagination-section"
+                    >
+                        <v-btn
+                            variant="outlined"
+                            :disabled="currentPage === 1"
+                            @click="goToPrevPage"
+                            class="pagination-btn"
+                        >
                             Previous
                         </v-btn>
 
                         <div class="pagination-info">
-                            <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
+                            <span class="pagination-text"
+                                >Page {{ currentPage }} of
+                                {{ totalPages }}</span
+                            >
                         </div>
 
-                        <v-btn variant="outlined" :disabled="currentPage >= totalPages" @click="goToNextPage"
-                            class="pagination-btn">
+                        <v-btn
+                            variant="outlined"
+                            :disabled="currentPage >= totalPages"
+                            @click="goToNextPage"
+                            class="pagination-btn"
+                        >
                             Next
                         </v-btn>
                     </div>
@@ -241,14 +415,26 @@
                 <div class="dialog-header">
                     <div class="header-content">
                         <div class="header-icon">
-                            <v-icon icon="mdi-calendar-clock" color="primary" size="24" />
+                            <v-icon
+                                icon="mdi-calendar-clock"
+                                color="primary"
+                                size="24"
+                            />
                         </div>
                         <div class="header-text">
                             <h2 class="dialog-title">Leave Request Details</h2>
-                            <p class="dialog-subtitle">Request ID: {{ selectedRequest?.leave_id }}</p>
+                            <p class="dialog-subtitle">
+                                Request ID: {{ selectedRequest?.leave_id }}
+                            </p>
                         </div>
                     </div>
-                    <v-btn icon="mdi-close" variant="text" size="small" @click="closeViewDialog" class="close-btn" />
+                    <v-btn
+                        icon="mdi-close"
+                        variant="text"
+                        size="small"
+                        @click="closeViewDialog"
+                        class="close-btn"
+                    />
                 </div>
 
                 <v-divider />
@@ -265,19 +451,29 @@
                             <div class="detail-grid">
                                 <div class="detail-item">
                                     <div class="detail-label">Student Name</div>
-                                    <div class="detail-value">{{ selectedRequest.student_name }}</div>
+                                    <div class="detail-value">
+                                        {{ selectedRequest.student_name }}
+                                    </div>
                                 </div>
                                 <div class="detail-item">
                                     <div class="detail-label">Student ID</div>
-                                    <div class="detail-value">{{ selectedRequest.student_id }}</div>
+                                    <div class="detail-value">
+                                        {{ selectedRequest.student_id }}
+                                    </div>
                                 </div>
                                 <div class="detail-item">
                                     <div class="detail-label">Generation</div>
-                                    <div class="detail-value">{{ selectedRequest.generation }}</div>
+                                    <div class="detail-value">
+                                        {{ selectedRequest.generation }}
+                                    </div>
                                 </div>
                                 <div class="detail-item">
-                                    <div class="detail-label">Specialization</div>
-                                    <div class="detail-value">{{ selectedRequest.specialize }}</div>
+                                    <div class="detail-label">
+                                        Specialization
+                                    </div>
+                                    <div class="detail-value">
+                                        {{ selectedRequest.specialize }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -285,17 +481,34 @@
                         <!-- Leave Details -->
                         <div class="detail-section">
                             <div class="section-title">
-                                <v-icon icon="mdi-calendar-clock" color="warning" />
+                                <v-icon
+                                    icon="mdi-calendar-clock"
+                                    color="warning"
+                                />
                                 Leave Details
                             </div>
                             <div class="detail-grid">
                                 <div class="detail-item">
                                     <div class="detail-label">Leave Type</div>
                                     <div class="detail-value">
-                                        <v-chip :color="getLeaveTypeColor(selectedRequest.leave_type)" variant="flat"
-                                            size="small">
-                                            <v-icon :icon="getLeaveTypeIcon(selectedRequest.leave_type)" start
-                                                size="16" />
+                                        <v-chip
+                                            :color="
+                                                getLeaveTypeColor(
+                                                    selectedRequest.leave_type,
+                                                )
+                                            "
+                                            variant="flat"
+                                            size="small"
+                                        >
+                                            <v-icon
+                                                :icon="
+                                                    getLeaveTypeIcon(
+                                                        selectedRequest.leave_type,
+                                                    )
+                                                "
+                                                start
+                                                size="16"
+                                            />
                                             {{ selectedRequest.leave_type }}
                                         </v-chip>
                                     </div>
@@ -303,47 +516,111 @@
                                 <div class="detail-item">
                                     <div class="detail-label">Status</div>
                                     <div class="detail-value">
-                                        <v-chip :color="getStatusColor(selectedRequest.status)" variant="flat"
-                                            size="small">
-                                            <v-icon :icon="getStatusIcon(selectedRequest.status)" start size="16" />
+                                        <v-chip
+                                            :color="
+                                                getStatusColor(
+                                                    selectedRequest.status,
+                                                )
+                                            "
+                                            variant="flat"
+                                            size="small"
+                                        >
+                                            <v-icon
+                                                :icon="
+                                                    getStatusIcon(
+                                                        selectedRequest.status,
+                                                    )
+                                                "
+                                                start
+                                                size="16"
+                                            />
                                             {{ selectedRequest.status }}
                                         </v-chip>
                                     </div>
                                 </div>
                                 <div class="detail-item">
                                     <div class="detail-label">Start Date</div>
-                                    <div class="detail-value">{{ formatDate(selectedRequest.start_date) }}</div>
+                                    <div class="detail-value">
+                                        {{
+                                            formatDate(
+                                                selectedRequest.start_date,
+                                            )
+                                        }}
+                                    </div>
                                 </div>
                                 <div class="detail-item">
                                     <div class="detail-label">End Date</div>
-                                    <div class="detail-value">{{ formatDate(selectedRequest.end_date) }}</div>
+                                    <div class="detail-value">
+                                        {{
+                                            formatDate(selectedRequest.end_date)
+                                        }}
+                                    </div>
                                 </div>
                                 <div class="detail-item">
                                     <div class="detail-label">Duration</div>
-                                    <div class="detail-value">{{ selectedRequest.duration_days }} {{
-                                        selectedRequest.duration_days === 1 ? 'day' : 'days' }}</div>
+                                    <div class="detail-value">
+                                        {{ selectedRequest.duration_days }}
+                                        {{
+                                            selectedRequest.duration_days === 1
+                                                ? "day"
+                                                : "days"
+                                        }}
+                                    </div>
                                 </div>
                                 <div class="detail-item">
                                     <div class="detail-label">Requested On</div>
-                                    <div class="detail-value">{{ formatDate(selectedRequest.created_on) }}</div>
+                                    <div class="detail-value">
+                                        {{
+                                            formatDate(
+                                                selectedRequest.created_on,
+                                            )
+                                        }}
+                                    </div>
                                 </div>
                                 <div class="detail-item full-width">
                                     <div class="detail-label">Reason</div>
-                                    <div class="detail-value">{{ selectedRequest.reason || 'No reason provided' }}</div>
+                                    <div class="detail-value">
+                                        {{
+                                            selectedRequest.reason ||
+                                            "No reason provided"
+                                        }}
+                                    </div>
                                 </div>
-                                <div class="detail-item full-width" v-if="selectedRequest.notes">
-                                    <div class="detail-label">Additional Notes</div>
-                                    <div class="detail-value">{{ selectedRequest.notes }}</div>
+                                <div
+                                    class="detail-item full-width"
+                                    v-if="selectedRequest.notes"
+                                >
+                                    <div class="detail-label">
+                                        Additional Notes
+                                    </div>
+                                    <div class="detail-value">
+                                        {{ selectedRequest.notes }}
+                                    </div>
                                 </div>
-                                <div class="detail-item full-width"
-                                    v-if="selectedRequest.status === 'Approved' && selectedRequest.approved_by">
+                                <div
+                                    class="detail-item full-width"
+                                    v-if="
+                                        selectedRequest.status === 'Approved' &&
+                                        selectedRequest.approved_by
+                                    "
+                                >
                                     <div class="detail-label">Approved By</div>
-                                    <div class="detail-value">{{ selectedRequest.approved_by }}</div>
+                                    <div class="detail-value">
+                                        {{ selectedRequest.approved_by }}
+                                    </div>
                                 </div>
-                                <div class="detail-item full-width"
-                                    v-if="selectedRequest.status === 'Rejected' && selectedRequest.rejection_reason">
-                                    <div class="detail-label">Rejection Reason</div>
-                                    <div class="detail-value rejected-reason">{{ selectedRequest.rejection_reason }}
+                                <div
+                                    class="detail-item full-width"
+                                    v-if="
+                                        selectedRequest.status === 'Rejected' &&
+                                        selectedRequest.rejection_reason
+                                    "
+                                >
+                                    <div class="detail-label">
+                                        Rejection Reason
+                                    </div>
+                                    <div class="detail-value rejected-reason">
+                                        {{ selectedRequest.rejection_reason }}
                                     </div>
                                 </div>
                             </div>
@@ -356,12 +633,22 @@
                 <!-- Dialog Actions -->
                 <v-card-actions class="dialog-actions">
                     <v-spacer />
-                    <v-btn variant="outlined" color="grey-darken-1" @click="closeViewDialog" class="action-btn">
+                    <v-btn
+                        variant="outlined"
+                        color="grey-darken-1"
+                        @click="closeViewDialog"
+                        class="action-btn"
+                    >
                         <v-icon start>mdi-close</v-icon>
                         Close
                     </v-btn>
 
-                    <v-btn color="primary" variant="flat" @click="downloadRequest(selectedRequest)" class="action-btn">
+                    <v-btn
+                        color="primary"
+                        variant="flat"
+                        @click="downloadRequest(selectedRequest)"
+                        class="action-btn"
+                    >
                         <v-icon start>mdi-download</v-icon>
                         Download
                     </v-btn>
@@ -373,322 +660,351 @@
 
 <script setup>
 definePageMeta({
-    layout: 'admin',
+    layout: "admin",
     // middleware: ['auth', 'role-admin'] // Uncomment if you want to enable middleware
-})
+});
 
-import { ref, computed, watch, onMounted } from 'vue'
-import { useRequestLeaveStore } from '@/store/useRequestLeaveStore'
-import { storeToRefs } from 'pinia'
-import ExportButtons from '@/components/ui/ExportButtons.vue'
+import { ref, computed, watch, onMounted } from "vue";
+import { useRequestLeaveStore } from "@/store/useRequestLeaveStore";
+import { storeToRefs } from "pinia";
+import ExportButtons from "@/components/ui/ExportButtons.vue";
 
 // Import composables
-const { exportToExcel, exportToPDF } = useExport()
+const { exportToExcel, exportToPDF } = useExport();
 
 // Initialize store
-const requestLeaveStore = useRequestLeaveStore()
-const { leaveRequests, loading: storeLoading, error } = storeToRefs(requestLeaveStore)
+const requestLeaveStore = useRequestLeaveStore();
+const {
+    leaveRequests,
+    loading: storeLoading,
+    error,
+} = storeToRefs(requestLeaveStore);
 
-const loading = ref(false)
-const searchQuery = ref('')
-const statusFilter = ref('All')
-const leaveTypeFilter = ref('All')
-const durationFilter = ref('All')
-const dateRangeFilter = ref('')
-const generationFilter = ref('All')
-const tableSortOrder = ref('Newest')
-const viewDialog = ref(false)
-const selectedRequest = ref(null)
-const showFilters = ref(false)
-const currentPage = ref(1)
-const itemsPerPage = ref(10)
+const loading = ref(false);
+const searchQuery = ref("");
+const statusFilter = ref("All");
+const leaveTypeFilter = ref("All");
+const durationFilter = ref("All");
+const dateRangeFilter = ref("");
+const generationFilter = ref("All");
+const tableSortOrder = ref("Newest");
+const viewDialog = ref(false);
+const selectedRequest = ref(null);
+const showFilters = ref(false);
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
 
 // Filter options
 const statusOptions = [
-    { title: 'All', value: 'All' },
-    { title: 'Pending', value: 'Pending' },
-    { title: 'Approved', value: 'Approved' },
-    { title: 'Rejected', value: 'Rejected' }
-]
+    { title: "All", value: "All" },
+    { title: "Pending", value: "Pending" },
+    { title: "Approved", value: "Approved" },
+    { title: "Rejected", value: "Rejected" },
+];
 
 const exportColumns = [
-  { key: 'leave_id', header: 'Leave ID' },
-  { key: 'student_name', header: 'Student Name' },
-  { key: 'student_id', header: 'Student ID' },
-  { key: 'generation', header: 'Generation' },
-  { key: 'specialize', header: 'Specialization' },
-  { key: 'leave_type', header: 'Leave Type' },
-  { key: 'reason', header: 'Reason' },
-  { key: 'start_date', header: 'Start Date', format: 'date' },
-  { key: 'end_date', header: 'End Date', format: 'date' },
-  { key: 'duration_days', header: 'Duration' },
-  { key: 'status', header: 'Status' },
-  { key: 'created_on', header: 'Requested On', format: 'date' },
-  { key: 'approved_by', header: 'Approved By' },
-  { key: 'notes', header: 'Notes' }
-]
+    { key: "leave_id", header: "Leave ID" },
+    { key: "student_name", header: "Student Name" },
+    { key: "student_id", header: "Student ID" },
+    { key: "generation", header: "Generation" },
+    { key: "specialize", header: "Specialization" },
+    { key: "leave_type", header: "Leave Type" },
+    { key: "reason", header: "Reason" },
+    { key: "start_date", header: "Start Date", format: "date" },
+    { key: "end_date", header: "End Date", format: "date" },
+    { key: "duration_days", header: "Duration" },
+    { key: "status", header: "Status" },
+    { key: "created_on", header: "Requested On", format: "date" },
+    { key: "approved_by", header: "Approved By" },
+    { key: "notes", header: "Notes" },
+];
 
 const leaveTypeOptions = [
-    'All', 'Sick Leave', 'Medical Leave', 'Personal Leave', 'Emergency Leave', 'Family Leave'
-]
+    "All",
+    "Sick Leave",
+    "Medical Leave",
+    "Personal Leave",
+    "Emergency Leave",
+    "Family Leave",
+];
 
 const durationOptions = [
-    'All', '1 day', '2-3 days', '4-7 days', 'More than 1 week'
-]
+    "All",
+    "1 day",
+    "2-3 days",
+    "4-7 days",
+    "More than 1 week",
+];
 
-const generationOptions = [
-    'All', '8', '9', '10', '11', '12'
-]
+const generationOptions = ["All", "8", "9", "10", "11", "12"];
 
-const tableSortOptions = [
-    'Newest', 'Oldest', 'A-Z', 'Z-A'
-]
+const tableSortOptions = ["Newest", "Oldest", "A-Z", "Z-A"];
 
 // Computed filtered requests
 const filteredLeaveRequests = computed(() => {
-    let filtered = [...leaveRequests.value]
+    let filtered = [...leaveRequests.value];
 
     // Search filter
     if (searchQuery.value) {
-        const query = searchQuery.value.toLowerCase()
-        filtered = filtered.filter(request =>
-            request.student_name?.toLowerCase().includes(query) ||
-            request.student_id?.toLowerCase().includes(query) ||
-            request.reason?.toLowerCase().includes(query) ||
-            request.leave_type?.toLowerCase().includes(query)
-        )
+        const query = searchQuery.value.toLowerCase();
+        filtered = filtered.filter(
+            (request) =>
+                request.student_name?.toLowerCase().includes(query) ||
+                request.student_id?.toLowerCase().includes(query) ||
+                request.reason?.toLowerCase().includes(query) ||
+                request.leave_type?.toLowerCase().includes(query),
+        );
     }
 
     // Status filter
-    if (statusFilter.value !== 'All') {
-        filtered = filtered.filter(request => request.status === statusFilter.value)
+    if (statusFilter.value !== "All") {
+        filtered = filtered.filter(
+            (request) => request.status === statusFilter.value,
+        );
     }
 
     // Leave type filter
-    if (leaveTypeFilter.value !== 'All') {
-        filtered = filtered.filter(request => request.leave_type === leaveTypeFilter.value)
+    if (leaveTypeFilter.value !== "All") {
+        filtered = filtered.filter(
+            (request) => request.leave_type === leaveTypeFilter.value,
+        );
     }
 
     // Duration filter
-    if (durationFilter.value !== 'All') {
-        filtered = filtered.filter(request => {
-            const days = request.duration_days
+    if (durationFilter.value !== "All") {
+        filtered = filtered.filter((request) => {
+            const days = request.duration_days;
             switch (durationFilter.value) {
-                case '1 day':
-                    return days === 1
-                case '2-3 days':
-                    return days >= 2 && days <= 3
-                case '4-7 days':
-                    return days >= 4 && days <= 7
-                case 'More than 1 week':
-                    return days > 7
+                case "1 day":
+                    return days === 1;
+                case "2-3 days":
+                    return days >= 2 && days <= 3;
+                case "4-7 days":
+                    return days >= 4 && days <= 7;
+                case "More than 1 week":
+                    return days > 7;
                 default:
-                    return true
+                    return true;
             }
-        })
+        });
     }
 
     // Generation filter
-    if (generationFilter.value !== 'All') {
-        filtered = filtered.filter(request => request.generation.toString() === generationFilter.value)
+    if (generationFilter.value !== "All") {
+        filtered = filtered.filter(
+            (request) =>
+                request.generation.toString() === generationFilter.value,
+        );
     }
 
     // Sort
     filtered.sort((a, b) => {
         switch (tableSortOrder.value) {
-            case 'Newest':
-                return new Date(b.created_on) - new Date(a.created_on)
-            case 'Oldest':
-                return new Date(a.created_on) - new Date(b.created_on)
-            case 'A-Z':
-                return a.student_name?.localeCompare(b.student_name) || 0
-            case 'Z-A':
-                return b.student_name?.localeCompare(a.student_name) || 0
+            case "Newest":
+                return new Date(b.created_on) - new Date(a.created_on);
+            case "Oldest":
+                return new Date(a.created_on) - new Date(b.created_on);
+            case "A-Z":
+                return a.student_name?.localeCompare(b.student_name) || 0;
+            case "Z-A":
+                return b.student_name?.localeCompare(a.student_name) || 0;
             default:
-                return 0
+                return 0;
         }
-    })
+    });
 
-    return filtered
-})
+    return filtered;
+});
 
 // Pagination computed properties
-const totalPages = computed(() => Math.ceil(filteredLeaveRequests.value.length / itemsPerPage.value))
+const totalPages = computed(() =>
+    Math.ceil(filteredLeaveRequests.value.length / itemsPerPage.value),
+);
 
 const paginatedLeaveRequests = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage.value
-    const end = start + itemsPerPage.value
-    return filteredLeaveRequests.value.slice(start, end)
-})
+    const start = (currentPage.value - 1) * itemsPerPage.value;
+    const end = start + itemsPerPage.value;
+    return filteredLeaveRequests.value.slice(start, end);
+});
 
 // Utility functions
 const formatDate = (dateString) => {
-    if (!dateString) return 'N/A'
+    if (!dateString) return "N/A";
     try {
-        const date = new Date(dateString)
-        return date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: '2-digit',
-            year: 'numeric'
-        })
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "2-digit",
+            year: "numeric",
+        });
     } catch (error) {
-        return 'Invalid Date'
+        return "Invalid Date";
     }
-}
+};
 
 const formatTime = (dateString) => {
-    if (!dateString) return ''
+    if (!dateString) return "";
     try {
-        const date = new Date(dateString)
-        return date.toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit'
-        })
+        const date = new Date(dateString);
+        return date.toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
     } catch (error) {
-        return ''
+        return "";
     }
-}
+};
 
 const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
-        case 'approved':
-            return 'success'
-        case 'rejected':
-            return 'error'
-        case 'pending':
-            return 'warning'
+        case "approved":
+            return "success";
+        case "rejected":
+            return "error";
+        case "pending":
+            return "warning";
         default:
-            return 'grey'
+            return "grey";
     }
-}
+};
 
 const getStatusIcon = (status) => {
     switch (status?.toLowerCase()) {
-        case 'approved':
-            return 'mdi-check-circle'
-        case 'rejected':
-            return 'mdi-close-circle'
-        case 'pending':
-            return 'mdi-clock'
+        case "approved":
+            return "mdi-check-circle";
+        case "rejected":
+            return "mdi-close-circle";
+        case "pending":
+            return "mdi-clock";
         default:
-            return 'mdi-help-circle'
+            return "mdi-help-circle";
     }
-}
+};
 
 const getLeaveTypeColor = (leaveType) => {
     // Return light blue for all leave types
-    return 'light-blue'
-}
+    return "light-blue";
+};
 
 const getLeaveTypeIcon = (leaveType) => {
     switch (leaveType?.toLowerCase()) {
-        case 'sick leave':
-            return 'mdi-thermometer'
-        case 'medical leave':
-            return 'mdi-medical-bag'
-        case 'personal leave':
-            return 'mdi-account'
-        case 'emergency leave':
-            return 'mdi-alert'
-        case 'family leave':
-            return 'mdi-account-group'
+        case "sick leave":
+            return "mdi-thermometer";
+        case "medical leave":
+            return "mdi-medical-bag";
+        case "personal leave":
+            return "mdi-account";
+        case "emergency leave":
+            return "mdi-alert";
+        case "family leave":
+            return "mdi-account-group";
         default:
-            return 'mdi-calendar'
+            return "mdi-calendar";
     }
-}
+};
 
 // Dialog methods
 const viewRequest = (request) => {
-    selectedRequest.value = request
-    viewDialog.value = true
-}
+    selectedRequest.value = request;
+    viewDialog.value = true;
+};
 
 const closeViewDialog = () => {
-    viewDialog.value = false
-    selectedRequest.value = null
-}
+    viewDialog.value = false;
+    selectedRequest.value = null;
+};
 
 // Action methods
 const refreshData = async () => {
-    loading.value = true
+    loading.value = true;
     try {
-        await requestLeaveStore.fetchLeaveRequests()
+        await requestLeaveStore.fetchLeaveRequests({ scope: "admin" });
     } catch (error) {
-        console.error('Failed to refresh data:', error)
+        console.error("Failed to refresh data:", error);
     } finally {
-        loading.value = false
+        loading.value = false;
     }
-}
+};
 
 // Fetch data on mount
 onMounted(async () => {
-    await refreshData()
-})
+    await refreshData();
+});
 
 const downloadRequest = (request) => {
     // Implement download functionality
-    console.log('Downloading request:', request.leave_id)
-}
+    console.log("Downloading request:", request.leave_id);
+};
 
 // Export functions
 const handleExportExcel = () => {
     try {
-        const exportData = filteredLeaveRequests.value.map(request => ({
-            'Leave ID': request.leave_id,
-            'Student Name': request.student_name,
-            'Student ID': request.student_id,
-            'Generation': request.generation,
-            'Specialization': request.specialize,
-            'Leave Type': request.leave_type,
-            'Reason': request.reason,
-            'Start Date': formatDate(request.start_date),
-            'End Date': formatDate(request.end_date),
-            'Duration': `${request.duration_days} ${request.duration_days === 1 ? 'day' : 'days'}`,
-            'Status': request.status,
-            'Requested On': formatDate(request.created_on),
-            'Approved By': request.approved_by || 'N/A',
-            'Notes': request.notes || 'N/A'
-        }))
+        const exportData = filteredLeaveRequests.value.map((request) => ({
+            "Leave ID": request.leave_id,
+            "Student Name": request.student_name,
+            "Student ID": request.student_id,
+            Generation: request.generation,
+            Specialization: request.specialize,
+            "Leave Type": request.leave_type,
+            Reason: request.reason,
+            "Start Date": formatDate(request.start_date),
+            "End Date": formatDate(request.end_date),
+            Duration: `${request.duration_days} ${request.duration_days === 1 ? "day" : "days"}`,
+            Status: request.status,
+            "Requested On": formatDate(request.created_on),
+            "Approved By": request.approved_by || "N/A",
+            Notes: request.notes || "N/A",
+        }));
 
-        exportToExcel(exportData, 'leave_requests')
-        alert('Leave requests exported to Excel successfully!')
+        exportToExcel(exportData, "leave_requests");
+        alert("Leave requests exported to Excel successfully!");
     } catch (error) {
-        alert('Export failed: ' + error.message)
+        alert("Export failed: " + error.message);
     }
-}
+};
 
 const handleExportPDF = () => {
     try {
-        const exportData = filteredLeaveRequests.value.map(request => ({
+        const exportData = filteredLeaveRequests.value.map((request) => ({
             leave_id: request.leave_id,
             student_name: request.student_name,
             student_id: request.student_id,
             leave_type: request.leave_type,
             duration_days: request.duration_days,
             status: request.status,
-            created_on: formatDate(request.created_on)
-        }))
+            created_on: formatDate(request.created_on),
+        }));
 
-        exportToPDF(exportData, 'leave_requests')
-        alert('Leave requests exported to PDF successfully!')
+        exportToPDF(exportData, "leave_requests");
+        alert("Leave requests exported to PDF successfully!");
     } catch (error) {
-        alert('Export failed: ' + error.message)
+        alert("Export failed: " + error.message);
     }
-}
+};
 
 // Pagination methods
 const goToPrevPage = () => {
-    if (currentPage.value > 1) currentPage.value--
-}
+    if (currentPage.value > 1) currentPage.value--;
+};
 
 const goToNextPage = () => {
-    if (currentPage.value < totalPages.value) currentPage.value++
-}
+    if (currentPage.value < totalPages.value) currentPage.value++;
+};
 
 // Watch for filter changes and reset pagination
-watch([searchQuery, statusFilter, leaveTypeFilter, durationFilter, generationFilter, tableSortOrder], () => {
-    currentPage.value = 1
-})
+watch(
+    [
+        searchQuery,
+        statusFilter,
+        leaveTypeFilter,
+        durationFilter,
+        generationFilter,
+        tableSortOrder,
+    ],
+    () => {
+        currentPage.value = 1;
+    },
+);
 </script>
 
 <style scoped>
