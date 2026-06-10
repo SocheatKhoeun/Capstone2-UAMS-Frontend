@@ -243,6 +243,18 @@
                                 >
                                     Present
                                 </VChip>
+                                <VChip
+                                    v-else-if="
+                                        getAttendanceStatus(session) ===
+                                        'absent'
+                                    "
+                                    size="small"
+                                    color="error"
+                                    variant="flat"
+                                    label
+                                >
+                                    Absent
+                                </VChip>
                                 <VBtn
                                     v-else
                                     size="small"

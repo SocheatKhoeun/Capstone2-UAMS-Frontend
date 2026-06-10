@@ -6,30 +6,43 @@
                 <div class="title-section">
                     <div class="title-wrapper">
                         <div class="title-icon">
-                            <v-icon color="white" size="24">mdi-calendar-clock</v-icon>
+                            <v-icon color="white" size="24"
+                                >mdi-calendar-clock</v-icon
+                            >
                         </div>
                         <div class="title-content">
                             <h1 class="page-title">Leave Management</h1>
                             <div class="breadcrumb">
-                                <span class="breadcrumb-item">Lectur
-                                    er</span>
-                                <v-icon size="12" class="breadcrumb-separator mx-1">mdi-chevron-right</v-icon>
-                                <span class="breadcrumb-item active">Leave Management</span>
+                                <span class="breadcrumb-item">Lectur er</span>
+                                <v-icon
+                                    size="12"
+                                    class="breadcrumb-separator mx-1"
+                                    >mdi-chevron-right</v-icon
+                                >
+                                <span class="breadcrumb-item active"
+                                    >Leave Management</span
+                                >
                             </div>
                         </div>
                     </div>
 
                     <div class="stats-cards">
                         <div class="stat-card">
-                            <div class="stat-number">{{ studentLeaveRequests.length }}</div>
+                            <div class="stat-number">
+                                {{ studentLeaveRequests.length }}
+                            </div>
                             <div class="stat-label">Total Requests</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">{{ pendingStudentRequests }}</div>
+                            <div class="stat-number">
+                                {{ pendingStudentRequests }}
+                            </div>
                             <div class="stat-label">Pending</div>
-                        </div>  
+                        </div>
                         <div class="stat-card">
-                            <div class="stat-number">{{ approvedStudentRequests }}</div>
+                            <div class="stat-number">
+                                {{ approvedStudentRequests }}
+                            </div>
                             <div class="stat-label">Approved</div>
                         </div>
                     </div>
@@ -48,8 +61,13 @@
                             </v-btn>
                         </template>
                         <v-list class="modern-menu">
-                            <v-list-item class="menu-item" @click="handleImportCSV">
-                                <v-list-item-title>Import from CSV</v-list-item-title>
+                            <v-list-item
+                                class="menu-item"
+                                @click="handleImportCSV"
+                            >
+                                <v-list-item-title
+                                    >Import from CSV</v-list-item-title
+                                >
                             </v-list-item>
                         </v-list>
                     </v-menu>
@@ -66,11 +84,21 @@
                             </v-btn>
                         </template>
                         <v-list class="modern-menu">
-                            <v-list-item class="menu-item" @click="handleExportExcel">
-                                <v-list-item-title>Export to Excel</v-list-item-title>
+                            <v-list-item
+                                class="menu-item"
+                                @click="handleExportExcel"
+                            >
+                                <v-list-item-title
+                                    >Export to Excel</v-list-item-title
+                                >
                             </v-list-item>
-                            <v-list-item class="menu-item" @click="handleExportPDF">
-                                <v-list-item-title>Export to PDF</v-list-item-title>
+                            <v-list-item
+                                class="menu-item"
+                                @click="handleExportPDF"
+                            >
+                                <v-list-item-title
+                                    >Export to PDF</v-list-item-title
+                                >
                             </v-list-item>
                         </v-list>
                     </v-menu>
@@ -87,15 +115,25 @@
                             </v-btn>
                         </template>
                         <v-list class="modern-menu">
-                            <v-list-item class="menu-item" @click="openStudentLeaveForm">
+                            <v-list-item
+                                class="menu-item"
+                                @click="openStudentLeaveForm"
+                            >
                                 <v-list-item-title>
-                                    <v-icon start size="20">mdi-account-school</v-icon>
+                                    <v-icon start size="20"
+                                        >mdi-account-school</v-icon
+                                    >
                                     Student Leave Request
                                 </v-list-item-title>
                             </v-list-item>
-                            <v-list-item class="menu-item" @click="openLecturerLeaveForm">
+                            <v-list-item
+                                class="menu-item"
+                                @click="openLecturerLeaveForm"
+                            >
                                 <v-list-item-title>
-                                    <v-icon start size="20">mdi-account-tie</v-icon>
+                                    <v-icon start size="20"
+                                        >mdi-account-tie</v-icon
+                                    >
                                     My Leave Request
                                 </v-list-item-title>
                             </v-list-item>
@@ -108,12 +146,24 @@
         <!-- Modern Tab Section -->
         <div class="modern-tab-section">
             <div class="tab-container">
-                <v-tabs v-model="activeTab" color="primary" slider-color="primary" height="48" class="modern-tabs">
+                <v-tabs
+                    v-model="activeTab"
+                    color="primary"
+                    slider-color="primary"
+                    height="48"
+                    class="modern-tabs"
+                >
                     <v-tab value="student-requests" class="modern-tab">
                         <v-icon start size="20">mdi-account-group</v-icon>
                         Student Requests
-                        <v-badge v-if="pendingStudentRequests > 0" :content="pendingStudentRequests" color="error" 
-                                inline class="ml-2" floating></v-badge>
+                        <v-badge
+                            v-if="pendingStudentRequests > 0"
+                            :content="pendingStudentRequests"
+                            color="error"
+                            inline
+                            class="ml-2"
+                            floating
+                        ></v-badge>
                     </v-tab>
                     <v-tab value="my-requests" class="modern-tab">
                         <v-icon start size="20">mdi-account-edit</v-icon>
@@ -132,10 +182,14 @@
                         <div class="table-toolbar">
                             <div class="toolbar-left">
                                 <h2 class="table-title">
-                                    <v-icon class="mr-2" color="primary">mdi-view-grid</v-icon>
+                                    <v-icon class="mr-2" color="primary"
+                                        >mdi-view-grid</v-icon
+                                    >
                                     Leave Information
                                 </h2>
-                                <p class="table-subtitle">Manage and organize your leave requests</p>
+                                <p class="table-subtitle">
+                                    Manage and organize your leave requests
+                                </p>
                             </div>
                             <div class="toolbar-right">
                                 <div class="search-container">
@@ -173,7 +227,9 @@
                                 class="modern-table"
                                 hover
                             >
-                                <template #bottom="{ page, pageCount, itemsLength }">
+                                <template
+                                    #bottom="{ page, pageCount, itemsLength }"
+                                >
                                     <div class="custom-table-footer">
                                         <v-btn
                                             variant="outlined"
@@ -182,162 +238,279 @@
                                             :disabled="page === 1"
                                             @click="page--"
                                         >
-                                            <v-icon size="20">mdi-chevron-left</v-icon>
+                                            <v-icon size="20"
+                                                >mdi-chevron-left</v-icon
+                                            >
                                             Previous
                                         </v-btn>
                                         <div class="footer-info">
-                                            Page {{ page }} of {{ pageCount }} ({{ itemsLength }} total records)
+                                            Page {{ page }} of
+                                            {{ pageCount }} ({{ itemsLength }}
+                                            total records)
                                         </div>
-                                            <v-btn
-                                                variant="outlined"
-                                                size="large"
-                                                class="footer-btn"
-                                                :disabled="page === pageCount"
-                                                @click="page++"
+                                        <v-btn
+                                            variant="outlined"
+                                            size="large"
+                                            class="footer-btn"
+                                            :disabled="page === pageCount"
+                                            @click="page++"
                                         >
                                             Next
-                                            <v-icon size="20">mdi-chevron-right</v-icon>
+                                            <v-icon size="20"
+                                                >mdi-chevron-right</v-icon
+                                            >
                                         </v-btn>
                                     </div>
                                 </template>
                                 <template #headers>
                                     <tr class="modern-header-row">
-                                        <th class="modern-header-cell id-column">
+                                        <th
+                                            class="modern-header-cell id-column"
+                                        >
                                             <div class="header-content">#</div>
                                         </th>
                                         <th class="modern-header-cell">
-                                            <div class="header-content">Student</div>
+                                            <div class="header-content">
+                                                Student
+                                            </div>
                                         </th>
                                         <th class="modern-header-cell">
-                                            <div class="header-content">Class</div>
+                                            <div class="header-content">
+                                                Class
+                                            </div>
                                         </th>
                                         <th class="modern-header-cell">
-                                            <div class="header-content">Type</div>
+                                            <div class="header-content">
+                                                Type
+                                            </div>
                                         </th>
                                         <th class="modern-header-cell">
-                                            <div class="header-content">Dates</div>
+                                            <div class="header-content">
+                                                Dates
+                                            </div>
                                         </th>
                                         <th class="modern-header-cell">
-                                            <div class="header-content">Status</div>
+                                            <div class="header-content">
+                                                Status
+                                            </div>
                                         </th>
                                         <th class="modern-header-cell">
-                                            <div class="header-content">Approval</div>
+                                            <div class="header-content">
+                                                Approval
+                                            </div>
                                         </th>
                                         <th class="modern-header-cell">
-                                            <div class="header-content">Actions</div>
+                                            <div class="header-content">
+                                                Actions
+                                            </div>
                                         </th>
                                     </tr>
                                 </template>
                                 <template #item="{ item, index }">
                                     <tr class="modern-table-row">
                                         <td class="modern-table-cell id-column">
-                                            <div class="id-badge">{{ index + 1 }}</div>
+                                            <div class="id-badge">
+                                                {{ index + 1 }}
+                                            </div>
                                         </td>
                                         <td class="modern-table-cell">
                                             <div class="group-info">
                                                 <div class="group-avatar">
-                                                    <v-icon color="primary">mdi-account-group</v-icon>
+                                                    <v-icon color="primary"
+                                                        >mdi-account-group</v-icon
+                                                    >
                                                 </div>
                                                 <div class="group-details">
-                                                    <div class="group-name">{{ item.student }}</div>
-                                                    <div class="group-meta">{{ item.studentId }}</div>
+                                                    <div class="group-name">
+                                                        {{ item.student }}
+                                                    </div>
+                                                    <div class="group-meta">
+                                                        {{ item.studentId }}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="modern-table-cell">
-                                            <div class="global-id-badge">{{ item.class }}</div>
+                                            <div class="global-id-badge">
+                                                {{ item.class }}
+                                            </div>
                                         </td>
                                         <td class="modern-table-cell">
-                                            <v-chip :color="getTypeColor(item.type)" variant="flat" size="small" text-color="white">
+                                            <v-chip
+                                                :color="getTypeColor(item.type)"
+                                                variant="flat"
+                                                size="small"
+                                                text-color="white"
+                                            >
                                                 {{ item.type }}
                                             </v-chip>
                                         </td>
                                         <td class="modern-table-cell">
                                             <div class="date-info">
-                                                <div class="date-primary">{{ formatDate(item.startDate) }}</div>
-                                                <div class="date-secondary">to {{ formatDate(item.endDate) }}</div>
+                                                <div class="date-primary">
+                                                    {{
+                                                        formatDate(
+                                                            item.startDate,
+                                                        )
+                                                    }}
+                                                </div>
+                                                <div class="date-secondary">
+                                                    to
+                                                    {{
+                                                        formatDate(item.endDate)
+                                                    }}
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="modern-table-cell">
-                                            <v-chip :color="getStatusColor(item.status)" text-color="white" variant="flat" size="small">
-                                                <v-icon :icon="getStatusIcon(item.status)" size="16" class="mr-1"></v-icon>
+                                            <v-chip
+                                                :color="
+                                                    getStatusColor(item.status)
+                                                "
+                                                text-color="white"
+                                                variant="flat"
+                                                size="small"
+                                            >
+                                                <v-icon
+                                                    :icon="
+                                                        getStatusIcon(
+                                                            item.status,
+                                                        )
+                                                    "
+                                                    size="16"
+                                                    class="mr-1"
+                                                ></v-icon>
                                                 {{ item.status }}
                                             </v-chip>
                                         </td>
                                         <td class="modern-table-cell">
                                             <div class="approval-actions">
-                                                <template v-if="item.status === 'Pending'">
-                                                    <v-tooltip text="Approve Request">
-                                                        <template v-slot:activator="{ props }">
-                                                            <v-btn 
+                                                <template
+                                                    v-if="
+                                                        item.status ===
+                                                        'Pending'
+                                                    "
+                                                >
+                                                    <v-tooltip
+                                                        text="Approve Request"
+                                                    >
+                                                        <template
+                                                            v-slot:activator="{
+                                                                props,
+                                                            }"
+                                                        >
+                                                            <v-btn
                                                                 v-bind="props"
-                                                                variant="elevated" 
-                                                                icon="mdi-check-circle" 
+                                                                variant="elevated"
+                                                                icon="mdi-check-circle"
                                                                 size="small"
                                                                 color="green"
                                                                 class="modern-action-btn approve-btn mr-2"
-                                                                @click="approveRequest(item)"
+                                                                @click="
+                                                                    approveRequest(
+                                                                        item,
+                                                                    )
+                                                                "
                                                             ></v-btn>
                                                         </template>
                                                     </v-tooltip>
 
-                                                    <v-tooltip text="Reject Request">
-                                                        <template v-slot:activator="{ props }">
-                                                            <v-btn 
+                                                    <v-tooltip
+                                                        text="Reject Request"
+                                                    >
+                                                        <template
+                                                            v-slot:activator="{
+                                                                props,
+                                                            }"
+                                                        >
+                                                            <v-btn
                                                                 v-bind="props"
-                                                                variant="elevated" 
-                                                                icon="mdi-close-circle" 
+                                                                variant="elevated"
+                                                                icon="mdi-close-circle"
                                                                 size="small"
                                                                 color="orange"
                                                                 class="modern-action-btn reject-btn"
-                                                                @click="rejectRequest(item)"
+                                                                @click="
+                                                                    rejectRequest(
+                                                                        item,
+                                                                    )
+                                                                "
                                                             ></v-btn>
                                                         </template>
                                                     </v-tooltip>
                                                 </template>
                                                 <template v-else>
-                                                    <span class="text-grey text-caption">{{ item.status }}</span>
+                                                    <span
+                                                        class="text-grey text-caption"
+                                                        >{{ item.status }}</span
+                                                    >
                                                 </template>
                                             </div>
                                         </td>
                                         <td class="modern-table-cell">
                                             <div class="action-group">
                                                 <v-tooltip text="View Details">
-                                                    <template v-slot:activator="{ props }">
-                                                        <v-btn 
+                                                    <template
+                                                        v-slot:activator="{
+                                                            props,
+                                                        }"
+                                                    >
+                                                        <v-btn
                                                             v-bind="props"
-                                                            variant="elevated" 
-                                                            icon="mdi-eye" 
+                                                            variant="elevated"
+                                                            icon="mdi-eye"
                                                             size="small"
                                                             color="blue"
                                                             class="modern-action-btn view-btn"
-                                                            @click="viewStudentRequest(item)"
+                                                            @click="
+                                                                viewStudentRequest(
+                                                                    item,
+                                                                )
+                                                            "
                                                         ></v-btn>
                                                     </template>
                                                 </v-tooltip>
-                                                
+
                                                 <v-tooltip text="Edit Request">
-                                                    <template v-slot:activator="{ props }">
-                                                        <v-btn 
+                                                    <template
+                                                        v-slot:activator="{
+                                                            props,
+                                                        }"
+                                                    >
+                                                        <v-btn
                                                             v-bind="props"
-                                                            variant="elevated" 
-                                                            icon="mdi-pencil" 
+                                                            variant="elevated"
+                                                            icon="mdi-pencil"
                                                             size="small"
                                                             class="modern-action-btn edit-btn"
-                                                            @click="editStudentRequest(item)"
+                                                            @click="
+                                                                editStudentRequest(
+                                                                    item,
+                                                                )
+                                                            "
                                                         ></v-btn>
                                                     </template>
                                                 </v-tooltip>
-                                                
-                                                <v-tooltip text="Delete Request">
-                                                    <template v-slot:activator="{ props }">
-                                                        <v-btn 
+
+                                                <v-tooltip
+                                                    text="Delete Request"
+                                                >
+                                                    <template
+                                                        v-slot:activator="{
+                                                            props,
+                                                        }"
+                                                    >
+                                                        <v-btn
                                                             v-bind="props"
-                                                            variant="elevated" 
-                                                            icon="mdi-delete" 
+                                                            variant="elevated"
+                                                            icon="mdi-delete"
                                                             size="small"
                                                             class="modern-action-btn delete-btn"
-                                                            @click="deleteRequest(item)"
+                                                            @click="
+                                                                deleteRequest(
+                                                                    item,
+                                                                )
+                                                            "
                                                         ></v-btn>
                                                     </template>
                                                 </v-tooltip>
@@ -347,9 +520,17 @@
                                 </template>
                                 <template #no-data>
                                     <div class="empty-state">
-                                        <v-icon size="64" color="grey-lighten-2">mdi-inbox-outline</v-icon>
-                                        <h3 class="empty-title">No student requests found</h3>
-                                        <p class="empty-subtitle">When students submit leave requests, they will appear here for your review.</p>
+                                        <v-icon size="64" color="grey-lighten-2"
+                                            >mdi-inbox-outline</v-icon
+                                        >
+                                        <h3 class="empty-title">
+                                            No student requests found
+                                        </h3>
+                                        <p class="empty-subtitle">
+                                            When students submit leave requests,
+                                            they will appear here for your
+                                            review.
+                                        </p>
                                     </div>
                                 </template>
                             </v-data-table>
@@ -363,10 +544,14 @@
                         <div class="table-toolbar">
                             <div class="toolbar-left">
                                 <h2 class="table-title">
-                                    <v-icon class="mr-2" color="primary">mdi-history</v-icon>
+                                    <v-icon class="mr-2" color="primary"
+                                        >mdi-history</v-icon
+                                    >
                                     My Leave Requests
                                 </h2>
-                                <p class="table-subtitle">Manage your personal leave applications</p>
+                                <p class="table-subtitle">
+                                    Manage your personal leave applications
+                                </p>
                             </div>
                             <!-- <div class="toolbar-right">
                                 <v-btn
@@ -388,7 +573,9 @@
                                 class="modern-table"
                                 hover
                             >
-                                <template #bottom="{ page, pageCount, itemsLength }">
+                                <template
+                                    #bottom="{ page, pageCount, itemsLength }"
+                                >
                                     <div class="custom-table-footer">
                                         <v-btn
                                             variant="outlined"
@@ -397,11 +584,15 @@
                                             :disabled="page === 1"
                                             @click="page--"
                                         >
-                                            <v-icon size="20">mdi-chevron-left</v-icon>
+                                            <v-icon size="20"
+                                                >mdi-chevron-left</v-icon
+                                            >
                                             Previous
                                         </v-btn>
                                         <div class="footer-info">
-                                            Page {{ page }} of {{ pageCount }} ({{ itemsLength }} total records)
+                                            Page {{ page }} of
+                                            {{ pageCount }} ({{ itemsLength }}
+                                            total records)
                                         </div>
                                         <v-btn
                                             variant="outlined"
@@ -411,29 +602,43 @@
                                             @click="page++"
                                         >
                                             Next
-                                            <v-icon size="20">mdi-chevron-right</v-icon>
+                                            <v-icon size="20"
+                                                >mdi-chevron-right</v-icon
+                                            >
                                         </v-btn>
                                     </div>
                                 </template>
                                 <template #headers>
                                     <tr class="modern-header-row">
                                         <th class="modern-header-cell">
-                                            <div class="header-content">Dates</div>
+                                            <div class="header-content">
+                                                Dates
+                                            </div>
                                         </th>
                                         <th class="modern-header-cell">
-                                            <div class="header-content">Duration</div>
+                                            <div class="header-content">
+                                                Duration
+                                            </div>
                                         </th>
                                         <th class="modern-header-cell">
-                                            <div class="header-content">Type</div>
+                                            <div class="header-content">
+                                                Type
+                                            </div>
                                         </th>
                                         <th class="modern-header-cell">
-                                            <div class="header-content">Status</div>
+                                            <div class="header-content">
+                                                Status
+                                            </div>
                                         </th>
                                         <th class="modern-header-cell">
-                                            <div class="header-content">Submitted</div>
+                                            <div class="header-content">
+                                                Submitted
+                                            </div>
                                         </th>
                                         <th class="modern-header-cell">
-                                            <div class="header-content">Actions</div>
+                                            <div class="header-content">
+                                                Actions
+                                            </div>
                                         </th>
                                     </tr>
                                 </template>
@@ -441,67 +646,142 @@
                                     <tr class="modern-table-row">
                                         <td class="modern-table-cell">
                                             <div class="date-info">
-                                                <div class="date-primary">{{ formatDate(item.startDate) }}</div>
-                                                <div class="date-secondary">to {{ formatDate(item.endDate) }}</div>
+                                                <div class="date-primary">
+                                                    {{
+                                                        formatDate(
+                                                            item.startDate,
+                                                        )
+                                                    }}
+                                                </div>
+                                                <div class="date-secondary">
+                                                    to
+                                                    {{
+                                                        formatDate(item.endDate)
+                                                    }}
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="modern-table-cell">
-                                            <div class="global-id-badge">{{ calculateDuration(item.startDate, item.endDate) }} days</div>
+                                            <div class="global-id-badge">
+                                                {{
+                                                    calculateDuration(
+                                                        item.startDate,
+                                                        item.endDate,
+                                                    )
+                                                }}
+                                                days
+                                            </div>
                                         </td>
                                         <td class="modern-table-cell">
-                                            <v-chip color="blue-grey" variant="flat" size="small">
+                                            <v-chip
+                                                color="blue-grey"
+                                                variant="flat"
+                                                size="small"
+                                            >
                                                 {{ item.type }}
                                             </v-chip>
                                         </td>
                                         <td class="modern-table-cell">
-                                            <v-chip :color="getStatusColor(item.status)" variant="flat" size="small">
-                                                <v-icon :icon="getStatusIcon(item.status)" size="16" class="mr-1"></v-icon>
+                                            <v-chip
+                                                :color="
+                                                    getStatusColor(item.status)
+                                                "
+                                                variant="flat"
+                                                size="small"
+                                            >
+                                                <v-icon
+                                                    :icon="
+                                                        getStatusIcon(
+                                                            item.status,
+                                                        )
+                                                    "
+                                                    size="16"
+                                                    class="mr-1"
+                                                ></v-icon>
                                                 {{ item.status }}
                                             </v-chip>
                                         </td>
                                         <td class="modern-table-cell">
                                             <div class="date-info">
-                                                <div class="date-primary">{{ formatDate(item.submittedAt) }}</div>
+                                                <div class="date-primary">
+                                                    {{
+                                                        formatDate(
+                                                            item.submittedAt,
+                                                        )
+                                                    }}
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="modern-table-cell">
                                             <div class="action-group">
                                                 <v-tooltip text="View Details">
-                                                    <template v-slot:activator="{ props }">
-                                                        <v-btn 
+                                                    <template
+                                                        v-slot:activator="{
+                                                            props,
+                                                        }"
+                                                    >
+                                                        <v-btn
                                                             v-bind="props"
-                                                            variant="elevated" 
-                                                            icon="mdi-eye" 
+                                                            variant="elevated"
+                                                            icon="mdi-eye"
                                                             size="small"
                                                             color="blue"
                                                             class="modern-action-btn view-btn"
-                                                            @click="viewMyRequest(item)"
+                                                            @click="
+                                                                viewMyRequest(
+                                                                    item,
+                                                                )
+                                                            "
                                                         ></v-btn>
                                                     </template>
                                                 </v-tooltip>
-                                                
-                                                <v-tooltip v-if="item.status === 'Pending'" text="Edit Request">
-                                                    <template v-slot:activator="{ props }">
-                                                        <v-btn 
+
+                                                <v-tooltip
+                                                    v-if="
+                                                        item.status ===
+                                                        'Pending'
+                                                    "
+                                                    text="Edit Request"
+                                                >
+                                                    <template
+                                                        v-slot:activator="{
+                                                            props,
+                                                        }"
+                                                    >
+                                                        <v-btn
                                                             v-bind="props"
-                                                            variant="elevated" 
-                                                            icon="mdi-pencil" 
+                                                            variant="elevated"
+                                                            icon="mdi-pencil"
                                                             size="small"
                                                             class="modern-action-btn edit-btn"
-                                                            @click="editMyRequest(item)"
+                                                            @click="
+                                                                editMyRequest(
+                                                                    item,
+                                                                )
+                                                            "
                                                         ></v-btn>
                                                     </template>
                                                 </v-tooltip>
-                                                
-                                                <v-tooltip text="Delete Request">
-                                                    <template v-slot:activator="{ props }">
-                                                        <v-btn 
+
+                                                <v-tooltip
+                                                    text="Delete Request"
+                                                >
+                                                    <template
+                                                        v-slot:activator="{
+                                                            props,
+                                                        }"
+                                                    >
+                                                        <v-btn
                                                             v-bind="props"
-                                                            variant="elevated" 
-                                                            icon="mdi-delete" 
+                                                            variant="elevated"
+                                                            icon="mdi-delete"
                                                             size="small"
                                                             class="modern-action-btn delete-btn"
-                                                            @click="deleteRequest(item)"
+                                                            @click="
+                                                                deleteRequest(
+                                                                    item,
+                                                                )
+                                                            "
                                                         ></v-btn>
                                                     </template>
                                                 </v-tooltip>
@@ -511,9 +791,16 @@
                                 </template>
                                 <template #no-data>
                                     <div class="empty-state">
-                                        <v-icon size="64" color="grey-lighten-2">mdi-file-document-outline</v-icon>
-                                        <h3 class="empty-title">No leave requests found</h3>
-                                        <p class="empty-subtitle">Submit your first leave request using the button above.</p>
+                                        <v-icon size="64" color="grey-lighten-2"
+                                            >mdi-file-document-outline</v-icon
+                                        >
+                                        <h3 class="empty-title">
+                                            No leave requests found
+                                        </h3>
+                                        <p class="empty-subtitle">
+                                            Submit your first leave request
+                                            using the button above.
+                                        </p>
                                     </div>
                                 </template>
                             </v-data-table>
@@ -529,16 +816,35 @@
                 <div class="dialog-header">
                     <div class="header-content">
                         <div class="header-icon">
-                            <v-icon :color="isEditMode ? 'orange' : 'primary'" size="24">
-                                {{ isEditMode ? 'mdi-pencil' : 'mdi-calendar-plus' }}
+                            <v-icon
+                                :color="isEditMode ? 'orange' : 'primary'"
+                                size="24"
+                            >
+                                {{
+                                    isEditMode
+                                        ? "mdi-pencil"
+                                        : "mdi-calendar-plus"
+                                }}
                             </v-icon>
                         </div>
                         <div class="header-text">
                             <h2 class="dialog-title">
-                                {{ isLecturerRequest ? (isEditMode ? 'Edit My Leave Request' : 'New Personal Leave Request') : (isEditMode ? 'Edit Student Leave Request' : 'New Student Leave Request') }}
+                                {{
+                                    isLecturerRequest
+                                        ? isEditMode
+                                            ? "Edit My Leave Request"
+                                            : "New Personal Leave Request"
+                                        : isEditMode
+                                          ? "Edit Student Leave Request"
+                                          : "New Student Leave Request"
+                                }}
                             </h2>
                             <p class="dialog-subtitle">
-                                {{ isLecturerRequest ? 'Submit your personal leave request' : 'Create a leave request for a student' }}
+                                {{
+                                    isLecturerRequest
+                                        ? "Submit your personal leave request"
+                                        : "Create a leave request for a student"
+                                }}
                             </p>
                         </div>
                     </div>
@@ -552,20 +858,31 @@
                 </div>
 
                 <div class="dialog-content">
-                    <v-form ref="leaveFormRef" v-model="leaveFormValid" @submit.prevent="submitLeaveRequest">
+                    <v-form
+                        ref="leaveFormRef"
+                        v-model="leaveFormValid"
+                        @submit.prevent="submitLeaveRequest"
+                    >
                         <!-- Student Information Section (only for student requests) -->
                         <div v-if="!isLecturerRequest" class="form-section">
                             <h3 class="section-title">
-                                <v-icon class="mr-2" color="primary">mdi-account-school</v-icon>
+                                <v-icon class="mr-2" color="primary"
+                                    >mdi-account-school</v-icon
+                                >
                                 Student Information
                             </h3>
-                            
+
                             <v-row>
                                 <v-col cols="12" md="6">
-                                    <label class="form-label">Student Name *</label>
+                                    <label class="form-label"
+                                        >Student Name *</label
+                                    >
                                     <v-text-field
                                         v-model="leaveFormData.studentName"
-                                        :rules="[rules.required, rules.studentName]"
+                                        :rules="[
+                                            rules.required,
+                                            rules.studentName,
+                                        ]"
                                         variant="outlined"
                                         density="comfortable"
                                         color="primary"
@@ -576,10 +893,15 @@
                                     />
                                 </v-col>
                                 <v-col cols="12" md="6">
-                                    <label class="form-label">Student ID *</label>
+                                    <label class="form-label"
+                                        >Student ID *</label
+                                    >
                                     <v-text-field
                                         v-model="leaveFormData.studentId"
-                                        :rules="[rules.required, rules.studentId]"
+                                        :rules="[
+                                            rules.required,
+                                            rules.studentId,
+                                        ]"
                                         variant="outlined"
                                         density="comfortable"
                                         color="primary"
@@ -608,10 +930,15 @@
                                     />
                                 </v-col>
                                 <v-col cols="12" md="6">
-                                    <label class="form-label">Contact Number *</label>
+                                    <label class="form-label"
+                                        >Contact Number *</label
+                                    >
                                     <v-text-field
                                         v-model="leaveFormData.contactNumber"
-                                        :rules="[rules.required, rules.phoneNumber]"
+                                        :rules="[
+                                            rules.required,
+                                            rules.phoneNumber,
+                                        ]"
                                         variant="outlined"
                                         density="comfortable"
                                         color="primary"
@@ -627,15 +954,19 @@
                         <!-- Lecturer Information Section (only for lecturer requests) -->
                         <div v-if="isLecturerRequest" class="form-section">
                             <h3 class="section-title">
-                                <v-icon class="mr-2" color="primary">mdi-account-tie</v-icon>
+                                <v-icon class="mr-2" color="primary"
+                                    >mdi-account-tie</v-icon
+                                >
                                 Personal Information
                             </h3>
-                            
+
                             <v-row>
                                 <v-col cols="12" md="6">
                                     <label class="form-label">Full Name</label>
                                     <v-text-field
-                                        v-model="lecturerLeaveFormData.lecturerName"
+                                        v-model="
+                                            lecturerLeaveFormData.lecturerName
+                                        "
                                         variant="outlined"
                                         density="comfortable"
                                         prepend-inner-icon="mdi-account"
@@ -645,9 +976,13 @@
                                     />
                                 </v-col>
                                 <v-col cols="12" md="6">
-                                    <label class="form-label">Employee ID</label>
+                                    <label class="form-label"
+                                        >Employee ID</label
+                                    >
                                     <v-text-field
-                                        v-model="lecturerLeaveFormData.employeeId"
+                                        v-model="
+                                            lecturerLeaveFormData.employeeId
+                                        "
                                         variant="outlined"
                                         density="comfortable"
                                         prepend-inner-icon="mdi-badge-account"
@@ -662,7 +997,9 @@
                                 <v-col cols="12" md="4">
                                     <label class="form-label">Department</label>
                                     <v-text-field
-                                        v-model="lecturerLeaveFormData.department"
+                                        v-model="
+                                            lecturerLeaveFormData.department
+                                        "
                                         variant="outlined"
                                         density="comfortable"
                                         prepend-inner-icon="mdi-domain"
@@ -672,10 +1009,17 @@
                                     />
                                 </v-col>
                                 <v-col cols="12" md="4">
-                                    <label class="form-label">Contact Number *</label>
+                                    <label class="form-label"
+                                        >Contact Number *</label
+                                    >
                                     <v-text-field
-                                        v-model="lecturerLeaveFormData.contactNumber"
-                                        :rules="[rules.required, rules.phoneNumber]"
+                                        v-model="
+                                            lecturerLeaveFormData.contactNumber
+                                        "
+                                        :rules="[
+                                            rules.required,
+                                            rules.phoneNumber,
+                                        ]"
                                         variant="outlined"
                                         density="comfortable"
                                         color="primary"
@@ -686,7 +1030,9 @@
                                     />
                                 </v-col>
                                 <v-col cols="12" md="4">
-                                    <label class="form-label">Email Address</label>
+                                    <label class="form-label"
+                                        >Email Address</label
+                                    >
                                     <v-text-field
                                         v-model="lecturerLeaveFormData.email"
                                         :rules="[rules.email]"
@@ -703,9 +1049,13 @@
 
                             <v-row>
                                 <v-col cols="12" md="6">
-                                    <label class="form-label">Emergency Contact Name</label>
+                                    <label class="form-label"
+                                        >Emergency Contact Name</label
+                                    >
                                     <v-text-field
-                                        v-model="lecturerLeaveFormData.emergencyContact"
+                                        v-model="
+                                            lecturerLeaveFormData.emergencyContact
+                                        "
                                         variant="outlined"
                                         density="comfortable"
                                         color="primary"
@@ -716,9 +1066,13 @@
                                     />
                                 </v-col>
                                 <v-col cols="12" md="6">
-                                    <label class="form-label">Emergency Contact Phone</label>
+                                    <label class="form-label"
+                                        >Emergency Contact Phone</label
+                                    >
                                     <v-text-field
-                                        v-model="lecturerLeaveFormData.emergencyPhone"
+                                        v-model="
+                                            lecturerLeaveFormData.emergencyPhone
+                                        "
                                         :rules="[rules.phoneNumber]"
                                         variant="outlined"
                                         density="comfortable"
@@ -737,17 +1091,24 @@
                         <!-- Leave Request Details Section -->
                         <div class="form-section">
                             <h3 class="section-title">
-                                <v-icon class="mr-2" color="primary">mdi-calendar-clock</v-icon>
+                                <v-icon class="mr-2" color="primary"
+                                    >mdi-calendar-clock</v-icon
+                                >
                                 Leave Request Details
                             </h3>
-                            
+
                             <v-row>
                                 <v-col cols="12" md="6">
-                                    <label class="form-label">Start Date *</label>
+                                    <label class="form-label"
+                                        >Start Date *</label
+                                    >
                                     <v-text-field
                                         v-model="leaveFormData.startDate"
                                         type="date"
-                                        :rules="[rules.required, rules.startDateNotPast]"
+                                        :rules="[
+                                            rules.required,
+                                            rules.startDateNotPast,
+                                        ]"
                                         variant="outlined"
                                         density="comfortable"
                                         color="primary"
@@ -761,7 +1122,10 @@
                                     <v-text-field
                                         v-model="leaveFormData.endDate"
                                         type="date"
-                                        :rules="[rules.required, rules.endDateAfterStart]"
+                                        :rules="[
+                                            rules.required,
+                                            rules.endDateAfterStart,
+                                        ]"
                                         variant="outlined"
                                         density="comfortable"
                                         color="primary"
@@ -774,7 +1138,9 @@
 
                             <v-row>
                                 <v-col cols="12" md="6">
-                                    <label class="form-label">Leave Type *</label>
+                                    <label class="form-label"
+                                        >Leave Type *</label
+                                    >
                                     <v-select
                                         v-model="leaveFormData.type"
                                         :items="leaveTypes"
@@ -804,10 +1170,15 @@
 
                             <v-row>
                                 <v-col cols="12">
-                                    <label class="form-label">Detailed Reason *</label>
+                                    <label class="form-label"
+                                        >Detailed Reason *</label
+                                    >
                                     <v-textarea
                                         v-model="leaveFormData.reason"
-                                        :rules="[rules.required, rules.minLength(10)]"
+                                        :rules="[
+                                            rules.required,
+                                            rules.minLength(10),
+                                        ]"
                                         variant="outlined"
                                         rows="4"
                                         color="primary"
@@ -822,7 +1193,9 @@
 
                             <v-row>
                                 <v-col cols="12">
-                                    <label class="form-label">Supporting Documents</label>
+                                    <label class="form-label"
+                                        >Supporting Documents</label
+                                    >
                                     <v-file-input
                                         v-model="leaveFormData.attachment"
                                         variant="outlined"
@@ -841,20 +1214,46 @@
                         </div>
 
                         <!-- Request Summary -->
-                        <v-card v-if="leaveFormData.startDate && leaveFormData.endDate" class="info-box mt-6 mb-4">
+                        <v-card
+                            v-if="
+                                leaveFormData.startDate && leaveFormData.endDate
+                            "
+                            class="info-box mt-6 mb-4"
+                        >
                             <v-card-text class="py-4">
-                                <h4 class="text-subtitle-1 font-weight-bold mb-3">
-                                    <v-icon class="mr-2" color="primary">mdi-information</v-icon>
+                                <h4
+                                    class="text-subtitle-1 font-weight-bold mb-3"
+                                >
+                                    <v-icon class="mr-2" color="primary"
+                                        >mdi-information</v-icon
+                                    >
                                     Request Summary
                                 </h4>
                                 <div class="d-flex flex-wrap gap-4">
-                                    <v-chip color="primary" variant="outlined" prepend-icon="mdi-calendar">
-                                        {{ formatDate(leaveFormData.startDate) }} - {{ formatDate(leaveFormData.endDate) }}
+                                    <v-chip
+                                        color="primary"
+                                        variant="outlined"
+                                        prepend-icon="mdi-calendar"
+                                    >
+                                        {{
+                                            formatDate(leaveFormData.startDate)
+                                        }}
+                                        -
+                                        {{ formatDate(leaveFormData.endDate) }}
                                     </v-chip>
-                                    <v-chip v-if="leaveFormData.type" color="success" variant="outlined" prepend-icon="mdi-tag">
+                                    <v-chip
+                                        v-if="leaveFormData.type"
+                                        color="success"
+                                        variant="outlined"
+                                        prepend-icon="mdi-tag"
+                                    >
                                         {{ leaveFormData.type }}
                                     </v-chip>
-                                    <v-chip color="info" variant="outlined" prepend-icon="mdi-clock">
+                                    <v-chip
+                                        color="info"
+                                        variant="outlined"
+                                        prepend-icon="mdi-clock"
+                                    >
                                         {{ calculateDurationText }}
                                     </v-chip>
                                 </div>
@@ -883,8 +1282,10 @@
                         class="submit-btn action-btn"
                         type="submit"
                     >
-                        <v-icon start>{{ isEditMode ? 'mdi-content-save' : 'mdi-send' }}</v-icon>
-                        {{ isEditMode ? 'Update Request' : 'Submit Request' }}
+                        <v-icon start>{{
+                            isEditMode ? "mdi-content-save" : "mdi-send"
+                        }}</v-icon>
+                        {{ isEditMode ? "Update Request" : "Submit Request" }}
                     </v-btn>
                 </div>
             </v-card>
@@ -892,14 +1293,27 @@
 
         <!-- View Student Request Dialog -->
         <v-dialog v-model="viewStudentDialog" max-width="750">
-            <v-card v-if="selectedStudentRequest" elevation="8" class="rounded-lg">
+            <v-card
+                v-if="selectedStudentRequest"
+                elevation="8"
+                class="rounded-lg"
+            >
                 <v-card-title class="pa-5 bg-gradient-indigo">
                     <div class="d-flex justify-space-between align-center">
                         <div class="d-flex align-center">
-                            <v-icon color="white" size="28" class="mr-3">mdi-file-document-outline</v-icon>
-                            <span class="text-h6 font-weight-bold text-white">Student Leave Request Details</span>
+                            <v-icon color="white" size="28" class="mr-3"
+                                >mdi-file-document-outline</v-icon
+                            >
+                            <span class="text-h6 font-weight-bold text-white"
+                                >Student Leave Request Details</span
+                            >
                         </div>
-                        <v-btn icon="mdi-close" variant="text" color="white" @click="viewStudentDialog = false"></v-btn>
+                        <v-btn
+                            icon="mdi-close"
+                            variant="text"
+                            color="white"
+                            @click="viewStudentDialog = false"
+                        ></v-btn>
                     </div>
                 </v-card-title>
                 <v-card-text class="pa-7">
@@ -907,20 +1321,44 @@
                         <v-col cols="12">
                             <div class="student-info-card pa-4 mb-5">
                                 <div class="d-flex align-center">
-                                    <v-avatar color="indigo" size="72" class="mr-4 elevation-3">
-                                        <span class="text-h4 text-white font-weight-bold">{{
-                                            selectedStudentRequest.student.charAt(0) }}</span>
+                                    <v-avatar
+                                        color="indigo"
+                                        size="72"
+                                        class="mr-4 elevation-3"
+                                    >
+                                        <span
+                                            class="text-h4 text-white font-weight-bold"
+                                            >{{
+                                                selectedStudentRequest.student.charAt(
+                                                    0,
+                                                )
+                                            }}</span
+                                        >
                                     </v-avatar>
                                     <div>
-                                        <div class="text-h5 font-weight-bold text-grey-darken-3 mb-1">{{
-                                            selectedStudentRequest.student }}</div>
-                                        <div class="text-body-1 text-grey-darken-1 mb-2">
-                                            <v-icon size="16" class="mr-1">mdi-identifier</v-icon>{{
-                                                selectedStudentRequest.studentId }}
+                                        <div
+                                            class="text-h5 font-weight-bold text-grey-darken-3 mb-1"
+                                        >
+                                            {{ selectedStudentRequest.student }}
                                         </div>
-                                        <v-chip size="small" variant="flat" color="indigo-lighten-4"
-                                            class="font-weight-medium text-indigo-darken-2">
-                                            <v-icon start size="14">mdi-book-open-variant</v-icon>
+                                        <div
+                                            class="text-body-1 text-grey-darken-1 mb-2"
+                                        >
+                                            <v-icon size="16" class="mr-1"
+                                                >mdi-identifier</v-icon
+                                            >{{
+                                                selectedStudentRequest.studentId
+                                            }}
+                                        </div>
+                                        <v-chip
+                                            size="small"
+                                            variant="flat"
+                                            color="indigo-lighten-4"
+                                            class="font-weight-medium text-indigo-darken-2"
+                                        >
+                                            <v-icon start size="14"
+                                                >mdi-book-open-variant</v-icon
+                                            >
                                             {{ selectedStudentRequest.class }}
                                         </v-chip>
                                     </div>
@@ -934,54 +1372,109 @@
                     <v-row>
                         <v-col cols="6">
                             <div class="info-box pa-3 mb-3">
-                                <div class="text-caption text-grey mb-1">Leave Type</div>
-                                <div class="font-weight-bold">{{ selectedStudentRequest.type }}</div>
+                                <div class="text-caption text-grey mb-1">
+                                    Leave Type
+                                </div>
+                                <div class="font-weight-bold">
+                                    {{ selectedStudentRequest.type }}
+                                </div>
                             </div>
                         </v-col>
                         <v-col cols="6">
                             <div class="info-box pa-3 mb-3">
-                                <div class="text-caption text-grey mb-1">Status</div>
-                                <v-chip :color="getStatusColor(selectedStudentRequest.status)" text-color="white" variant="flat" size="small">
+                                <div class="text-caption text-grey mb-1">
+                                    Status
+                                </div>
+                                <v-chip
+                                    :color="
+                                        getStatusColor(
+                                            selectedStudentRequest.status,
+                                        )
+                                    "
+                                    text-color="white"
+                                    variant="flat"
+                                    size="small"
+                                >
                                     {{ selectedStudentRequest.status }}
                                 </v-chip>
                             </div>
                         </v-col>
                         <v-col cols="6">
                             <div class="info-box pa-3 mb-3">
-                                <div class="text-caption text-grey mb-1">Start Date</div>
-                                <div class="font-weight-bold">{{ formatDate(selectedStudentRequest.startDate) }}</div>
+                                <div class="text-caption text-grey mb-1">
+                                    Start Date
+                                </div>
+                                <div class="font-weight-bold">
+                                    {{
+                                        formatDate(
+                                            selectedStudentRequest.startDate,
+                                        )
+                                    }}
+                                </div>
                             </div>
                         </v-col>
                         <v-col cols="6">
                             <div class="info-box pa-3 mb-3">
-                                <div class="text-caption text-grey mb-1">End Date</div>
-                                <div class="font-weight-bold">{{ formatDate(selectedStudentRequest.endDate) }}</div>
+                                <div class="text-caption text-grey mb-1">
+                                    End Date
+                                </div>
+                                <div class="font-weight-bold">
+                                    {{
+                                        formatDate(
+                                            selectedStudentRequest.endDate,
+                                        )
+                                    }}
+                                </div>
                             </div>
                         </v-col>
                         <v-col cols="12">
                             <div class="info-box pa-3 mb-3">
-                                <div class="text-caption text-grey mb-1">Duration</div>
-                                <div class="font-weight-bold">{{ calculateDuration(selectedStudentRequest.startDate,
-                                    selectedStudentRequest.endDate) }} days</div>
+                                <div class="text-caption text-grey mb-1">
+                                    Duration
+                                </div>
+                                <div class="font-weight-bold">
+                                    {{
+                                        calculateDuration(
+                                            selectedStudentRequest.startDate,
+                                            selectedStudentRequest.endDate,
+                                        )
+                                    }}
+                                    days
+                                </div>
                             </div>
                         </v-col>
                         <v-col cols="12">
                             <div class="info-box pa-3">
-                                <div class="text-caption text-grey mb-2">Reason</div>
+                                <div class="text-caption text-grey mb-2">
+                                    Reason
+                                </div>
                                 <div>{{ selectedStudentRequest.reason }}</div>
                             </div>
                         </v-col>
                     </v-row>
                 </v-card-text>
-                <v-card-actions class="pa-4" v-if="selectedStudentRequest.status === 'Pending'">
+                <v-card-actions
+                    class="pa-4"
+                    v-if="selectedStudentRequest.status === 'Pending'"
+                >
                     <v-spacer></v-spacer>
-                    <v-btn variant="outlined" @click="viewStudentDialog = false">Close</v-btn>
-                    <v-btn color="error" variant="outlined" prepend-icon="mdi-close"
-                        @click="rejectRequest(selectedStudentRequest)">
+                    <v-btn variant="outlined" @click="viewStudentDialog = false"
+                        >Close</v-btn
+                    >
+                    <v-btn
+                        color="error"
+                        variant="outlined"
+                        prepend-icon="mdi-close"
+                        @click="rejectRequest(selectedStudentRequest)"
+                    >
                         Reject
                     </v-btn>
-                    <v-btn color="success" variant="flat" prepend-icon="mdi-check"
-                        @click="approveRequest(selectedStudentRequest)">
+                    <v-btn
+                        color="success"
+                        variant="flat"
+                        prepend-icon="mdi-check"
+                        @click="approveRequest(selectedStudentRequest)"
+                    >
                         Approve
                     </v-btn>
                 </v-card-actions>
@@ -993,60 +1486,110 @@
             <v-card v-if="selectedMyRequest">
                 <v-card-title class="pa-4 bg-grey-lighten-4">
                     <div class="d-flex justify-space-between align-center">
-                        <span class="text-h6 font-weight-bold">My Leave Request Details</span>
-                        <v-btn icon="mdi-close" variant="text" @click="viewMyRequestDialog = false"></v-btn>
+                        <span class="text-h6 font-weight-bold"
+                            >My Leave Request Details</span
+                        >
+                        <v-btn
+                            icon="mdi-close"
+                            variant="text"
+                            @click="viewMyRequestDialog = false"
+                        ></v-btn>
                     </div>
                 </v-card-title>
                 <v-card-text class="pa-6">
                     <v-row>
                         <v-col cols="6">
                             <div class="info-box pa-3 mb-3">
-                                <div class="text-caption text-grey mb-1">Leave Type</div>
-                                <div class="font-weight-bold">{{ selectedMyRequest.type }}</div>
+                                <div class="text-caption text-grey mb-1">
+                                    Leave Type
+                                </div>
+                                <div class="font-weight-bold">
+                                    {{ selectedMyRequest.type }}
+                                </div>
                             </div>
                         </v-col>
                         <v-col cols="6">
                             <div class="info-box pa-3 mb-3">
-                                <div class="text-caption text-grey mb-1">Status</div>
-                                <v-chip :color="getStatusColor(selectedMyRequest.status)" text-color="white" variant="flat" size="small">
+                                <div class="text-caption text-grey mb-1">
+                                    Status
+                                </div>
+                                <v-chip
+                                    :color="
+                                        getStatusColor(selectedMyRequest.status)
+                                    "
+                                    text-color="white"
+                                    variant="flat"
+                                    size="small"
+                                >
                                     {{ selectedMyRequest.status }}
                                 </v-chip>
                             </div>
                         </v-col>
                         <v-col cols="6">
                             <div class="info-box pa-3 mb-3">
-                                <div class="text-caption text-grey mb-1">Start Date</div>
-                                <div class="font-weight-bold">{{ formatDate(selectedMyRequest.startDate) }}</div>
+                                <div class="text-caption text-grey mb-1">
+                                    Start Date
+                                </div>
+                                <div class="font-weight-bold">
+                                    {{
+                                        formatDate(selectedMyRequest.startDate)
+                                    }}
+                                </div>
                             </div>
                         </v-col>
                         <v-col cols="6">
                             <div class="info-box pa-3 mb-3">
-                                <div class="text-caption text-grey mb-1">End Date</div>
-                                <div class="font-weight-bold">{{ formatDate(selectedMyRequest.endDate) }}</div>
+                                <div class="text-caption text-grey mb-1">
+                                    End Date
+                                </div>
+                                <div class="font-weight-bold">
+                                    {{ formatDate(selectedMyRequest.endDate) }}
+                                </div>
                             </div>
                         </v-col>
                         <v-col cols="12">
                             <div class="info-box pa-3 mb-3">
-                                <div class="text-caption text-grey mb-1">Duration</div>
-                                <div class="font-weight-bold">{{ calculateDuration(selectedMyRequest.startDate,
-                                    selectedMyRequest.endDate) }} days</div>
+                                <div class="text-caption text-grey mb-1">
+                                    Duration
+                                </div>
+                                <div class="font-weight-bold">
+                                    {{
+                                        calculateDuration(
+                                            selectedMyRequest.startDate,
+                                            selectedMyRequest.endDate,
+                                        )
+                                    }}
+                                    days
+                                </div>
                             </div>
                         </v-col>
                         <v-col cols="12">
                             <div class="info-box pa-3 mb-3">
-                                <div class="text-caption text-grey mb-1">Submitted Date</div>
-                                <div class="font-weight-bold">{{ formatDate(selectedMyRequest.submittedAt) }}</div>
+                                <div class="text-caption text-grey mb-1">
+                                    Submitted Date
+                                </div>
+                                <div class="font-weight-bold">
+                                    {{
+                                        formatDate(
+                                            selectedMyRequest.submittedAt,
+                                        )
+                                    }}
+                                </div>
                             </div>
                         </v-col>
                         <v-col cols="12">
                             <div class="info-box pa-3">
-                                <div class="text-caption text-grey mb-2">Reason</div>
+                                <div class="text-caption text-grey mb-2">
+                                    Reason
+                                </div>
                                 <div>{{ selectedMyRequest.reason }}</div>
                             </div>
                         </v-col>
                         <v-col cols="12" v-if="selectedMyRequest.adminComment">
                             <div class="info-box pa-3 bg-blue-lighten-5">
-                                <div class="text-caption text-grey mb-2">Admin Comment</div>
+                                <div class="text-caption text-grey mb-2">
+                                    Admin Comment
+                                </div>
                                 <div>{{ selectedMyRequest.adminComment }}</div>
                             </div>
                         </v-col>
@@ -1054,7 +1597,11 @@
                 </v-card-text>
                 <v-card-actions class="pa-4">
                     <v-spacer></v-spacer>
-                    <v-btn variant="outlined" @click="viewMyRequestDialog = false">Close</v-btn>
+                    <v-btn
+                        variant="outlined"
+                        @click="viewMyRequestDialog = false"
+                        >Close</v-btn
+                    >
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -1064,27 +1611,51 @@
             <v-card elevation="8" class="rounded-lg">
                 <v-card-title class="pa-5 bg-gradient-red">
                     <div class="d-flex align-center">
-                        <v-icon color="white" size="28" class="mr-3">mdi-close-circle-outline</v-icon>
-                        <span class="text-h6 font-weight-bold text-white">Reject Leave Request</span>
+                        <v-icon color="white" size="28" class="mr-3"
+                            >mdi-close-circle-outline</v-icon
+                        >
+                        <span class="text-h6 font-weight-bold text-white"
+                            >Reject Leave Request</span
+                        >
                     </div>
                 </v-card-title>
                 <v-card-text class="pa-7">
-                    <p class="text-body-1 text-grey-darken-1 mb-4">Please provide a detailed explanation for
-                        rejecting
-                        this request. This will help the student understand your decision.</p>
-                    <v-textarea v-model="rejectReason" label="Reason for Rejection*" variant="outlined" rows="5"
+                    <p class="text-body-1 text-grey-darken-1 mb-4">
+                        Please provide a detailed explanation for rejecting this
+                        request. This will help the student understand your
+                        decision.
+                    </p>
+                    <v-textarea
+                        v-model="rejectReason"
+                        label="Reason for Rejection*"
+                        variant="outlined"
+                        rows="5"
                         placeholder="Enter a clear and constructive reason for declining this leave request..."
-                        :rules="[rules.required]" color="error" bg-color="grey-lighten-5"
-                        prepend-inner-icon="mdi-text-box-outline" />
+                        :rules="[rules.required]"
+                        color="error"
+                        bg-color="grey-lighten-5"
+                        prepend-inner-icon="mdi-text-box-outline"
+                    />
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions class="pa-5">
                     <v-spacer></v-spacer>
-                    <v-btn variant="outlined" size="large" @click="rejectDialog = false" class="text-none px-6">
+                    <v-btn
+                        variant="outlined"
+                        size="large"
+                        @click="rejectDialog = false"
+                        class="text-none px-6"
+                    >
                         Cancel
                     </v-btn>
-                    <v-btn color="error" variant="flat" size="large" @click="confirmReject"
-                        class="text-none px-8 font-weight-bold" prepend-icon="mdi-close-thick">
+                    <v-btn
+                        color="error"
+                        variant="flat"
+                        size="large"
+                        @click="confirmReject"
+                        class="text-none px-8 font-weight-bold"
+                        prepend-icon="mdi-close-thick"
+                    >
                         Confirm Rejection
                     </v-btn>
                 </v-card-actions>
@@ -1097,54 +1668,80 @@
                 <div class="dialog-header bg-gradient-red">
                     <div class="header-content">
                         <div class="header-icon">
-                            <v-icon color="white" size="28">mdi-delete-alert</v-icon>
+                            <v-icon color="white" size="28"
+                                >mdi-delete-alert</v-icon
+                            >
                         </div>
                         <div class="header-text">
-                            <h2 class="dialog-title text-white">Delete Leave Request</h2>
-                            <p class="dialog-subtitle text-white opacity-90">This action cannot be undone</p>
+                            <h2 class="dialog-title text-white">
+                                Delete Leave Request
+                            </h2>
+                            <p class="dialog-subtitle text-white opacity-90">
+                                This action cannot be undone
+                            </p>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="dialog-content" v-if="requestToDelete">
                     <div class="warning-box mb-4">
-                        <v-icon color="warning" size="24" class="mr-3">mdi-alert-triangle</v-icon>
+                        <v-icon color="warning" size="24" class="mr-3"
+                            >mdi-alert-triangle</v-icon
+                        >
                         <div>
-                            <div class="font-weight-bold text-h6 mb-1">Warning: Permanent Deletion</div>
+                            <div class="font-weight-bold text-h6 mb-1">
+                                Warning: Permanent Deletion
+                            </div>
                             <div class="text-body-2 text-grey-darken-1">
-                                You are about to permanently delete this leave request. This action cannot be reversed.
+                                You are about to permanently delete this leave
+                                request. This action cannot be reversed.
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="request-details-box pa-4">
-                        <h4 class="text-subtitle-1 font-weight-bold mb-3 text-red-darken-2">
+                        <h4
+                            class="text-subtitle-1 font-weight-bold mb-3 text-red-darken-2"
+                        >
                             <v-icon class="mr-2">mdi-file-document</v-icon>
                             Request Details
                         </h4>
                         <div class="d-flex flex-column gap-2">
                             <div class="d-flex align-center">
-                                <strong class="mr-2">Student:</strong> {{ requestToDelete.student || 'Personal Request' }}
+                                <strong class="mr-2">Student:</strong>
+                                {{
+                                    requestToDelete.student ||
+                                    "Personal Request"
+                                }}
                             </div>
                             <div class="d-flex align-center">
-                                <strong class="mr-2">Type:</strong> {{ requestToDelete.type }}
+                                <strong class="mr-2">Type:</strong>
+                                {{ requestToDelete.type }}
                             </div>
                             <div class="d-flex align-center">
-                                <strong class="mr-2">Dates:</strong> {{ formatDate(requestToDelete.startDate) }} - {{ formatDate(requestToDelete.endDate) }}
+                                <strong class="mr-2">Dates:</strong>
+                                {{ formatDate(requestToDelete.startDate) }} -
+                                {{ formatDate(requestToDelete.endDate) }}
                             </div>
                             <div class="d-flex align-center">
-                                <strong class="mr-2">Status:</strong> 
-                                <v-chip :color="getStatusColor(requestToDelete.status)" size="small" class="ml-1">
+                                <strong class="mr-2">Status:</strong>
+                                <v-chip
+                                    :color="
+                                        getStatusColor(requestToDelete.status)
+                                    "
+                                    size="small"
+                                    class="ml-1"
+                                >
                                     {{ requestToDelete.status }}
                                 </v-chip>
                             </div>
                         </div>
                     </div>
-                    
-                    <v-textarea 
-                        v-model="deleteReason" 
-                        label="Reason for deletion (optional)" 
-                        variant="outlined" 
+
+                    <v-textarea
+                        v-model="deleteReason"
+                        label="Reason for deletion (optional)"
+                        variant="outlined"
                         rows="3"
                         placeholder="Optional: Provide a reason for this deletion for audit purposes..."
                         class="mt-4"
@@ -1152,13 +1749,17 @@
                         prepend-inner-icon="mdi-note-text-outline"
                     />
                 </div>
-                
+
                 <v-divider></v-divider>
                 <div class="dialog-actions">
                     <v-btn
                         variant="outlined"
                         size="large"
-                        @click="deleteDialog = false; requestToDelete = null; deleteReason = ''"
+                        @click="
+                            deleteDialog = false;
+                            requestToDelete = null;
+                            deleteReason = '';
+                        "
                         class="cancel-btn action-btn"
                         prepend-icon="mdi-close"
                     >
@@ -1191,507 +1792,525 @@
 <script setup>
 definePageMeta({
     // middleware: ['auth', 'role-lecturer'],
-    layout: 'lecturer'
-})
+    layout: "lecturer",
+});
 
 // State
-const activeTab = ref('student-requests')
-const showNewLeaveDialog = ref(false)
-const viewStudentDialog = ref(false)
-const viewMyRequestDialog = ref(false)
-const rejectDialog = ref(false)
-const deleteDialog = ref(false)
-const leaveFormValid = ref(false)
-const selectedStudentRequest = ref(null)
-const selectedMyRequest = ref(null)
-const rejectReason = ref('')
-const requestToReject = ref(null)
-const requestToDelete = ref(null)
-const deleteReason = ref('')
-const isEditMode = ref(false)
-const formLoading = ref(false)
-const leaveFormRef = ref(null)
-const isLecturerRequest = ref(false) // Track if form is for lecturer or student request
+const activeTab = ref("student-requests");
+const showNewLeaveDialog = ref(false);
+const viewStudentDialog = ref(false);
+const viewMyRequestDialog = ref(false);
+const rejectDialog = ref(false);
+const deleteDialog = ref(false);
+const leaveFormValid = ref(false);
+const selectedStudentRequest = ref(null);
+const selectedMyRequest = ref(null);
+const rejectReason = ref("");
+const requestToReject = ref(null);
+const requestToDelete = ref(null);
+const deleteReason = ref("");
+const isEditMode = ref(false);
+const formLoading = ref(false);
+const leaveFormRef = ref(null);
+const isLecturerRequest = ref(false); // Track if form is for lecturer or student request
 
 // Filters
-const studentSearchQuery = ref('')
-const studentStatusFilter = ref('All')
-const studentClassFilter = ref('All Classes')
+const studentSearchQuery = ref("");
+const studentStatusFilter = ref("All");
+const studentClassFilter = ref("All Classes");
 
 // Snackbar
-const snackbar = ref(false)
-const snackbarMessage = ref('')
-const snackbarColor = ref('success')
+const snackbar = ref(false);
+const snackbarMessage = ref("");
+const snackbarColor = ref("success");
 
 // Form Data
 const leaveFormData = reactive({
     id: null,
-    studentName: '',
-    studentId: '',
-    class: '',
-    contactNumber: '',
-    startDate: '',
-    endDate: '',
-    type: '',
-    reason: '',
+    studentName: "",
+    studentId: "",
+    class: "",
+    contactNumber: "",
+    startDate: "",
+    endDate: "",
+    type: "",
+    reason: "",
     attachment: null,
-    status: 'Pending'
-})
+    status: "Pending",
+});
 
 // Lecturer Personal Leave Form Data
 const lecturerLeaveFormData = reactive({
     id: null,
-    lecturerName: 'Dr. John Smith', // This would come from auth context
-    employeeId: 'LEC001', // This would come from auth context
-    department: 'Computer Science', // This would come from auth context
-    contactNumber: '',
-    email: '',
-    startDate: '',
-    endDate: '',
-    type: '',
-    reason: '',
+    lecturerName: "Dr. John Smith", // This would come from auth context
+    employeeId: "LEC001", // This would come from auth context
+    department: "Computer Science", // This would come from auth context
+    contactNumber: "",
+    email: "",
+    startDate: "",
+    endDate: "",
+    type: "",
+    reason: "",
     attachment: null,
-    emergencyContact: '',
-    emergencyPhone: '',
-    status: 'Pending'
-})
+    emergencyContact: "",
+    emergencyPhone: "",
+    status: "Pending",
+});
 
 // Options
-const leaveTypes = ['Sick Leave', 'Personal Leave', 'Emergency Leave', 'Medical Leave', 'Conference', 'Research', 'Vacation', 'Family Emergency']
-const statusFilterOptions = ['All', 'Pending', 'Approved', 'Rejected']
-const classFilterOptions = ['All Classes', 'CS201', 'CS303', 'CS405', 'CS407', 'CS501']
-const classOptions = ['CS201', 'CS303', 'CS405', 'CS407', 'CS501', 'CS601', 'CS603', 'CS701']
+const leaveTypes = [
+    "Sick Leave",
+    "Personal Leave",
+    "Emergency Leave",
+    "Medical Leave",
+    "Conference",
+    "Research",
+    "Vacation",
+    "Family Emergency",
+];
+const statusFilterOptions = ["All", "Pending", "Approved", "Rejected"];
+const classFilterOptions = [
+    "All Classes",
+    "CS201",
+    "CS303",
+    "CS405",
+    "CS407",
+    "CS501",
+];
+const classOptions = [
+    "CS201",
+    "CS303",
+    "CS405",
+    "CS407",
+    "CS501",
+    "CS601",
+    "CS603",
+    "CS701",
+];
 
 // Comprehensive Validation Rules
 const rules = {
-    required: value => !!value || 'This field is required',
-    
-    studentId: value => {
-        if (!value) return 'Student ID is required'
-        const pattern = /^e\d{8}$/
-        return pattern.test(value) || 'Student ID must be in format: e20210001'
-    },
-    
-    studentName: value => {
-        if (!value) return 'Student name is required'
-        if (value.length < 2) return 'Student name must be at least 2 characters'
-        if (value.length > 50) return 'Student name must not exceed 50 characters'
-        const pattern = /^[a-zA-Z\s]+$/
-        return pattern.test(value) || 'Student name can only contain letters and spaces'
-    },
-    
-    phoneNumber: value => {
-        if (!value) return 'Contact number is required'
-        const pattern = /^(\+855|0)[1-9]\d{7,8}$/
-        return pattern.test(value.replace(/\s/g, '')) || 'Please enter a valid Cambodian phone number'
-    },
-    
-    startDateNotPast: value => {
-        if (!value) return true
-        const today = new Date()
-        const selectedDate = new Date(value)
-        today.setHours(0, 0, 0, 0)
-        selectedDate.setHours(0, 0, 0, 0)
-        return selectedDate >= today || 'Start date cannot be in the past'
-    },
-    
-    endDateAfterStart: value => {
-        if (!leaveFormData.startDate || !value) return true
-        const startDate = new Date(leaveFormData.startDate)
-        const endDate = new Date(value)
-        return endDate >= startDate || 'End date must be after or equal to start date'
-    },
-    
-    minLength: (min) => value => {
-        if (!value) return true
-        return value.length >= min || `Must be at least ${min} characters`
-    },
-    
-    maxLength: (max) => value => {
-        if (!value) return true
-        return value.length <= max || `Must not exceed ${max} characters`
-    },
-    
-    email: value => {
-        if (!value) return true
-        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        return pattern.test(value) || 'Please enter a valid email address'
-    }
-}
+    required: (value) => !!value || "This field is required",
 
-// Student Leave Requests (Mock Data)
-const studentLeaveRequests = ref([
-    {
-        id: 1,
-        student: 'CHAN Sok',
-        studentId: 'e20210001',
-        class: 'CS201',
-        startDate: '2025-02-15',
-        endDate: '2025-02-17',
-        type: 'Sick Leave',
-        reason: 'I have been diagnosed with flu and need to rest for recovery.',
-        status: 'Pending',
-        submittedAt: '2025-02-10'
+    studentId: (value) => {
+        if (!value) return "Student ID is required";
+        const pattern = /^e\d{8}$/;
+        return pattern.test(value) || "Student ID must be in format: e20210001";
     },
-    {
-        id: 2,
-        student: 'LIM Dara',
-        studentId: 'e20210002',
-        class: 'CS303',
-        startDate: '2025-02-20',
-        endDate: '2025-02-20',
-        type: 'Personal Leave',
-        reason: 'Family commitment that requires my presence.',
-        status: 'Pending',
-        submittedAt: '2025-02-12'
-    },
-    {
-        id: 3,
-        student: 'SREY Pov',
-        studentId: 'e20210003',
-        class: 'CS201',
-        startDate: '2025-01-10',
-        endDate: '2025-01-12',
-        type: 'Medical Leave',
-        reason: 'Medical appointment and checkup.',
-        status: 'Approved',
-        submittedAt: '2025-01-05'
-    },
-    {
-        id: 4,
-        student: 'KIM Sreynich',
-        studentId: 'e20210004',
-        class: 'CS405',
-        startDate: '2025-01-20',
-        endDate: '2025-01-21',
-        type: 'Emergency Leave',
-        reason: 'Family emergency.',
-        status: 'Rejected',
-        rejectionReason: 'Insufficient documentation provided.',
-        submittedAt: '2025-01-18'
-    },
-    {
-        id: 5,
-        student: 'PHON Ratanak',
-        studentId: 'e20210005',
-        class: 'CS407',
-        startDate: '2025-02-25',
-        endDate: '2025-02-26',
-        type: 'Sick Leave',
-        reason: 'Fever and headache.',
-        status: 'Pending',
-        submittedAt: '2025-02-14'
-    }
-])
 
-// My Leave Requests (Mock Data)
-const myLeaveRequests = ref([
-    {
-        id: 1,
-        startDate: '2025-03-15',
-        endDate: '2025-03-17',
-        type: 'Conference',
-        reason: 'Attending International Computer Science Conference in Bangkok.',
-        status: 'Approved',
-        submittedAt: '2025-02-20',
-        adminComment: 'Approved. Please submit conference report upon return.'
+    studentName: (value) => {
+        if (!value) return "Student name is required";
+        if (value.length < 2)
+            return "Student name must be at least 2 characters";
+        if (value.length > 50)
+            return "Student name must not exceed 50 characters";
+        const pattern = /^[a-zA-Z\s]+$/;
+        return (
+            pattern.test(value) ||
+            "Student name can only contain letters and spaces"
+        );
     },
-    {
-        id: 2,
-        startDate: '2025-04-10',
-        endDate: '2025-04-10',
-        type: 'Personal Leave',
-        reason: 'Personal matters to attend to.',
-        status: 'Pending',
-        submittedAt: '2025-02-22'
+
+    phoneNumber: (value) => {
+        if (!value) return "Contact number is required";
+        const pattern = /^(\+855|0)[1-9]\d{7,8}$/;
+        return (
+            pattern.test(value.replace(/\s/g, "")) ||
+            "Please enter a valid Cambodian phone number"
+        );
     },
-    {
-        id: 3,
-        startDate: '2025-01-05',
-        endDate: '2025-01-07',
-        type: 'Sick Leave',
-        reason: 'Medical treatment required.',
-        status: 'Approved',
-        submittedAt: '2024-12-28',
-        adminComment: 'Get well soon.'
+
+    startDateNotPast: (value) => {
+        if (!value) return true;
+        const today = new Date();
+        const selectedDate = new Date(value);
+        today.setHours(0, 0, 0, 0);
+        selectedDate.setHours(0, 0, 0, 0);
+        return selectedDate >= today || "Start date cannot be in the past";
     },
-    {
-        id: 4,
-        startDate: '2024-12-20',
-        endDate: '2024-12-21',
-        type: 'Research',
-        reason: 'Field research for ongoing project.',
-        status: 'Rejected',
-        submittedAt: '2024-12-10',
-        adminComment: 'Please reschedule as this conflicts with final exam period.'
-    }
-])
+
+    endDateAfterStart: (value) => {
+        if (!leaveFormData.startDate || !value) return true;
+        const startDate = new Date(leaveFormData.startDate);
+        const endDate = new Date(value);
+        return (
+            endDate >= startDate ||
+            "End date must be after or equal to start date"
+        );
+    },
+
+    minLength: (min) => (value) => {
+        if (!value) return true;
+        return value.length >= min || `Must be at least ${min} characters`;
+    },
+
+    maxLength: (max) => (value) => {
+        if (!value) return true;
+        return value.length <= max || `Must not exceed ${max} characters`;
+    },
+
+    email: (value) => {
+        if (!value) return true;
+        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return pattern.test(value) || "Please enter a valid email address";
+    },
+};
+
+// Student Leave Requests (API)
+const studentLeaveRequests = ref([]);
+
+// My Leave Requests (not supported by backend yet)
+const myLeaveRequests = ref([]);
 
 // Table Headers
 const studentRequestHeaders = [
-    { title: 'Student', key: 'student' },
-    { title: 'Class', key: 'class' },
-    { title: 'Type', key: 'type' },
-    { title: 'Dates', key: 'dates' },
-    { title: 'Status', key: 'status' },
-    { title: 'Approval', key: 'approval', sortable: false },
-    { title: 'Actions', key: 'actions', sortable: false }
-]
+    { title: "Student", key: "student" },
+    { title: "Class", key: "class" },
+    { title: "Type", key: "type" },
+    { title: "Dates", key: "dates" },
+    { title: "Status", key: "status" },
+    { title: "Approval", key: "approval", sortable: false },
+    { title: "Actions", key: "actions", sortable: false },
+];
 
 const myRequestHeaders = [
-    { title: 'Dates', key: 'dates' },
-    { title: 'Duration', key: 'duration' },
-    { title: 'Type', key: 'type' },
-    { title: 'Status', key: 'status' },
-    { title: 'Submitted', key: 'submittedAt' },
-    { title: 'Actions', key: 'actions', sortable: false }
-]
+    { title: "Dates", key: "dates" },
+    { title: "Duration", key: "duration" },
+    { title: "Type", key: "type" },
+    { title: "Status", key: "status" },
+    { title: "Submitted", key: "submittedAt" },
+    { title: "Actions", key: "actions", sortable: false },
+];
 
 // Computed
 const filteredStudentRequests = computed(() => {
-    let result = studentLeaveRequests.value
+    let result = studentLeaveRequests.value;
 
     // Filter by search
     if (studentSearchQuery.value) {
-        const query = studentSearchQuery.value.toLowerCase()
-        result = result.filter(r =>
-            r.student.toLowerCase().includes(query) ||
-            r.studentId.toLowerCase().includes(query)
-        )
+        const query = studentSearchQuery.value.toLowerCase();
+        result = result.filter(
+            (r) =>
+                r.student.toLowerCase().includes(query) ||
+                r.studentId.toLowerCase().includes(query),
+        );
     }
 
     // Filter by status
-    if (studentStatusFilter.value !== 'All') {
-        result = result.filter(r => r.status === studentStatusFilter.value)
+    if (studentStatusFilter.value !== "All") {
+        result = result.filter((r) => r.status === studentStatusFilter.value);
     }
 
     // Filter by class
-    if (studentClassFilter.value !== 'All Classes') {
-        result = result.filter(r => r.class === studentClassFilter.value)
+    if (studentClassFilter.value !== "All Classes") {
+        result = result.filter((r) => r.class === studentClassFilter.value);
     }
 
-    return result
-})
+    return result;
+});
 
-const pendingStudentRequests = computed(() =>
-    studentLeaveRequests.value.filter(r => r.status === 'Pending').length
-)
+const pendingStudentRequests = computed(
+    () =>
+        studentLeaveRequests.value.filter((r) => r.status === "Pending").length,
+);
 
-const approvedStudentRequests = computed(() =>
-    studentLeaveRequests.value.filter(r => r.status === 'Approved').length
-)
+const approvedStudentRequests = computed(
+    () =>
+        studentLeaveRequests.value.filter((r) => r.status === "Approved")
+            .length,
+);
 
-const rejectedStudentRequests = computed(() =>
-    studentLeaveRequests.value.filter(r => r.status === 'Rejected').length
-)
+const rejectedStudentRequests = computed(
+    () =>
+        studentLeaveRequests.value.filter((r) => r.status === "Rejected")
+            .length,
+);
 
-const approvedMyRequests = computed(() =>
-    myLeaveRequests.value.filter(r => r.status === 'Approved').length
-)
+const approvedMyRequests = computed(
+    () => myLeaveRequests.value.filter((r) => r.status === "Approved").length,
+);
 
-const pendingMyRequests = computed(() =>
-    myLeaveRequests.value.filter(r => r.status === 'Pending').length
-)
+const pendingMyRequests = computed(
+    () => myLeaveRequests.value.filter((r) => r.status === "Pending").length,
+);
 
-const rejectedMyRequests = computed(() =>
-    myLeaveRequests.value.filter(r => r.status === 'Rejected').length
-)
+const rejectedMyRequests = computed(
+    () => myLeaveRequests.value.filter((r) => r.status === "Rejected").length,
+);
 
 // Enhanced computed properties for form functionality
 const calculateDurationText = computed(() => {
-    const formData = isLecturerRequest.value ? lecturerLeaveFormData : leaveFormData
-    if (!formData.startDate || !formData.endDate) return 'Select dates'
-    const duration = calculateDuration(formData.startDate, formData.endDate)
-    return duration === 1 ? '1 day' : `${duration} days`
-})
+    const formData = isLecturerRequest.value
+        ? lecturerLeaveFormData
+        : leaveFormData;
+    if (!formData.startDate || !formData.endDate) return "Select dates";
+    const duration = calculateDuration(formData.startDate, formData.endDate);
+    return duration === 1 ? "1 day" : `${duration} days`;
+});
 
 const currentFormData = computed(() => {
-    return isLecturerRequest.value ? lecturerLeaveFormData : leaveFormData
-})
+    return isLecturerRequest.value ? lecturerLeaveFormData : leaveFormData;
+});
 
 const isFormValid = computed(() => {
-    const formData = currentFormData.value
+    const formData = currentFormData.value;
     if (isLecturerRequest.value) {
-        return leaveFormValid.value && 
-               formData.lecturerName && 
-               formData.employeeId && 
-               formData.contactNumber && 
-               formData.startDate && 
-               formData.endDate && 
-               formData.type && 
-               formData.reason
+        return (
+            leaveFormValid.value &&
+            formData.lecturerName &&
+            formData.employeeId &&
+            formData.contactNumber &&
+            formData.startDate &&
+            formData.endDate &&
+            formData.type &&
+            formData.reason
+        );
     } else {
-        return leaveFormValid.value && 
-               formData.studentName && 
-               formData.studentId && 
-               formData.class && 
-               formData.contactNumber && 
-               formData.startDate && 
-               formData.endDate && 
-               formData.type && 
-               formData.reason
+        return (
+            leaveFormValid.value &&
+            formData.studentName &&
+            formData.studentId &&
+            formData.class &&
+            formData.contactNumber &&
+            formData.startDate &&
+            formData.endDate &&
+            formData.type &&
+            formData.reason
+        );
     }
-})
+});
 
 const formTitle = computed(() => {
-    return isEditMode.value ? 'Edit Leave Request' : 'New Leave Request'
-})
+    return isEditMode.value ? "Edit Leave Request" : "New Leave Request";
+});
 
 const submitButtonText = computed(() => {
-    if (formLoading.value) return isEditMode.value ? 'Updating...' : 'Submitting...'
-    return isEditMode.value ? 'Update Request' : 'Submit Request'
-})
+    if (formLoading.value)
+        return isEditMode.value ? "Updating..." : "Submitting...";
+    return isEditMode.value ? "Update Request" : "Submit Request";
+});
 
 // Methods
 const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    })
-}
+    return new Date(date).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    });
+};
 
 const formatTime = (dateString) => {
-    if (!dateString) return ''
+    if (!dateString) return "";
     try {
-        const date = new Date(dateString)
-        return date.toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit'
-        })
+        const date = new Date(dateString);
+        return date.toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
     } catch (error) {
-        return ''
+        return "";
     }
-}
+};
 
 const calculateDuration = (startDate, endDate) => {
-    const start = new Date(startDate)
-    const end = new Date(endDate)
-    const diffTime = Math.abs(end - start)
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
-    return diffDays
-}
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    return diffDays;
+};
 
 const getStatusColor = (status) => {
     switch (status) {
-        case 'Approved': return 'light-green'
-        case 'Rejected': return 'red-lighten-2'
-        case 'Pending': return 'orange-lighten-2'
-        default: return 'grey'
+        case "Approved":
+            return "light-green";
+        case "Rejected":
+            return "red-lighten-2";
+        case "Pending":
+            return "orange-lighten-2";
+        default:
+            return "grey";
     }
-}
+};
 
 const getStatusIcon = (status) => {
     switch (status) {
-        case 'Approved': return 'mdi-check-circle'
-        case 'Rejected': return 'mdi-close-circle'
-        case 'Pending': return 'mdi-clock-outline'
-        default: return 'mdi-help-circle'
+        case "Approved":
+            return "mdi-check-circle";
+        case "Rejected":
+            return "mdi-close-circle";
+        case "Pending":
+            return "mdi-clock-outline";
+        default:
+            return "mdi-help-circle";
     }
-}
+};
 
 const getTypeColor = (type) => {
     switch (type) {
-        case 'Sick Leave': return 'light-blue'
-        case 'Personal Leave': return 'light-blue'
-        case 'Emergency Leave': return 'light-blue'
-        case 'Medical Leave': return 'light-blue'
-        case 'Conference': return 'light-blue'
-        case 'Research': return 'light-blue'
-        case 'Vacation': return 'light-blue'
-        case 'Family Emergency': return 'light-blue'
-        default: return 'light-blue'
+        case "Sick Leave":
+            return "light-blue";
+        case "Personal Leave":
+            return "light-blue";
+        case "Emergency Leave":
+            return "light-blue";
+        case "Medical Leave":
+            return "light-blue";
+        case "Conference":
+            return "light-blue";
+        case "Research":
+            return "light-blue";
+        case "Vacation":
+            return "light-blue";
+        case "Family Emergency":
+            return "light-blue";
+        default:
+            return "light-blue";
     }
-}
+};
 
 const resetStudentFilters = () => {
-    studentSearchQuery.value = ''
-    studentStatusFilter.value = 'All'
-    studentClassFilter.value = 'All Classes'
-}
+    studentSearchQuery.value = "";
+    studentStatusFilter.value = "All";
+    studentClassFilter.value = "All Classes";
+};
 
 const viewStudentRequest = (request) => {
-    selectedStudentRequest.value = request
-    viewStudentDialog.value = true
-}
+    selectedStudentRequest.value = request;
+    viewStudentDialog.value = true;
+};
 
 const editStudentRequest = (request) => {
-    isEditMode.value = true
-    
+    isEditMode.value = true;
+
     // Populate form with existing data
     Object.assign(leaveFormData, {
         id: request.id,
-        studentName: request.student || '',
-        studentId: request.studentId || '',
-        class: request.class || '',
-        contactNumber: request.contactNumber || '',
-        startDate: request.startDate || '',
-        endDate: request.endDate || '',
-        type: request.type || '',
-        reason: request.reason || '',
+        studentName: request.student || "",
+        studentId: request.studentId || "",
+        class: request.class || "",
+        contactNumber: request.contactNumber || "",
+        startDate: request.startDate || "",
+        endDate: request.endDate || "",
+        type: request.type || "",
+        reason: request.reason || "",
         attachment: request.attachment || null,
-        status: request.status || 'Pending'
-    })
-    
-    showNewLeaveDialog.value = true
-}
+        status: request.status || "Pending",
+    });
+
+    showNewLeaveDialog.value = true;
+};
 
 const viewMyRequest = (request) => {
-    selectedMyRequest.value = request
-    viewMyRequestDialog.value = true
-}
+    selectedMyRequest.value = request;
+    viewMyRequestDialog.value = true;
+};
 
-const approveRequest = (request) => {
-    const index = studentLeaveRequests.value.findIndex(r => r.id === request.id)
-    if (index !== -1) {
-        studentLeaveRequests.value[index].status = 'Approved'
-        showSnackbar('Leave request approved successfully', 'success')
-        viewStudentDialog.value = false
+const normalizeStatus = (status) => {
+    if (!status) return "Pending";
+    const s = String(status).toLowerCase();
+    return s.charAt(0).toUpperCase() + s.slice(1);
+};
+
+const mapLeaveRequest = (item) => {
+    return {
+        id: item.id,
+        student:
+            item.student_name ||
+            item.student_code ||
+            `Student ${item.student_id || ""}`,
+        studentId: item.student_code || String(item.student_id || ""),
+        class: item.group || "N/A",
+        startDate: item.start_date,
+        endDate: item.end_date,
+        type: item.leave_type || "Leave",
+        reason: item.reason || "",
+        status: normalizeStatus(item.status),
+        submittedAt: item.created_at
+            ? String(item.created_at).split("T")[0]
+            : "",
+    };
+};
+
+const fetchStudentLeaveRequests = async () => {
+    const { $UserPrivateAxios } = useNuxtApp();
+    const res = await $UserPrivateAxios.get("/lecturer/auth/leave-requests");
+    const data = res?.data?.data || res?.data || [];
+    const list = Array.isArray(data) ? data : data.items || [];
+    studentLeaveRequests.value = list.map(mapLeaveRequest);
+};
+
+const approveRequest = async (request) => {
+    try {
+        const { $UserPrivateAxios } = useNuxtApp();
+        await $UserPrivateAxios.post(
+            `/lecturer/auth/leave-requests/${request.id}/approve`,
+            { approved_by: null, notes: null },
+        );
+        await fetchStudentLeaveRequests();
+        showSnackbar("Leave request approved successfully", "success");
+        viewStudentDialog.value = false;
+    } catch (err) {
+        console.error("Approve request failed:", err);
+        showSnackbar("Failed to approve leave request", "error");
     }
-}
+};
 
 const rejectRequest = (request) => {
-    requestToReject.value = request
-    rejectDialog.value = true
-    viewStudentDialog.value = false
-}
+    requestToReject.value = request;
+    rejectDialog.value = true;
+    viewStudentDialog.value = false;
+};
 
 const confirmReject = () => {
-    if (requestToReject.value && rejectReason.value) {
-        const index = studentLeaveRequests.value.findIndex(r => r.id === requestToReject.value.id)
-        if (index !== -1) {
-            studentLeaveRequests.value[index].status = 'Rejected'
-            studentLeaveRequests.value[index].rejectionReason = rejectReason.value
-            showSnackbar('Leave request rejected', 'error')
+    if (!requestToReject.value || !rejectReason.value) return;
+
+    const runReject = async () => {
+        try {
+            const { $UserPrivateAxios } = useNuxtApp();
+            await $UserPrivateAxios.post(
+                `/lecturer/auth/leave-requests/${requestToReject.value.id}/reject`,
+                { rejected_by: null, rejection_reason: rejectReason.value },
+            );
+            await fetchStudentLeaveRequests();
+            showSnackbar("Leave request rejected", "error");
+        } catch (err) {
+            console.error("Reject request failed:", err);
+            showSnackbar("Failed to reject leave request", "error");
+        } finally {
+            rejectDialog.value = false;
+            rejectReason.value = "";
+            requestToReject.value = null;
         }
-        rejectDialog.value = false
-        rejectReason.value = ''
-        requestToReject.value = null
-    }
-}
+    };
+
+    runReject();
+};
 
 const submitLeaveRequest = async () => {
     if (!leaveFormValid.value || !isFormValid.value) {
-        showSnackbar('Please fill in all required fields correctly', 'warning')
-        return
+        showSnackbar("Please fill in all required fields correctly", "warning");
+        return;
     }
-    
-    formLoading.value = true
-    
+
+    formLoading.value = true;
+
     try {
         // Validate form data before submission
-        const validationErrors = validateFormData()
+        const validationErrors = validateFormData();
         if (validationErrors.length > 0) {
-            showSnackbar(validationErrors[0], 'error')
-            return
+            showSnackbar(validationErrors[0], "error");
+            return;
         }
-        
+
         // Simulate API call with more realistic delay
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
         if (isEditMode.value && leaveFormData.id) {
             // Update existing request
-            const index = studentLeaveRequests.value.findIndex(r => r.id === leaveFormData.id)
+            const index = studentLeaveRequests.value.findIndex(
+                (r) => r.id === leaveFormData.id,
+            );
             if (index !== -1) {
                 const updatedRequest = {
                     ...studentLeaveRequests.value[index],
@@ -1704,18 +2323,22 @@ const submitLeaveRequest = async () => {
                     type: leaveFormData.type,
                     reason: leaveFormData.reason,
                     attachment: leaveFormData.attachment,
-                    updatedAt: new Date().toISOString().split('T')[0]
-                }
-                studentLeaveRequests.value[index] = updatedRequest
-                showSnackbar('Leave request updated successfully', 'success')
+                    updatedAt: new Date().toISOString().split("T")[0],
+                };
+                studentLeaveRequests.value[index] = updatedRequest;
+                showSnackbar("Leave request updated successfully", "success");
             } else {
-                showSnackbar('Request not found for update', 'error')
-                return
+                showSnackbar("Request not found for update", "error");
+                return;
             }
         } else {
             // Create new request with enhanced data
             const newRequest = {
-                id: Math.max(...studentLeaveRequests.value.map(r => r.id || 0), 0) + 1,
+                id:
+                    Math.max(
+                        ...studentLeaveRequests.value.map((r) => r.id || 0),
+                        0,
+                    ) + 1,
                 student: leaveFormData.studentName,
                 studentId: leaveFormData.studentId,
                 class: leaveFormData.class,
@@ -1725,251 +2348,296 @@ const submitLeaveRequest = async () => {
                 type: leaveFormData.type,
                 reason: leaveFormData.reason,
                 attachment: leaveFormData.attachment,
-                status: 'Pending',
-                submittedAt: new Date().toISOString().split('T')[0],
-                duration: calculateDuration(leaveFormData.startDate, leaveFormData.endDate)
-            }
-            
+                status: "Pending",
+                submittedAt: new Date().toISOString().split("T")[0],
+                duration: calculateDuration(
+                    leaveFormData.startDate,
+                    leaveFormData.endDate,
+                ),
+            };
+
             // Add to the beginning of the array for better UX
-            studentLeaveRequests.value.unshift(newRequest)
-            showSnackbar(`Leave request submitted successfully for ${leaveFormData.studentName}`, 'success')
+            studentLeaveRequests.value.unshift(newRequest);
+            showSnackbar(
+                `Leave request submitted successfully for ${leaveFormData.studentName}`,
+                "success",
+            );
         }
-        
-        closeLeaveDialog()
+
+        closeLeaveDialog();
     } catch (error) {
-        console.error('Error submitting leave request:', error)
-        showSnackbar('Failed to submit request. Please try again.', 'error')
+        console.error("Error submitting leave request:", error);
+        showSnackbar("Failed to submit request. Please try again.", "error");
     } finally {
-        formLoading.value = false
+        formLoading.value = false;
     }
-}
+};
 
 // Form validation helper
 const validateFormData = () => {
-    const errors = []
-    
-    if (!leaveFormData.studentName?.trim()) errors.push('Student name is required')
-    if (!leaveFormData.studentId?.trim()) errors.push('Student ID is required')
-    if (!leaveFormData.class) errors.push('Class is required')
-    if (!leaveFormData.contactNumber?.trim()) errors.push('Contact number is required')
-    if (!leaveFormData.startDate) errors.push('Start date is required')
-    if (!leaveFormData.endDate) errors.push('End date is required')
-    if (!leaveFormData.type) errors.push('Leave type is required')
-    if (!leaveFormData.reason?.trim()) errors.push('Reason is required')
-    
+    const errors = [];
+
+    if (!leaveFormData.studentName?.trim())
+        errors.push("Student name is required");
+    if (!leaveFormData.studentId?.trim()) errors.push("Student ID is required");
+    if (!leaveFormData.class) errors.push("Class is required");
+    if (!leaveFormData.contactNumber?.trim())
+        errors.push("Contact number is required");
+    if (!leaveFormData.startDate) errors.push("Start date is required");
+    if (!leaveFormData.endDate) errors.push("End date is required");
+    if (!leaveFormData.type) errors.push("Leave type is required");
+    if (!leaveFormData.reason?.trim()) errors.push("Reason is required");
+
     // Validate date logic
     if (leaveFormData.startDate && leaveFormData.endDate) {
-        const startDate = new Date(leaveFormData.startDate)
-        const endDate = new Date(leaveFormData.endDate)
+        const startDate = new Date(leaveFormData.startDate);
+        const endDate = new Date(leaveFormData.endDate);
         if (endDate < startDate) {
-            errors.push('End date must be after start date')
+            errors.push("End date must be after start date");
         }
     }
-    
-    return errors
-}
+
+    return errors;
+};
 
 const closeLeaveDialog = () => {
     // Confirm close if form has data and is not submitted
-    const formData = isLecturerRequest.value ? lecturerLeaveFormData : leaveFormData
-    const hasFormData = Object.values(formData).some(value => 
-        value !== null && value !== '' && value !== 'Pending'
-    )
-    
+    const formData = isLecturerRequest.value
+        ? lecturerLeaveFormData
+        : leaveFormData;
+    const hasFormData = Object.values(formData).some(
+        (value) => value !== null && value !== "" && value !== "Pending",
+    );
+
     if (hasFormData && !formLoading.value) {
-        const confirmClose = confirm('You have unsaved changes. Are you sure you want to close?')
-        if (!confirmClose) return
+        const confirmClose = confirm(
+            "You have unsaved changes. Are you sure you want to close?",
+        );
+        if (!confirmClose) return;
     }
-    
-    showNewLeaveDialog.value = false
-    isEditMode.value = false
-    isLecturerRequest.value = false
-    formLoading.value = false
-    
+
+    showNewLeaveDialog.value = false;
+    isEditMode.value = false;
+    isLecturerRequest.value = false;
+    formLoading.value = false;
+
     // Enhanced form reset
     Object.assign(leaveFormData, {
         id: null,
-        studentName: '',
-        studentId: '',
-        class: '',
-        contactNumber: '',
-        startDate: '',
-        endDate: '',
-        type: '',
-        reason: '',
+        studentName: "",
+        studentId: "",
+        class: "",
+        contactNumber: "",
+        startDate: "",
+        endDate: "",
+        type: "",
+        reason: "",
         attachment: null,
-        status: 'Pending'
-    })
-    
+        status: "Pending",
+    });
+
     Object.assign(lecturerLeaveFormData, {
         id: null,
-        lecturerName: 'Dr. John Smith',
-        employeeId: 'LEC001',
-        department: 'Computer Science',
-        contactNumber: '',
-        email: '',
-        startDate: '',
-        endDate: '',
-        type: '',
-        reason: '',
+        lecturerName: "Dr. John Smith",
+        employeeId: "LEC001",
+        department: "Computer Science",
+        contactNumber: "",
+        email: "",
+        startDate: "",
+        endDate: "",
+        type: "",
+        reason: "",
         attachment: null,
-        emergencyContact: '',
-        emergencyPhone: '',
-        status: 'Pending'
-    })
-    
+        emergencyContact: "",
+        emergencyPhone: "",
+        status: "Pending",
+    });
+
     // Reset form validation with delay to ensure proper cleanup
     nextTick(() => {
         if (leaveFormRef.value) {
-            leaveFormRef.value.resetValidation()
+            leaveFormRef.value.resetValidation();
         }
-        leaveFormValid.value = false
-    })
-}
+        leaveFormValid.value = false;
+    });
+};
 
 // Methods for opening different form types
 const openStudentLeaveForm = () => {
-    isLecturerRequest.value = false
-    isEditMode.value = false
-    showNewLeaveDialog.value = true
-}
+    isLecturerRequest.value = false;
+    isEditMode.value = false;
+    showNewLeaveDialog.value = true;
+};
 
 const openLecturerLeaveForm = () => {
-    isLecturerRequest.value = true
-    isEditMode.value = false
-    showNewLeaveDialog.value = true
-}
+    isLecturerRequest.value = true;
+    isEditMode.value = false;
+    showNewLeaveDialog.value = true;
+};
 
 const deleteMyRequest = async (request) => {
-    if (!confirm(`Are you sure you want to delete this leave request?\n\nRequest: ${request.type}\nDates: ${formatDate(request.startDate)} to ${formatDate(request.endDate)}\n\nThis action cannot be undone.`)) {
-        return
+    if (
+        !confirm(
+            `Are you sure you want to delete this leave request?\n\nRequest: ${request.type}\nDates: ${formatDate(request.startDate)} to ${formatDate(request.endDate)}\n\nThis action cannot be undone.`,
+        )
+    ) {
+        return;
     }
-    
+
     try {
         // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 500))
-        
-        const index = myLeaveRequests.value.findIndex(r => r.id === request.id)
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        const index = myLeaveRequests.value.findIndex(
+            (r) => r.id === request.id,
+        );
         if (index !== -1) {
-            myLeaveRequests.value.splice(index, 1)
-            showSnackbar('Your leave request has been deleted successfully', 'success')
+            myLeaveRequests.value.splice(index, 1);
+            showSnackbar(
+                "Your leave request has been deleted successfully",
+                "success",
+            );
         } else {
-            showSnackbar('Request not found', 'error')
+            showSnackbar("Request not found", "error");
         }
     } catch (error) {
-        console.error('Error deleting request:', error)
-        showSnackbar('Failed to delete request. Please try again.', 'error')
+        console.error("Error deleting request:", error);
+        showSnackbar("Failed to delete request. Please try again.", "error");
     }
-}
+};
 
 const editMyRequest = (request) => {
     // Convert my request to student request format for editing
-    isEditMode.value = true
-    
+    isEditMode.value = true;
+
     // Note: For editing personal requests, we might need different form handling
     // For now, we'll use the existing form but with personal data
     Object.assign(leaveFormData, {
         id: request.id,
-        studentName: 'Personal Request', // Placeholder
-        studentId: 'LECTURER', // Placeholder
-        class: 'N/A', // Not applicable for lecturers
-        contactNumber: '', // Could be lecturer's contact
-        startDate: request.startDate || '',
-        endDate: request.endDate || '',
-        type: request.type || '',
-        reason: request.reason || '',
+        studentName: "Personal Request", // Placeholder
+        studentId: "LECTURER", // Placeholder
+        class: "N/A", // Not applicable for lecturers
+        contactNumber: "", // Could be lecturer's contact
+        startDate: request.startDate || "",
+        endDate: request.endDate || "",
+        type: request.type || "",
+        reason: request.reason || "",
         attachment: request.attachment || null,
-        status: request.status || 'Pending'
-    })
-    
-    showNewLeaveDialog.value = true
-    showSnackbar('Editing personal leave requests will be implemented in a future update', 'info')
-}
+        status: request.status || "Pending",
+    });
+
+    showNewLeaveDialog.value = true;
+    showSnackbar(
+        "Editing personal leave requests will be implemented in a future update",
+        "info",
+    );
+};
 
 const showSnackbar = (message, color) => {
-    snackbarMessage.value = message
-    snackbarColor.value = color
-    snackbar.value = true
-}
+    snackbarMessage.value = message;
+    snackbarColor.value = color;
+    snackbar.value = true;
+};
+
+onMounted(async () => {
+    try {
+        await fetchStudentLeaveRequests();
+    } catch (err) {
+        console.error("Failed to load leave requests:", err);
+        showSnackbar("Failed to load leave requests", "error");
+    }
+});
 
 // Import/Export functions (placeholders for Group Management style compatibility)
 const handleImportCSV = async () => {
     try {
         // Placeholder for import functionality
-        showSnackbar('Import functionality not yet implemented', 'info')
+        showSnackbar("Import functionality not yet implemented", "info");
     } catch (error) {
-        showSnackbar('Import failed', 'error')
+        showSnackbar("Import failed", "error");
     }
-}
+};
 
 const handleExportExcel = () => {
     try {
         // Placeholder for export functionality
-        showSnackbar('Export to Excel functionality not yet implemented', 'info')
+        showSnackbar(
+            "Export to Excel functionality not yet implemented",
+            "info",
+        );
     } catch (error) {
-        showSnackbar('Export failed', 'error')
+        showSnackbar("Export failed", "error");
     }
-}
+};
 
 const handleExportPDF = () => {
     try {
         // Placeholder for export functionality
-        showSnackbar('Export to PDF functionality not yet implemented', 'info')
+        showSnackbar("Export to PDF functionality not yet implemented", "info");
     } catch (error) {
-        showSnackbar('Export failed', 'error')
+        showSnackbar("Export failed", "error");
     }
-}
+};
 
 const deleteRequest = (request) => {
-    requestToDelete.value = request
-    deleteDialog.value = true
-}
+    requestToDelete.value = request;
+    deleteDialog.value = true;
+};
 
 const confirmDelete = async () => {
-    if (!requestToDelete.value) return
-    
-    const request = requestToDelete.value
-    const isPersonalRequest = !request.student // My requests don't have student property
-    
+    if (!requestToDelete.value) return;
+
+    const request = requestToDelete.value;
+    const isPersonalRequest = !request.student; // My requests don't have student property
+
     try {
         // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 800))
-        
+        await new Promise((resolve) => setTimeout(resolve, 800));
+
         if (isPersonalRequest) {
             // Delete from my requests
-            const index = myLeaveRequests.value.findIndex(r => r.id === request.id)
+            const index = myLeaveRequests.value.findIndex(
+                (r) => r.id === request.id,
+            );
             if (index !== -1) {
-                myLeaveRequests.value.splice(index, 1)
-                showSnackbar('Your leave request has been deleted successfully', 'success')
+                myLeaveRequests.value.splice(index, 1);
+                showSnackbar(
+                    "Your leave request has been deleted successfully",
+                    "success",
+                );
             } else {
-                showSnackbar('Request not found', 'error')
+                showSnackbar("Request not found", "error");
             }
         } else {
             // Delete from student requests
-            const index = studentLeaveRequests.value.findIndex(r => r.id === request.id)
+            const index = studentLeaveRequests.value.findIndex(
+                (r) => r.id === request.id,
+            );
             if (index !== -1) {
-                studentLeaveRequests.value.splice(index, 1)
-                showSnackbar(`Leave request for ${request.student} deleted successfully`, 'success')
+                studentLeaveRequests.value.splice(index, 1);
+                showSnackbar(
+                    `Leave request for ${request.student} deleted successfully`,
+                    "success",
+                );
             } else {
-                showSnackbar('Request not found', 'error')
+                showSnackbar("Request not found", "error");
             }
         }
-        
+
         // Log deletion reason if provided
         if (deleteReason.value) {
-            console.log('Delete reason:', deleteReason.value)
+            console.log("Delete reason:", deleteReason.value);
         }
-        
     } catch (error) {
-        console.error('Error deleting request:', error)
-        showSnackbar('Failed to delete request. Please try again.', 'error')
+        console.error("Error deleting request:", error);
+        showSnackbar("Failed to delete request. Please try again.", "error");
     } finally {
         // Reset dialog state
-        deleteDialog.value = false
-        requestToDelete.value = null
-        deleteReason.value = ''
+        deleteDialog.value = false;
+        requestToDelete.value = null;
+        deleteReason.value = "";
     }
-}
+};
 </script>
 
 <style scoped>
@@ -2632,19 +3300,19 @@ const confirmDelete = async () => {
 }
 
 .stat-card-blue {
-    border-left-color: #3949AB;
+    border-left-color: #3949ab;
 }
 
 .stat-card-orange {
-    border-left-color: #F57C00;
+    border-left-color: #f57c00;
 }
 
 .stat-card-green {
-    border-left-color: #388E3C;
+    border-left-color: #388e3c;
 }
 
 .stat-card-red {
-    border-left-color: #D32F2F;
+    border-left-color: #d32f2f;
 }
 
 .stat-icon {
@@ -2687,23 +3355,23 @@ const confirmDelete = async () => {
 }
 
 .bg-gradient-indigo {
-    background: linear-gradient(135deg, #3949AB 0%, #5C6BC0 100%);
+    background: linear-gradient(135deg, #3949ab 0%, #5c6bc0 100%);
 }
 
 .bg-gradient-red {
-    background: linear-gradient(135deg, #D32F2F 0%, #E57373 100%);
+    background: linear-gradient(135deg, #d32f2f 0%, #e57373 100%);
 }
 
 .info-box {
     background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
     border-radius: 12px;
-    border-left: 3px solid #3949AB;
+    border-left: 3px solid #3949ab;
 }
 
 .student-info-card {
-    background: linear-gradient(135deg, #E8EAF6 0%, #C5CAE9 100%);
+    background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
     border-radius: 16px;
-    border: 2px solid #3949AB;
+    border: 2px solid #3949ab;
 }
 
 @keyframes fadeInDown {

@@ -269,7 +269,7 @@
                     </v-card>
 
                     <!-- Recent Attendance History -->
-                    <v-card class="history-card mt-6" elevation="2">
+                    <!-- <v-card class="history-card mt-6" elevation="2">
                         <v-card-title class="history-title">
                             <v-icon icon="mdi-history" class="mr-2" />
                             Recent Attendance
@@ -342,7 +342,7 @@
                                 </v-list>
                             </div>
                         </v-card-text>
-                    </v-card>
+                    </v-card> -->
                 </v-col>
             </v-row>
         </v-container>
